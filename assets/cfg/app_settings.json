@@ -1,0 +1,14 @@
+{
+    "sender": true,
+    "recipient": true,
+    "logos": true,
+    "links": true,
+    "address": true,
+    "autoplay": true,
+    "validated": true,
+    "email_subject": true,
+    "email_text": true,
+    "email_sender": true,
+    "email_recipients": true,
+    "tutorial": true
+}

@@ -1,0 +1,40 @@
+name: iOS CI/CD
+
+on:
+  push:
+    branches:
+      - "master"
+      - "developer"
+  
+  pull_request:
+    branches:
+      - "master"
+      - "developer"
+      
+jobs:
+ deploy_ios:
+    name: Build iOS
+    runs-on: macOS-latest
+    steps:
+      - name: Get run number
+        run: |
+          echo '${{ github.run_number }}'
+      - name: Checkout code from ref
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Run Flutter tasks
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - name: Install from Podfile
+        run: |
+          cd ios
+          pod install
+          cd .. 
+      - name: FLutter build
+        run: flutter build ios --release --no-codesign
+      - name: Run Unit Tests
+        run: flutter test
+

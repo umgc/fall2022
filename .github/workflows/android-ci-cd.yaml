@@ -1,0 +1,51 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches:
+      - "developer"
+      - "master"
+  pull_request:
+    branches:
+    - "developer"
+    - "master"
+
+jobs:
+  # CI
+  build_android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get run number
+        run: |
+          echo ${{ github.run_number }}
+      - name: Update version in YAML
+        run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
+      - name: Update keystore password
+        run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' android/key.properties
+      - name: Update keystore key password  
+        run: sed -i 's/#{KEYSTORE_KEY_PASS}#/${{ secrets.KEYSTORE_KEY_PASS }}/g' android/key.properties
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 12.x
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+      - name: Run Unit Tests
+        run: flutter test
+      - name: Release app to internal track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          packageName: com.umgc.summer2022
+          releaseFile: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: draft
+          serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
+          whatsNewDirectory: distribution/whatsnew
