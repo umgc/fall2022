@@ -1,15 +1,55 @@
-# See https://www.dartlang.org/guides/libraries/private-files
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
 
-# Files and directories created by pub
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
 .packages
-build/
-# If you're building an application, you may want to check-in your pubspec.lock
-pubspec.lock
+.pub-cache/
+.pub/
+/build/
+#credentials.json
+
+# Web related
+lib/generated_plugin_registrant.dart
+
+# Symbolication related
+app.*.symbols
+
 
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
 doc/api/
+.flutter-plugins
+.flutter-plugins-dependencies
+.vscode/
+
+android/local.properties
+.idea/
+*summer2022.iml*
 
 # Avoid committing generated Javascript files:
 *.dart.js
@@ -19,3 +59,28 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+.flutter-plugins-dependencies
+android/local.properties
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+macos/Flutter/ephemeral/Flutter-Generated.xcconfig
+macos/Flutter/ephemeral/flutter_export_environment.sh
+.flutter-plugins-dependencies
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+.flutter-plugins-dependencies
+macos/Flutter/ephemeral/Flutter-Generated.xcconfig
+macos/Flutter/ephemeral/flutter_export_environment.sh
+/coverage/
+macos/Flutter/ephemeral/flutter_export_environment.sh
+
+.vscode/launch.json
+android/app/local.properties
