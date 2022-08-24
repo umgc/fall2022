@@ -83,3 +83,4 @@ macos/Flutter/ephemeral/flutter_export_environment.sh
 macos/Flutter/ephemeral/flutter_export_environment.sh
 
 .vscode/launch.json
+android/app/local.properties
