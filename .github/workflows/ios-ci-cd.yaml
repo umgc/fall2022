@@ -36,7 +36,7 @@ jobs:
       - name: FLutter build
         run: flutter build ios --release --no-codesign
       - name: FLutter build ipa
-        run: flutter build ipa --obfuscate
+        run: flutter build ipa
       - name: Upload App File
         uses: actions/upload-artifact@v3
         with:
