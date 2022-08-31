@@ -35,11 +35,18 @@ jobs:
           cd .. 
       - name: FLutter build
         run: flutter build ios --release --no-codesign
+      - name: FLutter build ipa
+        run: flutter build ipa --obfuscate --split-debug-info
       - name: Upload App File
         uses: actions/upload-artifact@v3
         with:
           name: app-release.app
           path: /Users/runner/work/fall2022/fall2022/build/ios/iphoneos/Runner.app
+      - name: Upload Ipa File
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.ipa
+          path: /build/ios/ipa
       - name: Run Unit Tests
         run: flutter test
 
