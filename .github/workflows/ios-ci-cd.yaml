@@ -38,7 +38,7 @@ jobs:
       - name: Upload App File
         uses: actions/upload-artifact@v3
         with:
-          name: app-release.aab
+          name: app-release.app
           path: /Users/runner/work/fall2022/fall2022/build/ios/iphoneos/Runner.app
       - name: Run Unit Tests
         run: flutter test
