@@ -125,6 +125,13 @@ class MailWidgetState extends State<MailWidget> {
           centerTitle: true,
           title: const Text("Digest"),
           backgroundColor: Colors.grey,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return BackButton(
+                onPressed: () { navKey.currentState!.pushNamed('/main');},
+              );
+            },
+          ),
         ),
         body: SafeArea(
           child: Column(

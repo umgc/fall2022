@@ -29,6 +29,13 @@ class SettingWidgetState extends State<SettingsWidget> {
         centerTitle: true,
         title: const Text("Settings"),
         backgroundColor: Colors.grey,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return BackButton(
+              onPressed: () { navKey.currentState!.pushNamed('/main');},
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: SafeArea(

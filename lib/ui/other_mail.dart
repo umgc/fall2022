@@ -146,6 +146,13 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
               style: TextStyle(fontWeight: commonFontWt, fontSize: commonFontSize),
             ),
             backgroundColor: Colors.grey,
+            leading: Builder(
+              builder: (BuildContext context) {
+                return BackButton(
+                  onPressed: () { navKey.currentState!.pushNamed('/main');},
+                );
+              },
+            ),
           ),
           body: SafeArea(
             child: Column(
