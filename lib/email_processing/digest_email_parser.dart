@@ -134,7 +134,7 @@ class DigestEmailParser {
         ReturnOption option = ReturnOption("all");
         returnOptions.add(option);
         final searchResult = await client.searchMessages(
-            searchCriteria: searchCriteria, returnOptions: returnOptions);
+            searchCriteria: searchCriteria);
         //extract sequence id
         int? seqID;
         final matchingSequence = searchResult.matchingSequence;
