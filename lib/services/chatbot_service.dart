@@ -1,7 +1,6 @@
 import 'dart:collection';
-
-import 'package:enough_mail/enough_mail.dart';
 import 'package:summer2022/exceptions/invalid_command_exception.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/interfaces/ichatbot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
@@ -15,22 +14,34 @@ class ChatbotService implements IChatbotService {
     _populateChatFunctions();
   }
 
+  /**
+   * Perform user entered chat function
+   * returns an application function to be called by UI
+   */
   @override
-  void performChatFunction(SiteAreas currentArea, String userInput) {
+  ApplicationFunction performChatFunction(SiteAreas currentArea, String userInput) {
     var parsedInput = userInput.split(' ');
 
     try {
       // Attempt to retrieve the first word (command)
-      String? commandFunction = ChatFunctions[currentArea]?.firstWhere((e) => e == parsedInput[0],
-          orElse: throw InvalidCommandException("Could not find matching function " + parsedInput[0])
-      );
-
+      var cmd = ChatFunctions[currentArea]!.toList();
+      String? cmdFunc;
+      for (var i = 0; i < cmd.length; i++) {
+        if (cmd[i] == parsedInput[0]) {
+          cmdFunc = cmd[i];
+          break;
+        }
+      }
+      if (cmdFunc == null) throw InvalidCommandException();
       // Remove command from parseInput so we only have the parameters to pass
       parsedInput.removeAt(0);
 
-      _implementCommand(commandFunction.toString(), parsedInput);
+      var response = _implementCommand(currentArea, cmdFunc.toString(), parsedInput);
+      return response!;
     } catch (InvalidCommandException) {
-      // TODO: Send response command was unsuccessful
+      // Send response command was unsuccessful
+      return ApplicationFunction(message: "Unable to parse command: " + userInput  +
+          ". Enter 'help' to see a list of available options");
     }
   }
 
@@ -74,9 +85,23 @@ class ChatbotService implements IChatbotService {
   }
 
   /**
-   * Implement command (navigation/population/etc)
+   * Converts String command to ApplicationFunction for implementation
    */
-  void _implementCommand(String command, List<String> parameters) {
-      // TODO: Reflection to determine commands or custom actions
+  ApplicationFunction? _implementCommand(SiteAreas currentArea, String command, List<String> parameters) {
+    switch (command) {
+      case "help":
+        // Return list of available commands
+        var commands = ChatFunctions[currentArea]?.toList().join(", ");
+        return ApplicationFunction(message: "Available commands on this page: " + commands!);
+        break;
+      case "home":
+        // Perform return home function
+        return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/main"]);
+        break;
+      default:
+        break;
+    }
+    // No response available
+    return null;
   }
 }
