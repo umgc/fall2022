@@ -1,16 +1,16 @@
 import 'dart:collection';
 import 'package:summer2022/exceptions/invalid_command_exception.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
-import 'package:summer2022/services/bases/chatbot.dart';
+import 'package:summer2022/services/bases/chat_bot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
-class ChatbotService implements Chatbot {
+class ChatBotService implements ChatBot {
   Map<SiteAreas, List<String>> ChatFunctions = HashMap();
 
   /**
    * Default constructor
    */
-  ChatbotService() {
+  ChatBotService() {
     _populateChatFunctions();
   }
 
@@ -55,27 +55,27 @@ class ChatbotService implements Chatbot {
     ];
 
     ChatFunctions[SiteAreas.Home] = <String>[
-      "search",
+      "search", "settings",
       ...availableOnAllPages
     ];
     ChatFunctions[SiteAreas.MailView] = <String>[
-      "home",
+      "home", "settings",
       ...availableOnAllPages
     ];
     ChatFunctions[SiteAreas.NotificationManage] = <String>[
-      "home",
+      "home", "settings",
       ...availableOnAllPages
     ];
     ChatFunctions[SiteAreas.NotificationView] = <String>[
-      "home",
+      "home", "settings",
       ...availableOnAllPages
     ];
     ChatFunctions[SiteAreas.Search] = <String>[
-      "home",
+      "home", "settings",
       ...availableOnAllPages
     ];
     ChatFunctions[SiteAreas.SearchResults] = <String>[
-      "home",
+      "home", "settings",
       ...availableOnAllPages
     ];
     ChatFunctions[SiteAreas.Settings] = <String>[
@@ -93,11 +93,18 @@ class ChatbotService implements Chatbot {
         // Return list of available commands
         var commands = ChatFunctions[currentArea]?.toList().join(", ");
         return ApplicationFunction(message: "Available commands on this page: " + commands!);
-        break;
       case "home":
         // Perform return home function
         return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/main"]);
-        break;
+      case "search":
+        // Perform navigate to search function
+        return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/search"]);
+      case "settings":
+        // Perform navigate to settings function
+        return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/settings"]);
+      case "logout":
+        // Take user to sign in page
+        return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/sign_in"]);
       default:
         break;
     }
