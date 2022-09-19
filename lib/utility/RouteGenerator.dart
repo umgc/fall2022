@@ -8,6 +8,9 @@ import 'package:summer2022/backend_testing.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 
+// Enum defining all areas of the application
+enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
+
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     print('setting.name:  ${settings.name}');
