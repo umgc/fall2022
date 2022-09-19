@@ -1,10 +1,10 @@
 import 'dart:collection';
 import 'package:summer2022/exceptions/invalid_command_exception.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
-import 'package:summer2022/services/interfaces/ichatbot_service.dart';
+import 'package:summer2022/services/bases/chatbot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
-class ChatbotService implements IChatbotService {
+class ChatbotService implements Chatbot {
   Map<SiteAreas, List<String>> ChatFunctions = HashMap();
 
   /**
@@ -24,19 +24,19 @@ class ChatbotService implements IChatbotService {
 
     try {
       // Attempt to retrieve the first word (command)
-      var cmd = ChatFunctions[currentArea]!.toList();
-      String? cmdFunc;
-      for (var i = 0; i < cmd.length; i++) {
-        if (cmd[i] == parsedInput[0]) {
-          cmdFunc = cmd[i];
+      var command = ChatFunctions[currentArea]!.toList();
+      String? commandFunction;
+      for (var i = 0; i < command.length; i++) {
+        if (command[i] == parsedInput[0]) {
+          commandFunction = command[i];
           break;
         }
       }
-      if (cmdFunc == null) throw InvalidCommandException();
+      if (commandFunction == null) throw InvalidCommandException();
       // Remove command from parseInput so we only have the parameters to pass
       parsedInput.removeAt(0);
 
-      var response = _implementCommand(currentArea, cmdFunc.toString(), parsedInput);
+      var response = _implementCommand(currentArea, commandFunction.toString(), parsedInput);
       return response!;
     } catch (InvalidCommandException) {
       // Send response command was unsuccessful

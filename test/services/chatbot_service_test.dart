@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/services/chatbot_service.dart';
-import 'package:summer2022/services/interfaces/ichatbot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
 void main() async {
