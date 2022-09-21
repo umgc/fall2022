@@ -17,7 +17,6 @@ class RouteGenerator {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     _updatePreviousRoute(settings.name!);
-    print('setting.name:  ${settings.name}');
     switch (settings.name) {
       case '/main':
         return MaterialPageRoute(builder: (_) => const MainWidget());

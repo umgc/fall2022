@@ -21,17 +21,12 @@ class ChatWidget extends StatefulWidget {
 }
 
 class _ChatWidgetState extends State<ChatWidget> {
-  ChatBotService _chatBotService = ChatBotService();
-  List<types.Message> _messages = [];
+  final ChatBotService _chatBotService = ChatBotService();
   final _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
   final _system = const types.User(id: 'system', /* imageUrl: TODO: Add chatBot image */);
-
-  FontWeight commonFontWt = FontWeight.w700;
-  double commonFontSize = 30;
-  double commonBorderWidth = 2;
-  double commonButtonHeight = 60;
-  double commonButtonWidth = 200;
-  double commonCornerRadius = 8;
+  final FontWeight _commonFontWt = FontWeight.w700;
+  final double _commonFontSize = 30;
+  List<types.Message> _messages = [];
 
   @override
   void initState() {
@@ -54,7 +49,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       title: Text(
         "Chat Support",
         style:
-        TextStyle(fontWeight: commonFontWt, fontSize: commonFontSize),
+        TextStyle(fontWeight: _commonFontWt, fontSize: _commonFontSize),
       ),
       actions: <Widget>[
         Padding(
@@ -95,9 +90,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     });
   }
 
-  /*
-    May be able to use this for simple clicking of suggested option commands
-   */
+  // May be able to use this for simple clicking of suggested option commands
   void _handleMessageTap(BuildContext _, types.Message message) async {
     // TODO: Remove or implement this if needed
   }

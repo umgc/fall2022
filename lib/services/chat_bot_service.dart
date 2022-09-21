@@ -5,21 +5,31 @@ import 'package:summer2022/services/bases/chat_bot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
 class ChatBotService implements ChatBot {
-  Map<SiteAreas, List<String>> ChatFunctions = HashMap();
+  // This list of functions should be available on all pages
+  static const availableOnAllPages = <String>[
+    "logout", "help"
+  ];
+  static const Map<SiteAreas, List<String>> ChatFunctions = {
+    SiteAreas.Home: <String>["search", "settings", ...availableOnAllPages],
+    SiteAreas.Settings: <String>["home", ...availableOnAllPages],
+    SiteAreas.SearchResults: <String>["home", "settings", ...availableOnAllPages],
+    SiteAreas.Search: <String>["home", "settings", ...availableOnAllPages],
+    SiteAreas.MailView: <String>["home", "settings", ...availableOnAllPages],
+    SiteAreas.NotificationView: <String>["home", "settings", ...availableOnAllPages],
+    SiteAreas.NotificationManage: <String>["home", "settings", ...availableOnAllPages],
+  };
 
-  /**
-   * Default constructor
-   */
-  ChatBotService() {
-    _populateChatFunctions();
-  }
+  // Default constructor
+  ChatBotService() {  }
 
-  /**
-   * Perform user entered chat function
-   * returns an application function to be called by UI
-   */
+  // Perform user entered chat function
+  // returns an application function to be called by UI
   @override
   ApplicationFunction performChatFunction(SiteAreas currentArea, String userInput) {
+    // Return if currentArea doesn't have any mapped functions
+    if (!ChatFunctions.containsKey(currentArea))
+      return ApplicationFunction(message: "There are no available commands on this page.");
+
     var parsedInput = userInput.split(' ');
 
     try {
@@ -36,8 +46,7 @@ class ChatBotService implements ChatBot {
       // Remove command from parseInput so we only have the parameters to pass
       parsedInput.removeAt(0);
 
-      var response = _implementCommand(currentArea, commandFunction.toString(), parsedInput);
-      return response!;
+      return _implementCommand(currentArea, commandFunction.toString(), parsedInput)!;
     } catch (InvalidCommandException) {
       // Send response command was unsuccessful
       return ApplicationFunction(message: "Unable to parse command: " + userInput  +
@@ -45,49 +54,8 @@ class ChatBotService implements ChatBot {
     }
   }
 
-  /**
-   * Populates chatFunctions HashMap with possible commands per site area
-   */
-  void _populateChatFunctions() {
-    // This list of functions should be available on all pages
-    var availableOnAllPages = <String>[
-      "logout", "help"
-    ];
-
-    ChatFunctions[SiteAreas.Home] = <String>[
-      "search", "settings",
-      ...availableOnAllPages
-    ];
-    ChatFunctions[SiteAreas.MailView] = <String>[
-      "home", "settings",
-      ...availableOnAllPages
-    ];
-    ChatFunctions[SiteAreas.NotificationManage] = <String>[
-      "home", "settings",
-      ...availableOnAllPages
-    ];
-    ChatFunctions[SiteAreas.NotificationView] = <String>[
-      "home", "settings",
-      ...availableOnAllPages
-    ];
-    ChatFunctions[SiteAreas.Search] = <String>[
-      "home", "settings",
-      ...availableOnAllPages
-    ];
-    ChatFunctions[SiteAreas.SearchResults] = <String>[
-      "home", "settings",
-      ...availableOnAllPages
-    ];
-    ChatFunctions[SiteAreas.Settings] = <String>[
-      "home",
-      ...availableOnAllPages
-    ];
-  }
-
-  /**
-   * Converts String command to ApplicationFunction for implementation
-   */
-  ApplicationFunction? _implementCommand(SiteAreas currentArea, String command, List<String> parameters) {
+  // Converts String command to ApplicationFunction for implementation
+  ApplicationFunction _implementCommand(SiteAreas currentArea, String command, List<String> parameters) {
     switch (command) {
       case "help":
         // Return list of available commands
@@ -109,6 +77,6 @@ class ChatBotService implements ChatBot {
         break;
     }
     // No response available
-    return null;
+    return ApplicationFunction(message: "Sorry. I couldn't interpret your command.");
   }
 }
