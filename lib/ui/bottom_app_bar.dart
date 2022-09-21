@@ -88,6 +88,10 @@ class BottomBarState extends State<BottomBar> {
     );
 
     return GestureDetector(
+      // TODO:  Proper nav for this
+        onTap: () {
+          Navigator.pushNamed(context, '/chat');
+        },
         onLongPress: () {
           stt.pressRecord();
           setState(() {
