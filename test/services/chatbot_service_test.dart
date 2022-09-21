@@ -9,15 +9,15 @@ void main() async {
     test("Verify performChatFunction Help", () {
       var service = ChatBotService();
       var result = service.performChatFunction(SiteAreas.Home, "help");
-      expect(result.getMethodName, "");
-      expect(result.getParameters, null);
-      expect(result.getMessage.contains("Available commands on this page:"), true);
+      expect(result.methodName, "");
+      expect(result.parameters, null);
+      expect(result.message.contains("Available commands on this page:"), true);
     });
     test("Verify ChatBot to homepage", () {
       var service = ChatBotService();
       var result = service.performChatFunction(SiteAreas.Settings, "home");
-      expect(result.getMethodName, "navigateTo");
-      expect(result.getParameters, <String>["/main"]);
+      expect(result.methodName, "navigateTo");
+      expect(result.parameters, <String>["/main"]);
     });
   });
 }

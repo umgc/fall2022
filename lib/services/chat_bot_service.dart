@@ -46,7 +46,7 @@ class ChatBotService implements ChatBot {
       // Remove command from parseInput so we only have the parameters to pass
       parsedInput.removeAt(0);
 
-      return _implementCommand(currentArea, commandFunction.toString(), parsedInput)!;
+      return _implementCommand(currentArea, commandFunction.toString(), parsedInput);
     } catch (InvalidCommandException) {
       // Send response command was unsuccessful
       return ApplicationFunction(message: "Unable to parse command: " + userInput  +
