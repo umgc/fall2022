@@ -50,11 +50,9 @@ class RouteGenerator {
     }
   }
 
-  /**
-   * Update previous route to new route if it matches any valid routes
-   * This is for use by the ChatBot to determine the user's page
-   * TODO: Probably a better way to handle this with Navigator/navkey
-   */
+  // Update previous route to new route if it matches any valid routes
+  // This is for use by the ChatBot to determine the user's page
+  // TODO: Probably a better way to handle this with Navigator/navkey
   static void _updatePreviousRoute(String newRoute) {
     switch (newRoute) {
       case '/main':
