@@ -6,11 +6,6 @@ void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('ChatBot Service Verification Tests', () {
-    test("Verify ChatFunctions are populated", () {
-      var service = ChatBotService();
-      var result = service.ChatFunctions.entries.length > 0;
-      expect(result, true);
-    });
     test("Verify performChatFunction Help", () {
       var service = ChatBotService();
       var result = service.performChatFunction(SiteAreas.Home, "help");
