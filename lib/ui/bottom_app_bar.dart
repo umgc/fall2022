@@ -93,19 +93,16 @@ class BottomBarState extends State<BottomBar> {
           Navigator.pushNamed(context, '/chat');
         },
         onLongPress: () {
-          stt.pressRecord();
           setState(() {
             micStatus = true;
           });
         },
         onLongPressUp: () {
-          stt.command(stt.words); 
           setState(() {
             micStatus = false;
           });
         },
         onDoubleTap: () {
-          stop();
           setState(() {
             micStatus = false;
           });

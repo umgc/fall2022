@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
-import 'package:summer2022/speech_commands/read_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/models/Digest.dart';
@@ -20,7 +19,6 @@ class MailWidget extends StatefulWidget {
 }
 
 class MailWidgetState extends State<MailWidget> {
-  ReadDigestMail? reader;
   int attachmentIndex = 0;
   List<Link> links = <Link>[];
   FontWeight commonFontWt = FontWeight.w700;
@@ -50,36 +48,15 @@ class MailWidgetState extends State<MailWidget> {
   initState() {
     super.initState();
     if (widget.digest.attachments.isNotEmpty) {
-      reader = ReadDigestMail();
-      reader!.setCurrentMail(
-          widget.digest.attachments[attachmentIndex].detailedInformation);
       buildLinks();
     }
-    stt.setCurrentPage("mail", this);
-    WidgetsBinding.instance.addPostFrameCallback((_) => digestAuto(context));
-  }
-
-  digestAuto(context) async {
-    try {
-      setTtsState(TtsState.playing);
-      readMailPiece();
-    } catch(e) {
-      debugPrint("ERROR: Read mail piece in init: ${e.toString()}");
-    }
-    autoplay();
   }
 
   Future<void> autoplay() async {
     // Wait a few seconds before starting to check if speaking is done
     await Future.delayed(const Duration(seconds: 3));
-    setTtsState(TtsState.playing);
     if (GlobalConfiguration().getValue("autoplay")) {
       if (mounted) {
-        while (ttsState != TtsState.stopped){
-          debugPrint("waiting for tts to stop");
-          await Future.delayed(const Duration(seconds: 1));
-        }
-        debugPrint("tts stopped");
         await Future.delayed(const Duration(seconds: 5));
         if (attachmentIndex < (widget.digest.attachments.length - 1)) {
           setState(() {
@@ -95,14 +72,12 @@ class MailWidgetState extends State<MailWidget> {
       // User swiped Left
       debugPrint("Swap Left to Right");
       setState(() {
-        stop();
         seekBack();
       });
     } else if (details.primaryVelocity! < 0) {
       // User swiped Right
       debugPrint("Swap Right to Left");
       setState(() {
-        stop();
         seekForward();
       });
     }
@@ -192,7 +167,7 @@ class MailWidgetState extends State<MailWidget> {
                         height: commonButtonHeight, // UNREAD Button
                         child: OutlinedButton(
                           onPressed: () {
-                            readMailPiece();
+                            //readMailPiece();
                           },
                           style: commonButtonStyleElevated(
                               Colors.white, Colors.grey),
@@ -212,7 +187,6 @@ class MailWidgetState extends State<MailWidget> {
                         heroTag: "f1",
                         onPressed: () {
                           setState(() {
-                            stop();
                             seekBack();
                           });
                         },
@@ -226,7 +200,6 @@ class MailWidgetState extends State<MailWidget> {
                         heroTag: "f2",
                         onPressed: () {
                           setState(() {
-                            stop();
                             seekForward();
                           });
                         },
@@ -246,11 +219,8 @@ class MailWidgetState extends State<MailWidget> {
       attachmentIndex = attachmentIndex - 1;
       debugPrint(widget.digest.attachments[attachmentIndex].detailedInformation
           .toJson().toString());
-      reader!.setCurrentMail(
-          widget.digest.attachments[attachmentIndex].detailedInformation);
+
       buildLinks();
-      setTtsState(TtsState.playing);
-      readMailPiece();
     }
   }
 
@@ -260,16 +230,7 @@ class MailWidgetState extends State<MailWidget> {
       attachmentIndex = attachmentIndex + 1;
       debugPrint(widget.digest.attachments[attachmentIndex].detailedInformation
           .toJson().toString());
-      reader!.setCurrentMail(
-          widget.digest.attachments[attachmentIndex].detailedInformation);
       buildLinks();
-      try {
-        setTtsState(TtsState.playing);
-        readMailPiece();
-      } catch (e) {
-        debugPrint("ERROR: Seek forward: ${e.toString()}");
-      }
-      autoplay();
     }
   }
 
@@ -329,17 +290,17 @@ class MailWidgetState extends State<MailWidget> {
       }
     }
     links = newLinks;
-    reader!.links = links;
+
   }
 
-  Future<void> readMailPiece() async {
-    try {
-      if (reader != null) {
-        await reader!.readDigestInfo();
-        //Future.wait([reader!.readDigestInfo()]);
-      }
-    } catch (e) {
-      debugPrint("ERROR: Read digest piece: ${e.toString()}");
-    }
-  }
+  // Future<void> readMailPiece() async {
+  //   try {
+  //     if (reader != null) {
+  //       await reader!.readDigestInfo();
+  //       //Future.wait([reader!.readDigestInfo()]);
+  //     }
+  //   } catch (e) {
+  //     debugPrint("ERROR: Read digest piece: ${e.toString()}");
+  //   }
+  // }
 }

@@ -7,7 +7,6 @@ import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/email_processing/other_mail_parser.dart';
-import 'package:summer2022/speech_commands/read_info.dart';
 import 'package:summer2022/ui/mail_widget.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/ui/other_mail.dart';
@@ -24,7 +23,6 @@ class Speech {
   dynamic username;
   dynamic password;
   Digest digest = Digest();
-  CommandTutorial tutorial = CommandTutorial();
   late List<Digest> emails;
   late MailWidgetState _mailWidgetState;
   late OtherMailWidgetState _otherMailWidgetState;
@@ -206,81 +204,79 @@ class Speech {
               });
               break;
             case 'details':
-              _mailWidgetState.readMailPiece();
+              //_mailWidgetState.readMailPiece();
               break;
             case 'center name':
             case 'sender name':
             case 'send her name':
             case 'sonder name':
-              try {
-                _mailWidgetState.reader!.readDigestSenderName();
-              } catch (e) {
-                speak('There is no sender name');
-              }
+              // try {
+              //   _mailWidgetState.reader!.readDigestSenderName();
+              // } catch (e) {
+              //   speak('There is no sender name');
+              // }
               break;
             case 'recipient name':
-              try {
-                _mailWidgetState.reader!.readDigestRecipientName();
-              } catch (e) {
-                speak('There is no recipient name');
-              }
+              // try {
+              //   _mailWidgetState.reader!.readDigestRecipientName();
+              // } catch (e) {
+              //   speak('There is no recipient name');
+              // }
               break;
             case 'center address':
             case 'sender address':
             case 'send her address':
             case 'sonder address':
-              try {
-                _mailWidgetState.reader!.readDigestSenderAddress();
-              } catch (e) {
-                speak('There is no sender address');
-              }
-
+              // try {
+              //   _mailWidgetState.reader!.readDigestSenderAddress();
+              // } catch (e) {
+              //   speak('There is no sender address');
+              // }
               break;
             case 'recipient address':
-              try {
-                _mailWidgetState.reader!.readDigestRecipientAddress();
-              } catch (e) {
-                speak('There is no recipient address');
-              }
-
+              // try {
+              //   _mailWidgetState.reader!.readDigestRecipientAddress();
+              // } catch (e) {
+              //   speak('There is no recipient address');
+              // }
               break;
             case 'center validated':
             case 'sender validated':
             case 'send her validated':
             case 'sonder validated':
-              try {
-                _mailWidgetState.reader!.readDigestSenderAddressValidated();
-              } catch (e) {
-                speak('There is no sender validation');
-              }
+              // try {
+              //   _mailWidgetState.reader!.readDigestSenderAddressValidated();
+              // } catch (e) {
+              //   speak('There is no sender validation');
+              // }
               break;
             case 'recipient validated':
-              try {
-                _mailWidgetState.reader!.readDigestRecipientAddressValidated();
-              } catch (e) {
-                speak('There is no recipient validation');
-              }
+              // try {
+              //   _mailWidgetState.reader!.readDigestRecipientAddressValidated();
+              // } catch (e) {
+              //   speak('There is no recipient validation');
+              // }
               break;
             case 'logos':
-              try {
-                _mailWidgetState.reader!.readDigestLogos();
-              } catch (e) {
-                speak('There are no logos');
-              }
+              // try {
+              //   _mailWidgetState.reader!.readDigestLogos();
+              // } catch (e) {
+              //   speak('There are no logos');
+              // }
               break;
             case 'help':
-              tutorial.getDigestHelp();
+              // tutorial.getDigestHelp();
               break;
             case 'back':
               navKey.currentState!.pushNamed('/main');
               break;
             default:
               if (s.contains("hyperlink")) {
-                if (s == 'hyperlinks' && links == false) {
-                  _mailWidgetState.reader!.readDigestLinks();
-                  _mailWidgetState.showLinkDialog();
-                  links = true;
-                }
+                // if (s == 'hyperlinks' && links == false) {
+                //   _mailWidgetState.reader!.readDigestLinks();
+                //   _mailWidgetState.showLinkDialog();
+                //   links = true;
+                // }
                 if (s == 'close hyperlinks' && links == true) {
                   navKey.currentState!.pop();
                   links = false;
@@ -292,8 +288,8 @@ class Speech {
                         _mailWidgetState
                             .openLink(_mailWidgetState.links[0].link);
                       } catch (e) {
-                        speak(
-                            'There is not a valid hyperlink in the first position');
+                      //   speak(
+                      //       'There is not a valid hyperlink in the first position');
                       }
                     }
                     if (position == 'second' || position == '2nd') {
@@ -301,8 +297,8 @@ class Speech {
                         _mailWidgetState
                             .openLink(_mailWidgetState.links[1].link);
                       } catch (e) {
-                        speak(
-                            'There is not a valid hyperlink in the second position');
+                      //   speak(
+                      //       'There is not a valid hyperlink in the second position');
                       }
                     }
                     if (position == 'third' || position == '3rd') {
@@ -310,8 +306,8 @@ class Speech {
                         _mailWidgetState
                             .openLink(_mailWidgetState.links[2].link);
                       } catch (e) {
-                        speak(
-                            'There is not a valid hyperlink in the third position');
+                      //   speak(
+                      //       'There is not a valid hyperlink in the third position');
                       }
                     }
                     if (position == 'fourth' || position == '4th') {
@@ -319,8 +315,8 @@ class Speech {
                         _mailWidgetState
                             .openLink(_mailWidgetState.links[3].link);
                       } catch (e) {
-                        speak(
-                            'There is not a valid hyperlink in the fourth position');
+                      //   speak(
+                      //       'There is not a valid hyperlink in the fourth position');
                       }
                     }
                     if (position == 'fifth' || position == '5th') {
@@ -328,8 +324,8 @@ class Speech {
                         _mailWidgetState
                             .openLink(_mailWidgetState.links[4].link);
                       } catch (e) {
-                        speak(
-                            'There is not a valid hyperlink in the fifth position');
+                      //   speak(
+                      //       'There is not a valid hyperlink in the fifth position');
                       }
                     }
                   } catch (e) {
@@ -354,25 +350,25 @@ class Speech {
               });
               break;
             case 'details':
-              _otherMailWidgetState.reader!.readEmailInfo();
+              // _otherMailWidgetState.reader!.readEmailInfo();
               break;
             case 'subject':
-              _otherMailWidgetState.reader!.readEmailSubject();
+              // _otherMailWidgetState.reader!.readEmailSubject();
               break;
             case 'text':
-              _otherMailWidgetState.reader!.readEmailText();
+              // _otherMailWidgetState.reader!.readEmailText();
               break;
             case 'center':
             case 'sender':
             case 'send her':
             case 'sonder':
-              _otherMailWidgetState.reader!.readEmailSender();
+              // _otherMailWidgetState.reader!.readEmailSender();
               break;
             case 'recipients':
-              _otherMailWidgetState.reader!.readEmailRecipients();
+              // _otherMailWidgetState.reader!.readEmailRecipients();
               break;
             case 'help':
-              tutorial.getEmailHelp();
+              // tutorial.getEmailHelp();
               break;
             case 'back':
               navKey.currentState!.pushNamed('/main');
@@ -403,28 +399,28 @@ class Speech {
                   navKey.currentState!.pushNamed('/digest_mail',
                       arguments: MailWidgetArguments(digest));
                 } else {
-                  speak('There are no digests available for today');
+                  // speak('There are no digests available for today');
                 }
               } catch (e) {
-                speak('An error occurred while fetching your daily digest: $e');
+                // speak('An error occurred while fetching your daily digest: $e');
               }
               break;
             case 'settings':
               navKey.currentState!.pushNamed('/settings');
-              speak("You are on the settings page.");
+              // speak("You are on the settings page.");
               break;
             case 'sign out':
               navKey.currentState!.pushNamed('/sign_in');
-              speak("You have been signed out.");
+              // speak("You have been signed out.");
               break;
             case 'tutorial off':
               cfg.updateValue("tutorial", false);
               break;
             case 'skip':
-              stop(); // stop any tts (purpose is for skipping tutorial)
+              // stop(); // stop any tts (purpose is for skipping tutorial)
               break;
             case 'help':
-              tutorial.getMainHelp();
+              // tutorial.getMainHelp();
               break;
             default:
               // User asks for emails from specific date
@@ -432,8 +428,8 @@ class Speech {
                 try {
                   requestedDate = s.split("date ")[1];
                 } catch (e) {
-                  tts.speak(
-                      'When utilizing the email date command please state the command followed by the chosen date');
+                  // tts.speak(
+                  //     'When utilizing the email date command please state the command followed by the chosen date');
                   break;
                 }
                 DateTime? dt = processDate(requestedDate);
@@ -448,14 +444,14 @@ class Speech {
                       navKey.currentState!.pushNamed('/other_mail',
                           arguments: EmailWidgetArguments(emails));
                     } else {
-                      speak('There are no digest available for $requestedDate');
+                      // speak('There are no digest available for $requestedDate');
                     }
                   } catch (e) {
-                    speak('An error occurred while fetching your emails: $e');
+                    // speak('An error occurred while fetching your emails: $e');
                   }
                 } else {
-                  speak(
-                      'The specified date is invalid. Please say the month, day of the month, and then the year.');
+                  // speak(
+                  //     'The specified date is invalid. Please say the month, day of the month, and then the year.');
                 }
               }
               // User asks for digest from specific date
@@ -463,8 +459,8 @@ class Speech {
                 try {
                   requestedDate = s.split("date ")[1];
                 } catch (e) {
-                  tts.speak(
-                      'When utilizing the digest date command please state the command followed by the chosen date');
+                  // tts.speak(
+                  //     'When utilizing the digest date command please state the command followed by the chosen date');
                   break;
                 }
                 DateTime? dt = processDate(requestedDate);
@@ -478,15 +474,15 @@ class Speech {
                       navKey.currentState!.pushNamed('/digest_mail',
                           arguments: MailWidgetArguments(digest));
                     } else {
-                      speak('There are no digest available for $requestedDate');
+                      // speak('There are no digest available for $requestedDate');
                     }
                   } catch (e) {
-                    speak(
-                        'An error occurred while fetching your daily digest: $e');
+                    // speak(
+                    //     'An error occurred while fetching your daily digest: $e');
                   }
                 } else {
-                  speak(
-                      'The specified date is invalid. Please say the month, day of the month, and then the year.');
+                  // speak(
+                  //     'The specified date is invalid. Please say the month, day of the month, and then the year.');
                 }
               }
               break;
@@ -501,7 +497,7 @@ class Speech {
             case 'sonder on':
               cfg.updateValue("sender", true);
               _settingWidgetState.setState(() {});
-              speak("Sender on.");
+              // speak("Sender on.");
               break;
             case 'center off':
             case 'sender off':
@@ -510,114 +506,114 @@ class Speech {
             case 'sonder off':
               cfg.updateValue("sender", false);
               _settingWidgetState.setState(() {});
-              speak("Sender off.");
+              // speak("Sender off.");
               break;
             case 'recipient on':
               cfg.updateValue("recipient", true);
               _settingWidgetState.setState(() {});
-              speak("Recipient on.");
+              // speak("Recipient on.");
               break;
             case 'recipient off':
               cfg.updateValue("recipient", false);
               _settingWidgetState.setState(() {});
-              speak("Recipient off.");
+              // speak("Recipient off.");
               break;
             case 'logos on':
               cfg.updateValue("logos", true);
               _settingWidgetState.setState(() {});
-              speak("Logos on.");
+              // speak("Logos on.");
               break;
             case 'logos off':
               cfg.updateValue("logos", false);
               _settingWidgetState.setState(() {});
-              speak("Logos off.");
+              // speak("Logos off.");
               break;
             case 'hyperlinks on':
               cfg.updateValue("links", true);
               _settingWidgetState.setState(() {});
-              speak("Links on.");
+              // speak("Links on.");
               break;
             case 'hyperlinks off':
               cfg.updateValue("links", false);
               _settingWidgetState.setState(() {});
-              speak("Links off.");
+              // speak("Links off.");
               break;
             case 'address on':
               cfg.updateValue("address", true);
               _settingWidgetState.setState(() {});
-              speak("Address on.");
+              // speak("Address on.");
               break;
             case 'address off':
               cfg.updateValue("address", false);
               _settingWidgetState.setState(() {});
-              speak("Address off.");
+              // speak("Address off.");
               break;
             case 'email subject on':
               cfg.updateValue("email_subject", true);
               _settingWidgetState.setState(() {});
-              speak("Email subject on.");
+              // speak("Email subject on.");
               break;
             case 'email subject off':
               cfg.updateValue("email_subject", false);
               _settingWidgetState.setState(() {});
-              speak("Email subject off.");
+              // speak("Email subject off.");
               break;
             case 'email text on':
               cfg.updateValue("email_text", true);
               _settingWidgetState.setState(() {});
-              speak("Email text on.");
+              // speak("Email text on.");
               break;
             case 'email text off':
               cfg.updateValue("email_text", false);
               _settingWidgetState.setState(() {});
-              speak("Email text off.");
+              // speak("Email text off.");
               break;
             case 'email sender address on':
               cfg.updateValue("email_sender", true);
               _settingWidgetState.setState(() {});
-              speak("Email sender on.");
+              // speak("Email sender on.");
               break;
             case 'email sender address off':
               cfg.updateValue("email_sender", false);
               _settingWidgetState.setState(() {});
-              speak("Email sender off.");
+              // speak("Email sender off.");
               break;
             case 'email recipients on':
               cfg.updateValue("email_recipients", true);
               _settingWidgetState.setState(() {});
-              speak("Email recipients on.");
+              // speak("Email recipients on.");
               break;
             case 'email recipients off':
               cfg.updateValue("email_recipients", false);
               _settingWidgetState.setState(() {});
-              speak("Email recipients off.");
+              // speak("Email recipients off.");
               break;
             case 'autoplay on':
               cfg.updateValue("autoplay", true);
               _settingWidgetState.setState(() {});
-              speak("Autoplay on.");
+              // speak("Autoplay on.");
               break;
             case 'autoplay off':
               cfg.updateValue("autoplay", false);
               _settingWidgetState.setState(() {});
-              speak("Autoplay off.");
+              // speak("Autoplay off.");
               break;
             case 'tutorial on':
               cfg.updateValue("tutorial", true);
               _settingWidgetState.setState(() {});
-              speak("Tutorial on.");
+              // speak("Tutorial on.");
               break;
             case 'tutorial off':
               cfg.updateValue("tutorial", false);
               _settingWidgetState.setState(() {});
-              speak("Tutorial off.");
+              // speak("Tutorial off.");
               break;
             case 'help':
-              tutorial.getSettingsHelp();
+              // tutorial.getSettingsHelp();
               break;
             case 'back':
               navKey.currentState!.pushNamed('/main');
-              speak("You are on the main page.");
+              // speak("You are on the main page.");
               break;
             default:
               break;
@@ -630,15 +626,15 @@ class Speech {
           mute = true;
           break;
         case 'stop':
-          tts.stop();
+          // tts.stop();
           break;
         case 'speakers off':
-          tts.stop();
-          tts.setVolume(0);
+          // tts.stop();
+          // tts.setVolume(0);
           break;
         case 'speakers on':
-          tts.stop();
-          tts.setVolume(1);
+          // tts.stop();
+          // tts.setVolume(1);
           break;
         default: // Invalid command
           break;

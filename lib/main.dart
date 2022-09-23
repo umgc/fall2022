@@ -14,37 +14,6 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'dart:io' show Platform;
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
-final Speech stt = Speech();
-FlutterTts tts = FlutterTts();
-enum TtsState { playing, stopped, paused, continued }
-TtsState ttsState = TtsState.stopped;
-
-Future speak(String text) async {
-  debugPrint(text);
-  try {
-    setTtsState(TtsState.playing);
-    await tts.awaitSpeakCompletion(true);
-    int result = await tts.speak(text);
-    debugPrint("result $result");
-    setTtsState(TtsState.stopped);
-  } catch(e) {
-    debugPrint("TTS ERROR: ${e.toString()}");
-  }
-}
-
-Future stop() async {
-  try {
-    await tts.stop();
-    setTtsState(TtsState.stopped);
-  } catch(e) {
-    debugPrint("TTS STOP ERROR: ${e.toString()}");
-  }
-}
-
-setTtsState(TtsState state) {
-  debugPrint("set tts state $state");
-  ttsState = state;
-}
 
 void main() async {
   WidgetsFlutterBinding
@@ -58,21 +27,6 @@ void main() async {
     emailAuthenticated = (await Client().getImapClient(
         username, password)); //Replace with config read for credentials
   }
-
-  void initTTS() async {
-    if(Platform.isAndroid) {
-      await tts.setQueueMode(1);
-    }
-    tts.setCompletionHandler(() {setTtsState(TtsState.stopped);});
-    await tts.setLanguage("en-US");
-    await tts.setSpeechRate(.4);
-    await tts.setVolume(1.0);
-    await tts.setPitch(1.0);
-  }
-
-  initTTS();
-
-  stt.speechToText();
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(

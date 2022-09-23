@@ -1,8 +1,6 @@
 import 'package:enough_mail/enough_mail.dart';
 import 'package:flutter/material.dart';
-import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
-import 'package:summer2022/speech_commands/read_info.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/main.dart';
@@ -19,7 +17,7 @@ class OtherMailWidget extends StatefulWidget {
 }
 
 class OtherMailWidgetState extends State<OtherMailWidget> {
-  ReadMail? reader;
+  // ReadMail? reader;
   late int index;
   FontWeight commonFontWt = FontWeight.w500;
   double commonFontSize = 28;
@@ -28,45 +26,6 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
   void initState() {
     // index must be initialed before build or emails won't iterate
     super.initState();
-    index = widget.emails.length - 1;
-    stt.setCurrentPage("email", this);
-    if(widget.emails.isNotEmpty) {
-        reader = ReadMail();
-        reader!.setCurrentMail(widget.emails[index].message);
-           
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) => otherMailAuto(context));
-  }
-
-  otherMailAuto(context) async {
-    try {
-        setTtsState(TtsState.playing);
-        readMailPiece();
-    } catch(e) {
-        debugPrint("ERROR: Read mail piece in init: ${e.toString()}");
-    }
-    autoplay();
-  }
-
-  Future<void> autoplay() async {
-    // Wait a few seconds before starting to check if speaking is done
-    await Future.delayed(const Duration(seconds: 3));
-    setTtsState(TtsState.playing);
-    if (GlobalConfiguration().getValue("autoplay")) {
-      if (mounted) {
-        while (ttsState != TtsState.stopped){
-          debugPrint("waiting for tts to stop");
-          await Future.delayed(const Duration(seconds: 1));
-        }
-        debugPrint("tts stopped");
-        await Future.delayed(const Duration(seconds: 5));
-        if (index != 0) {
-          setState(() {
-            seekForward();
-          });
-        }
-      }
-    }
   }
 
   MimeMessage getCurrentEmailMessage() {
@@ -232,7 +191,6 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
                       backgroundColor: Colors.grey,
                       heroTag: "f1",
                       onPressed: () {
-                        stop();
                         seekBack();
                       },
                       child: const Icon(Icons.skip_previous),
@@ -245,7 +203,6 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
                       backgroundColor: Colors.grey,
                       heroTag: "f2",
                       onPressed: () {
-                        stop();
                         seekForward();
                       },
                       child: const Icon(Icons.skip_next),
@@ -268,15 +225,15 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
       if (index != widget.emails.length - 1) {
         index++;
       }
-      reader!.setCurrentMail(widget.emails[index].message);
+      // reader!.setCurrentMail(widget.emails[index].message);
       
     });
-    try {
-      setTtsState(TtsState.playing);
-      readMailPiece();
-    } catch(e) {
-      debugPrint("ERROR: Seek back: ${e.toString()}");
-    }
+    // try {
+    //   setTtsState(TtsState.playing);
+    //   readMailPiece();
+    // } catch(e) {
+    //   debugPrint("ERROR: Seek back: ${e.toString()}");
+    // }
   }
 
   void seekForward() {
@@ -285,26 +242,26 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
         if (index != 0) {
           index--;
         }
-        reader!.setCurrentMail(widget.emails[index].message);
+        // reader!.setCurrentMail(widget.emails[index].message);
       });
-      try {
-        setTtsState(TtsState.playing);
-        readMailPiece();
-      } catch(e) {
-        debugPrint("ERROR: Seek forward: ${e.toString()}");
-      }
-      autoplay();
+      // try {
+      //   setTtsState(TtsState.playing);
+      //   readMailPiece();
+      // } catch(e) {
+      //   debugPrint("ERROR: Seek forward: ${e.toString()}");
+      // }
+      // autoplay();
     }
   }
 
-  Future<bool> readMailPiece() async {
-    try{
-      if(reader != null) {
-        await reader!.readEmailInfo();
-      }
-    } catch (e) {
-      debugPrint("ERROR: Read mail piece: ${e.toString()}");
-    }
-    return true;
-  }
+  // Future<bool> readMailPiece() async {
+  //   try{
+  //     if(reader != null) {
+  //       await reader!.readEmailInfo();
+  //     }
+  //   } catch (e) {
+  //     debugPrint("ERROR: Read mail piece: ${e.toString()}");
+  //   }
+  //   return true;
+  // }
 }
