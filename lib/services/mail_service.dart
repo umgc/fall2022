@@ -54,13 +54,11 @@ class MailService {
 
       var mailList = jsonDecode(mailParsed) as List;
 
-      List<MailPiece> mail = mailList
+      return mailList
           .map((x) => MailPiece.fromJson(x))
           .where((x) => matchesKeyword(x, keyword))
           .where((x) => isWithinDateRange(x, startDate, endDate))
           .toList();
-
-      return mail;
     } catch (e) {
       throw new FetchMailException(e.toString());
     }
