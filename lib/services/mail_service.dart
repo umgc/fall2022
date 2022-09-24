@@ -8,33 +8,38 @@ import 'package:summer2022/models/Digest.dart';
 
 /// todo: remove this once mailpiece class is properly implemented
 class MailPiece {
-  String ID;
-  String EmailID;
-  DateTime TimeStamp = new DateTime(2022, 1, 1);
-  String Sender;
-  String MidID;
-  String ImageText;
+  String id;
+  String emailId;
+  DateTime timeStamp = new DateTime(2022, 1, 1);
+  String sender;
+  String midId;
+  String imageText;
 
-  MailPiece(this.ID, this.EmailID, this.MidID, this.ImageText, this.Sender,
-      this.TimeStamp);
+  MailPiece(this.id, this.emailId, this.midId, this.imageText, this.sender,
+      this.timeStamp);
 
   factory MailPiece.fromJson(dynamic json) {
     return MailPiece(
-        json['ID'] as String,
-        json['EmailID'] as String,
-        json['MidID'] as String,
-        json['ImageText'] as String,
-        json['Sender'] as String,
-        json['TimeStamp'] as DateTime);
+        json['id'] as String,
+        json['emailId'] as String,
+        json['midId'] as String,
+        json['imageText'] as String,
+        json['sender'] as String,
+        json['timeStamp'] as DateTime);
   }
 }
 
 class MailService {
   /// Location of mail data file
+  /// todo: set file path in config and pull value from there
   String mailData = "";
 
-  Future<File> get _localFile async {
-    return File(mailData);
+  /// Mail data file
+  File localFile = new File("");
+
+  /// MailService constructor
+  MailService() {
+    localFile = File(mailData);
   }
 
   /// Retrieves all mail from local cache that matches [keyword] or is within [startDate] and [endDate]
@@ -43,18 +48,17 @@ class MailService {
   Future<List> fetchMail(
       String? keyword, DateTime? startDate, DateTime? endDate) async {
     try {
-      final jsonMail = await _localFile;
+      final jsonMail = localFile;
 
       final mailParsed = await jsonMail.readAsString();
 
       var mailList = jsonDecode(mailParsed) as List;
 
-      List<MailPiece> mailObjs =
-          mailList.map((x) => MailPiece.fromJson(x)).toList();
-
-      List<MailPiece> mail = <MailPiece>[...mailObjs];
-
-      mail = getMailByKeyword(getMailByDate(mail, startDate, endDate), keyword);
+      List<MailPiece> mail = mailList
+          .map((x) => MailPiece.fromJson(x))
+          .where((x) => matchesKeyword(x, keyword))
+          .where((x) => isWithinDateRange(x, startDate, endDate))
+          .toList();
 
       return mail;
     } catch (e) {
@@ -62,21 +66,18 @@ class MailService {
     }
   }
 
-  /// returns items from [mail] that match [keyword]
-  List<MailPiece> getMailByKeyword(List<MailPiece> mail, String? keyword) {
-    return mail
-        .where((x) =>
-            x.Sender.contains(keyword ?? "") ||
-            x.ImageText.contains(keyword ?? ""))
-        .toList();
+  /// returns true if [mail] mail has a sender or imageText value that matches [keyword]
+  bool matchesKeyword(MailPiece mail, String? keyword) {
+    return mail.sender.contains(keyword ?? "") ||
+        mail.imageText.contains(keyword ?? "");
   }
 
-  /// returns items from [mail] with a timestamp within [startDate] and [endDate]
-  List<MailPiece> getMailByDate(
-      List<MailPiece> mail, DateTime? startDate, DateTime? endDate) {
+  /// returns true if [mail] has a timestamp within [startDate] and [endDate]
+  bool isWithinDateRange(
+      MailPiece mail, DateTime? startDate, DateTime? endDate) {
     //if either value is null, both should be null and the filter should not be applied
     if (startDate == null || endDate == null) {
-      return mail;
+      return true;
     }
 
     //set to 1 millisecond before midnight of given day
@@ -89,10 +90,7 @@ class MailService {
         new DateTime(endDate.year, endDate.month, endDate.day)
             .add(Duration(days: 1, milliseconds: -1));
 
-    return mail
-        .where((x) =>
-            (x.TimeStamp.isAfter(convertedStartDate)) &&
-            (x.TimeStamp.isBefore(convertedEndDate)))
-        .toList();
+    return mail.timeStamp.isAfter(convertedStartDate) &&
+        mail.timeStamp.isBefore(convertedEndDate);
   }
 }
