@@ -26,6 +26,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
   void initState() {
     // index must be initialed before build or emails won't iterate
     super.initState();
+    index = widget.emails.length - 1;
   }
 
   MimeMessage getCurrentEmailMessage() {
