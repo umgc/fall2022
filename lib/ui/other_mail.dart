@@ -1,4 +1,5 @@
 import 'package:enough_mail/enough_mail.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,8 @@ import 'package:summer2022/speech_commands/read_info.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class OtherMailWidget extends StatefulWidget {
   final List<Digest> emails;
@@ -30,6 +33,15 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
     super.initState();
     index = widget.emails.length - 1;
     stt.setCurrentPage("email", this);
+    locator<AnalyticsService>().logScreens(name: "Email");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Email");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Email',
+        'screenClass': 'other_mail.dart',
+      },
+    );*/
     if(widget.emails.isNotEmpty) {
         reader = ReadMail();
         reader!.setCurrentMail(widget.emails[index].message);

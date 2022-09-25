@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:io';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/image_processing/imageProcessing.dart';
@@ -17,6 +18,10 @@ import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
+
+import '../services/analytics_service.dart';
 
 class MainWidget extends StatefulWidget {
   const MainWidget({Key? key}) : super(key: key);
@@ -48,6 +53,19 @@ class MainWidgetState extends State<MainWidget> {
   void initState() {
     super.initState();
     stt.setCurrentPage("main", this);
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Main Menu");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Main Menu',
+        'screenClass': 'main_menu.dart',
+      },
+    );*/
+
+    locator<AnalyticsService>().logScreens(name: "Main Menu");
+
+
+
     if (GlobalConfiguration().getValue("tutorial")) {
       _completed ??= commandTutorial.runTutorial();
     }
@@ -61,7 +79,7 @@ class MainWidgetState extends State<MainWidget> {
     return ElevatedButton.styleFrom(
       textStyle:
           TextStyle(fontWeight: FontWeight.w700, fontSize: commonFontSize),
-      primary: primary,
+      backgroundColor: primary,
       shadowColor: shadow,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
@@ -72,7 +90,7 @@ class MainWidgetState extends State<MainWidget> {
   ButtonStyle commonButtonStyleText(Color? primary, Color? shadow) {
     return TextButton.styleFrom(
       textStyle: TextStyle(fontWeight: commonFontWt, fontSize: commonFontSize),
-      primary: primary,
+      backgroundColor: primary,
       shadowColor: shadow,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
@@ -297,7 +315,7 @@ class MainWidgetState extends State<MainWidget> {
                                   ),
                                   child: OutlinedButton.icon(
                                     onPressed: () async {
-                                      final pickedFile = await picker.getImage(
+                                      final pickedFile = await picker.pickImage(
                                           source: ImageSource.camera);
                                       print(pickedFile!.path);
                                       if (pickedFile != null) {
@@ -340,7 +358,7 @@ class MainWidgetState extends State<MainWidget> {
                                   ),
                                   child: OutlinedButton.icon(
                                     onPressed: () async {
-                                      final pickedFile = await picker.getImage(
+                                      final pickedFile = await picker.pickImage(
                                           source: ImageSource.gallery);
                                       print(pickedFile!.path);
                                       if (pickedFile != null) {

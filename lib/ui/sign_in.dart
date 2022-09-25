@@ -1,9 +1,12 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
@@ -20,6 +23,15 @@ class SignInWidgetState extends State<SignInWidget> {
   void initState() {
     super.initState();
     stt.setCurrentPage("signIn");
+    locator<AnalyticsService>().logScreens(name: "signIn");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'SignIn',
+        'screenClass': 'signIn.dart',
+      },
+    );*/
   }
 
   @override
@@ -140,7 +152,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.black,
+                                backgroundColor: Colors.black,
                                 shadowColor: Colors.grey,
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:

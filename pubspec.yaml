@@ -59,6 +59,9 @@ dependencies:
   image_gallery_saver: ^1.7.1
   flutter_chat_ui: ^1.6.4
   uuid: ^3.0.6
+  firebase_analytics: ^9.3.5
+  firebase_core: ^1.22.0
+  get_it: ^7.2.0
 
 dev_dependencies:
   flutter_test:
@@ -106,6 +109,14 @@ flutter:
     - assets/mail.test.03.png
     - assets/NoAttachments.png
     - assets/mail.test.04.png
+    - assets/icon/settings-icon.png
+    - assets/icon/calendar-icon.png
+    - assets/icon/exit-icon.png
+    - assets/icon/home-icon.png
+    - assets/icon/notifications-icon.png
+    - assets/icon/scanmail-icon.png
+    - assets/icon/search-icon.png
+    - assets/icon/back-icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,6 +1,9 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 import 'bottom_app_bar.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -19,6 +22,15 @@ class SettingWidgetState extends State<SettingsWidget> {
   void initState() {
     super.initState();
     stt.setCurrentPage("settings", this);
+    locator<AnalyticsService>().logScreens(name: "Settings");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Settings',
+        'screenClass': 'settings.dart',
+      },
+    );*/
   }
 
   @override
