@@ -9,6 +9,7 @@ import 'package:summer2022/backend_testing.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/ui/search.dart';
+import 'package:summer2022/ui/mail_view.dart';
 
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
@@ -44,6 +45,9 @@ class RouteGenerator {
       case '/search':
         return MaterialPageRoute(
             builder: (_) => SearchWidget());
+      case '/mail_view':
+        return MaterialPageRoute(
+            builder: (_) => MailViewWidget());
       default:
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
