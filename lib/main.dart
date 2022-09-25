@@ -1,12 +1,10 @@
 // ignore_for_file: import_of_legacy_library_into_null_safe
 
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/utility/Keychain.dart';
-import 'package:summer2022/speech_commands/speech_to_text.dart';
 import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
