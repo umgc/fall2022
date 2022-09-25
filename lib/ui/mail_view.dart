@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 
 class MailViewWidget extends StatelessWidget {
   final FontWeight _commonFontWeight = FontWeight.w500;
@@ -23,6 +24,7 @@ class MailViewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const BottomBar(),
       appBar: AppBar(
         title: Text('Search Results',  style:
         TextStyle(fontWeight: _commonFontWeight, fontSize: _commonFontSize),

@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 
 class SearchWidget extends StatefulWidget {
   @override
@@ -31,6 +32,7 @@ class SearchWidgetState extends State<SearchWidget> {
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
 
     return Scaffold(
+      bottomNavigationBar: const BottomBar(),
       appBar: AppBar(
         title: Text('Mail Search',  style:
         TextStyle(fontWeight: _commonFontWeight, fontSize: _commonFontSize),
