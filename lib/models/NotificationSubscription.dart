@@ -1,9 +1,6 @@
-import 'package:json_annotation/json_annotation.dart';
-
-@JsonSerializable()
+/// This class represents a subscription for generating notifications when new
+/// pieces of mail are received by the USPS.
 class NotificationSubscription {
-  String Keyword;
-
-  NotificationSubscription({this.Keyword = ''});
-
+  final String keyword;
+  NotificationSubscription(this.keyword);
 }
