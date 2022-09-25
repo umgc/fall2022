@@ -8,6 +8,7 @@ import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/backend_testing.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
+import 'package:summer2022/ui/search.dart';
 
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
@@ -40,6 +41,9 @@ class RouteGenerator {
             builder: (_) => ChatWidget(
               currentPage: previousRoute
         ));
+      case '/search':
+        return MaterialPageRoute(
+            builder: (_) => SearchWidget());
       default:
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
