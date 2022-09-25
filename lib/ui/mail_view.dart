@@ -36,7 +36,7 @@ class MailViewWidget extends StatelessWidget {
         padding: EdgeInsets.all(15.0),
         child: Center(
           child: ListView(
-            children: mailPieces.map(_buildMialPiece).toList(),
+            children: mailPieces.map(_buildMailPiece).toList(),
           ),
         ),
       ),
@@ -44,7 +44,7 @@ class MailViewWidget extends StatelessWidget {
   }
 }
 
-Widget _buildMialPiece(MailPiece mailPiece) {
+Widget _buildMailPiece(MailPiece mailPiece) {
   return Container(
     color: Colors.white10,
     child: ListTile(
@@ -52,7 +52,7 @@ Widget _buildMialPiece(MailPiece mailPiece) {
       contentPadding: EdgeInsets.all(5),
       dense: true,
       onTap: () {},
-      leading: mailPiece._mailImage,
+      leading: mailPiece.mailImage,
       title:
       Row(
           children:[
@@ -60,7 +60,7 @@ Widget _buildMialPiece(MailPiece mailPiece) {
               padding: EdgeInsets.only(right: 10.0),
               child:
               Text(
-                mailPiece._sender,
+                mailPiece.sender,
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -69,25 +69,25 @@ Widget _buildMialPiece(MailPiece mailPiece) {
               Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children:[
-                    Text(DateFormat('EEE hh:mm').format(mailPiece._timeStamp)
+                    Text(DateFormat('EEE hh:mm').format(mailPiece.timeStamp)
                     ),
-                    Text(DateFormat('MM/dd/yyyy').format(mailPiece._timeStamp)
+                    Text(DateFormat('MM/dd/yyyy').format(mailPiece.timeStamp)
                     ),
                   ]),
             ),
           ]
       ),
-      subtitle: Text(mailPiece._mailDescription.toString()),
+      subtitle: Text(mailPiece.mailDescription.toString()),
     ),
   );
 }
 
 class MailPiece {
-  final DateTime _timeStamp;
-  final String _sender;
-  final String _imageText;
-  final Image _mailImage;
-  final String _mailDescription;
+  final DateTime timeStamp;
+  final String sender;
+  final String imageText;
+  final Image mailImage;
+  final String mailDescription;
 
   MailPiece(
       {
@@ -97,15 +97,9 @@ class MailPiece {
         mailImage,
         mailDescription
       })
-      : this._timeStamp = timeStamp,
-        this._sender = sender,
-        this._imageText = imageText,
-        this._mailImage = mailImage,
-        this._mailDescription = mailDescription;
-
-  DateTime get timeStamp => _timeStamp;
-  String get sender => _sender;
-  String get imageText => _imageText;
-  String get mailDescription => _mailDescription;
-  Image get mailImage => _mailImage;
+      : this.timeStamp = timeStamp,
+        this.sender = sender,
+        this.imageText = imageText,
+        this.mailImage = mailImage,
+        this.mailDescription = mailDescription;
 }
