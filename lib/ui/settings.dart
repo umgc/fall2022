@@ -25,22 +25,7 @@ class SettingWidgetState extends State<SettingsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
-        child: TopBar(),
-      ),
-      /*appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Settings"),
-        backgroundColor: Colors.grey,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return BackButton(
-              onPressed: () { navKey.currentState!.pushNamed('/main');},
-            );
-          },
-        ),
-      ),*/
+      appBar: TopBar(title: 'Settings'),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
