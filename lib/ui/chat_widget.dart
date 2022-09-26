@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -11,6 +12,8 @@ import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 import 'package:uuid/uuid.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class ChatWidget extends StatefulWidget {
   final SiteAreas currentPage;
@@ -31,6 +34,15 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   void initState() {
     super.initState();
+    locator<AnalyticsService>().logScreens(name: "Chatbot");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Chatbot',
+        'screenClass': 'chat_widget.dart',
+      },
+    );*/
     _addSystemMessage("How may I assist you?");
   }
 
