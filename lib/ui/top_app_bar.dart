@@ -4,8 +4,6 @@ import '../main.dart';
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
 
-  //final String title = "";
-  //final backgroundColor;
   const TopBar(
       {Key? key, required this.title}): super(key:key);
 
@@ -20,7 +18,7 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
 class TopBarState extends State<TopBar> {
   @override
   Widget build(BuildContext context) {
-    //preferredSize: const Size.fromHeight(50);
+
       return AppBar(
           actions: <Widget>[
             IconButton(
@@ -32,7 +30,7 @@ class TopBarState extends State<TopBar> {
           IconButton(
               icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30), onPressed: () { navKey.currentState!.pushNamed('/main');}, ),
           centerTitle: true,
-          //todo - need to dynamically set the page title
+
           title: Text("${this.widget.title}",
           style:
           TextStyle(fontWeight: FontWeight.w700, fontSize: 30),

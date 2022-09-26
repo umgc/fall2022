@@ -10,9 +10,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:uuid/uuid.dart';
-
-import 'top_app_bar.dart';
 
 class ChatWidget extends StatefulWidget {
   final SiteAreas currentPage;
@@ -39,7 +39,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: TopBar(title: 'Chat Support'),
-    /*AppBar(
+    /*appBar: AppBar(
       leading: GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, '/main');

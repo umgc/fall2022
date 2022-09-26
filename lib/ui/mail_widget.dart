@@ -5,9 +5,8 @@ import 'package:summer2022/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/models/Digest.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
-
-import 'top_app_bar.dart';
 
 class MailWidget extends StatefulWidget {
   final Digest digest;
@@ -99,18 +98,6 @@ class MailWidgetState extends State<MailWidget> {
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Mail"),
-        /*appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Digest"),
-          backgroundColor: Colors.grey,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return BackButton(
-                onPressed: () { navKey.currentState!.pushNamed('/main');},
-              );
-            },
-          ),
-        ),*/
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

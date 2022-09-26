@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
-import 'bottom_app_bar.dart';
-import 'top_app_bar.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
+
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({Key? key}) : super(key: key);
@@ -26,18 +27,6 @@ class SettingWidgetState extends State<SettingsWidget> {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(title: 'Settings'),
-      /*appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Settings"),
-        backgroundColor: Colors.grey,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return BackButton(
-              onPressed: () { navKey.currentState!.pushNamed('/main');},
-            );
-          },
-        ),
-      ),*/
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(

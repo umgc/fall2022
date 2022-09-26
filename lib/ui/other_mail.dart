@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/main.dart';
-import 'top_app_bar.dart';
 
 class OtherMailWidget extends StatefulWidget {
   final List<Digest> emails;
@@ -100,8 +99,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
       onHorizontalDragEnd: swipeLeftRight,
        child: Scaffold(
           bottomNavigationBar: const BottomBar(),
-         appBar: TopBar(title: "Other Mail"),
-          /*appBar: AppBar(
+          appBar: AppBar(
             centerTitle: true,
             title: Text(
               formatted,
@@ -115,7 +113,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
                 );
               },
             ),
-          ),*/
+          ),
           body: SafeArea(
             child: Column(
               children: [
