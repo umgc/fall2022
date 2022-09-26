@@ -116,7 +116,8 @@ class _ChatWidgetState extends State<ChatWidget> {
         break;
       case 'performSearch':
         Navigator.pushNamed(context, '/search', arguments: chatFunction.parameters);
-        break;    }
+        break;
+    }
   }
 
   void _addSystemMessage(String input) {

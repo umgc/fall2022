@@ -64,11 +64,17 @@ class RouteGenerator {
   // TODO: Probably a better way to handle this with Navigator/navkey
   static void _updatePreviousRoute(String newRoute) {
     switch (newRoute) {
+      case '/mail_view':
+        previousRoute = SiteAreas.MailView;
+        break;
       case '/main':
         previousRoute = SiteAreas.Home;
         break;
       case '/settings':
         previousRoute = SiteAreas.Settings;
+        break;
+      case '/search':
+        previousRoute = SiteAreas.Search;
         break;
       default:
         break;

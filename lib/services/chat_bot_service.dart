@@ -1,8 +1,9 @@
-import 'dart:collection';
 import 'package:summer2022/exceptions/invalid_command_exception.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/bases/chat_bot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
+
+import '../models/SearchCriteria.dart';
 
 class ChatBotService implements ChatBot {
   // This list of functions should be available on all pages
@@ -13,7 +14,7 @@ class ChatBotService implements ChatBot {
     SiteAreas.Home: <String>["search", "settings", ...availableOnAllPages],
     SiteAreas.Settings: <String>["home", ...availableOnAllPages],
     SiteAreas.SearchResults: <String>["home", "settings", ...availableOnAllPages],
-    SiteAreas.Search: <String>["home", "settings", ...availableOnAllPages],
+    SiteAreas.Search: <String>["home", "settings", "search", ...availableOnAllPages],
     SiteAreas.MailView: <String>["home", "settings", ...availableOnAllPages],
     SiteAreas.NotificationView: <String>["home", "settings", ...availableOnAllPages],
     SiteAreas.NotificationManage: <String>["home", "settings", ...availableOnAllPages],
