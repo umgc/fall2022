@@ -60,7 +60,8 @@ class MailWidgetState extends State<MailWidget> {
       buildLinks();
     }
     stt.setCurrentPage("mail", this);
-    locator<AnalyticsService>().logScreens(name: "signIn");
+    locator<AnalyticsService>().logScreens(name: "Mail");
+    //
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Mail");
     //FirebaseAnalytics.instance.logScreenView(screenName: "Mail");
     /*FirebaseAnalytics.instance.logEvent(
