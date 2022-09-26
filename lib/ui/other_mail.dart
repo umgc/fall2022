@@ -100,10 +100,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
       onHorizontalDragEnd: swipeLeftRight,
        child: Scaffold(
           bottomNavigationBar: const BottomBar(),
-         appBar: PreferredSize(
-           preferredSize: const Size.fromHeight(50),
-           child: TopBar(),
-         ),
+         appBar: TopBar(title: "Other Mail"),
           /*appBar: AppBar(
             centerTitle: true,
             title: Text(
