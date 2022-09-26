@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 
-class TopBar extends StatefulWidget {
-  const TopBar({Key? key}) : super(key: key);
+class TopBar extends StatefulWidget implements PreferredSizeWidget {
+  final String title;
+  
+  const TopBar(
+      {Key? key, required this.title}): super(key:key);
+  
+  Size get preferredSize => Size.fromHeight(50.0);
 
   @override
   TopBarState createState() => TopBarState();
@@ -15,15 +20,17 @@ class TopBarState extends State<TopBar> {
     return AppBar(
         actions: <Widget>[
           IconButton(
-              icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/sign_in');} ),
+                icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');} ),
+            IconButton(
+                icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/sign_in');} ),
         ],
         leading:
         IconButton(
             icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30), onPressed: () { navKey.currentState!.pushNamed('/main');}, ),
         centerTitle: true,
         //todo - need to dynamically set the page title
-        title: Text(
-          "Main Menu",
+        title: Text("${this.widget.title}",
+         
           style:
           TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
         ),
