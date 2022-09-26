@@ -59,6 +59,10 @@ dependencies:
   image_gallery_saver: ^1.7.1
   flutter_chat_ui: ^1.6.4
   uuid: ^3.0.6
+  firebase_analytics: ^9.3.5
+  firebase_core: ^1.22.0
+  get_it: ^7.2.0
+  syncfusion_flutter_datepicker: ^20.2.50
 
 dev_dependencies:
   flutter_test:
@@ -69,7 +73,7 @@ dev_dependencies:
 flutter_icons:
  android: true
  ios: true
- image_path: "assets/icon/icon.png"
+ image_path: "assets/icon/app-icon.png"
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
