@@ -4,6 +4,8 @@ import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
+import 'top_app_bar.dart';
+
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
 
@@ -54,12 +56,7 @@ class SignInWidgetState extends State<SignInWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Sign-In"),
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey,
-      ),
+      appBar: TopBar(title: "Sign In"),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
