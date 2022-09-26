@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 import 'dart:io';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/image_processing/imageProcessing.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/email_processing/digest_email_parser.dart';
 import 'package:summer2022/email_processing/other_mail_parser.dart';
-import 'package:summer2022/speech_commands/read_info.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
-import 'package:summer2022/main.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/models/Digest.dart';
@@ -20,7 +16,8 @@ import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:global_configuration/global_configuration.dart';
 import '../services/analytics_service.dart';
 
 class MainWidget extends StatefulWidget {
@@ -47,12 +44,12 @@ class MainWidgetState extends State<MainWidget> {
   double commonCornerRadius = 8;
   bool selectDigest = false;
   bool ranTutorial = false;
-  CommandTutorial commandTutorial = CommandTutorial();
+
 
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("main", this);
+    locator<AnalyticsService>().logScreens(name: "Main Menu");
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Main Menu");
     /*FirebaseAnalytics.instance.logEvent(
       name: 'screen_view',
@@ -61,14 +58,6 @@ class MainWidgetState extends State<MainWidget> {
         'screenClass': 'main_menu.dart',
       },
     );*/
-
-    locator<AnalyticsService>().logScreens(name: "Main Menu");
-
-
-
-    if (GlobalConfiguration().getValue("tutorial")) {
-      _completed ??= commandTutorial.runTutorial();
-    }
   }
 
   void setMailType(String type) {
@@ -106,7 +95,6 @@ class MainWidgetState extends State<MainWidget> {
       height: commonButtonHeight, // LATEST Button
       child: OutlinedButton(
         onPressed: () async {
-          stop(); // stop tts
           if (mailType == "Email") {
             context.loaderOverlay.show();
             await getEmails(false, DateTime.now());
@@ -137,7 +125,6 @@ class MainWidgetState extends State<MainWidget> {
       height: commonButtonHeight, // UNREAD Button
       child: OutlinedButton(
         onPressed: () async {
-          stop(); // stop tts
           if (mailType == "Email") {
             context.loaderOverlay.show();
             await getEmails(true, DateTime.now());
@@ -327,11 +314,11 @@ class MainWidgetState extends State<MainWidget> {
                                             _imageBytes!, "mailpiece.jpg");
                                         MailResponse s = await processImage(
                                             "$imagePath/mailpiece.jpg");
-                                        ReadDigestMail readMail =
-                                            ReadDigestMail();
+                                        // ReadDigestMail readMail =
+                                        //     ReadDigestMail();
                                         print(s.toJson());
-                                        readMail.setCurrentMail(s);
-                                        await readMail.readDigestInfo();
+                                        // readMail.setCurrentMail(s);
+                                        // await readMail.readDigestInfo();
                                       } else {
                                         return;
                                       }
@@ -370,11 +357,11 @@ class MainWidgetState extends State<MainWidget> {
                                             _imageBytes!, "mailpiece.jpg");
                                         MailResponse s = await processImage(
                                             "$imagePath/mailpiece.jpg");
-                                        ReadDigestMail readMail =
-                                            ReadDigestMail();
+                                        // ReadDigestMail readMail =
+                                        //     ReadDigestMail();
                                         print(s.toJson());
-                                        readMail.setCurrentMail(s);
-                                        await readMail.readDigestInfo();
+                                        // readMail.setCurrentMail(s);
+                                        // await readMail.readDigestInfo();
                                       } else {
                                         return;
                                       }

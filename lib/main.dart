@@ -2,13 +2,11 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/utility/Keychain.dart';
-import 'package:summer2022/speech_commands/speech_to_text.dart';
 import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
@@ -34,7 +32,7 @@ void main() async {
     emailAuthenticated = (await Client().getImapClient(
         username, password)); //Replace with config read for credentials
   }
-
+  
   String? emailDomain = username?.substring(username.indexOf("@")+1,username.length);
 
   if (Firebase.apps.length == 0) {

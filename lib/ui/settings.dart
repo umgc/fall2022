@@ -21,7 +21,6 @@ class SettingWidgetState extends State<SettingsWidget> {
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("settings", this);
     locator<AnalyticsService>().logScreens(name: "Settings");
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
     /*FirebaseAnalytics.instance.logEvent(

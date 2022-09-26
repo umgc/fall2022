@@ -2,7 +2,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
-import 'package:summer2022/main.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/analytics_service.dart';
@@ -22,7 +21,6 @@ class SignInWidgetState extends State<SignInWidget> {
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("signIn");
     locator<AnalyticsService>().logScreens(name: "signIn");
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
     /*FirebaseAnalytics.instance.logEvent(
@@ -31,7 +29,7 @@ class SignInWidgetState extends State<SignInWidget> {
         'screenName': 'SignIn',
         'screenClass': 'signIn.dart',
       },
-    );*/
+    );*/    
   }
 
   @override
