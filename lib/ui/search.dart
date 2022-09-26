@@ -6,9 +6,11 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 
 class SearchWidget extends StatefulWidget {
+  final List<String> parameters;
+  static const defaultValue = <String>[];
+  const SearchWidget({this.parameters = defaultValue});
   @override
   SearchWidgetState createState() => SearchWidgetState();
-
 }
 
 class SearchWidgetState extends State<SearchWidget> {
@@ -26,10 +28,46 @@ class SearchWidgetState extends State<SearchWidget> {
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
   DateTime _start = DateTime.now();
   DateTime _end = DateTime.now();
+  String _keyword = "";
+  TextEditingController keywordInput = TextEditingController();
+
+  // Apply and passed in search parameters to the filters
+  void applyFilters() {
+    if (this.widget.parameters.isEmpty) return;
+    DateTime? _potentialStart;
+    DateTime? _potentialEnd;
+    String _potentialKeyword = "";
+
+    for (var param in this.widget.parameters) {
+      try {
+        var potentialDate = DateFormat('MM/dd/yyyy').parse(param);
+
+        // Update start/end date if we found a valid date
+        if (_potentialStart == null) _potentialStart = potentialDate;
+        else if (_potentialEnd == null) _potentialEnd = potentialDate;
+      } catch (FormatException) {
+        // Couldn't parse value. Probably a keyword instead
+        // Append to existing keyword search
+        _potentialKeyword += _potentialKeyword.length == 0 ? param : " ${param}";
+      }
+    }
+
+    // Update local variables
+    _start = _potentialStart ?? _start;
+    _end = _potentialEnd ?? _end;
+    _keyword = _potentialKeyword;
+
+    // Verify end isn't before start
+    if (_start.compareTo(_end) > 0) {
+      _end = _start;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
+    keywordInput.text = _keyword;
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
@@ -172,6 +210,7 @@ class SearchWidgetState extends State<SearchWidget> {
                 Container(
                   child:
                   TextField(
+                    controller: keywordInput,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         focusedBorder: OutlineInputBorder(

@@ -43,8 +43,9 @@ class RouteGenerator {
               currentPage: previousRoute
         ));
       case '/search':
+        var parameters = settings.arguments != null ? settings.arguments as List<String> : <String>[];
         return MaterialPageRoute(
-            builder: (_) => SearchWidget());
+            builder: (_) => SearchWidget(parameters: parameters));
       case '/mail_view':
         return MaterialPageRoute(
             builder: (_) => MailViewWidget());

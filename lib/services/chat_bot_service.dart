@@ -65,8 +65,13 @@ class ChatBotService implements ChatBot {
         // Perform return home function
         return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/main"]);
       case "search":
-        // Perform navigate to search function
-        return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/search"]);
+        if (parameters.isNotEmpty) {
+          // Perform search using parameters
+          return ApplicationFunction(methodName: "performSearch", parameters: parameters);
+        } else {
+          // Perform navigate to search function
+          return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/search"]);
+        }
       case "settings":
         // Perform navigate to settings function
         return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/settings"]);
