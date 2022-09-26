@@ -143,10 +143,7 @@ class MainWidgetState extends State<MainWidget> {
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: TopBar(),
-      ),
+      appBar: TopBar(title: "Main Menu"),
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
