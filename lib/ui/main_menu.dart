@@ -168,7 +168,7 @@ class MainWidgetState extends State<MainWidget> {
                 children: <Widget>[
       //search button
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                       ElevatedButton.icon(
                         onPressed: () async {
@@ -207,7 +207,7 @@ class MainWidgetState extends State<MainWidget> {
                   ),
                    //daily digest
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () async {
@@ -246,7 +246,7 @@ class MainWidgetState extends State<MainWidget> {
                   ),
                   //scan mail
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () async {
@@ -280,7 +280,7 @@ class MainWidgetState extends State<MainWidget> {
                   ),
       //upload mail
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () async {
@@ -314,7 +314,7 @@ class MainWidgetState extends State<MainWidget> {
                   ),
       //notifications
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () {
@@ -333,7 +333,7 @@ class MainWidgetState extends State<MainWidget> {
                   ),
       //chatbot
                   /*Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () {
@@ -351,7 +351,7 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                   ),*/
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () {
