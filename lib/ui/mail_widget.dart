@@ -98,22 +98,7 @@ class MailWidgetState extends State<MailWidget> {
       onHorizontalDragEnd: swipeLeftRight,
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: TopBar(),
-        ),
-        /*appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Digest"),
-          backgroundColor: Colors.grey,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return BackButton(
-                onPressed: () { navKey.currentState!.pushNamed('/main');},
-              );
-            },
-          ),
-        ),*/
+        appBar: TopBar(title: "Mail"),
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
