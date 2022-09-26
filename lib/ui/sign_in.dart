@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
-import 'package:summer2022/main.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
@@ -19,7 +18,6 @@ class SignInWidgetState extends State<SignInWidget> {
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("signIn");
   }
 
   @override
