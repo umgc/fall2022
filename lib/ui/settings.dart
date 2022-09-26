@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
 import 'bottom_app_bar.dart';
+import 'top_app_bar.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({Key? key}) : super(key: key);
@@ -24,7 +25,11 @@ class SettingWidgetState extends State<SettingsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50),
+        child: TopBar(),
+      ),
+      /*appBar: AppBar(
         centerTitle: true,
         title: const Text("Settings"),
         backgroundColor: Colors.grey,
@@ -35,7 +40,7 @@ class SettingWidgetState extends State<SettingsWidget> {
             );
           },
         ),
-      ),
+      ),*/
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
