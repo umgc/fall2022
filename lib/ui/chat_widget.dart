@@ -11,6 +11,7 @@ import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 import 'package:uuid/uuid.dart';
+import 'top_app_bar.dart';
 
 class ChatWidget extends StatefulWidget {
   final SiteAreas currentPage;
@@ -36,7 +37,8 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
+    appBar: TopBar(title: 'Chat Support'),
+    /*appBar: AppBar(
       leading: GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, '/main');
@@ -73,7 +75,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       ],
       automaticallyImplyLeading: false,
       backgroundColor: Color(0xff004B87),
-    ),
+    ),*/
     body: Chat(
       messages: _messages,
       onMessageTap: _handleMessageTap,
