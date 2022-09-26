@@ -21,7 +21,7 @@ class SearchCriteria {
     } else {
       for (var param in params) {
         try {
-          var potentialDate = DateFormat('MM/dd/yyyy').parse(param);
+          var potentialDate = DateFormat('MM/d/yyyy').parse(param);
 
           // Update start/end date if we found a valid date
           if (_potentialStart == null)
