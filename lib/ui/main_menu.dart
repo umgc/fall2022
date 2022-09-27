@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'dart:io';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/image_processing/imageProcessing.dart';
 import 'package:flutter/material.dart';
@@ -99,9 +98,7 @@ class MainWidgetState extends State<MainWidget> {
       height: commonButtonHeight, // LATEST Button
       child: OutlinedButton(
         onPressed: () async {
-            Navigator.pushNamed(context, '/search');
-          },
-          /*if (mailType == "Email") {
+          if (mailType == "Email") {
             context.loaderOverlay.show();
             await getEmails(false, DateTime.now());
             if (emails.isNotEmpty) {
@@ -122,7 +119,7 @@ class MainWidgetState extends State<MainWidget> {
             }
             context.loaderOverlay.hide();
           }
-        },*/
+        },
         style: commonButtonStyleElevated(Colors.white, Colors.grey),
         child: const Text("Latest", style: TextStyle(color: Colors.black)),
       ),
@@ -157,7 +154,6 @@ class MainWidgetState extends State<MainWidget> {
         child: const Text("Unread", style: TextStyle(color: Colors.black)),
       ),
     );
-
     return Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),
@@ -256,7 +252,6 @@ class MainWidgetState extends State<MainWidget> {
                     if (pickedFile != null) {
                       _image = File(pickedFile.path);
                       _imageBytes = _image!.readAsBytesSync();
-
                       await deleteImageFiles();
                       await saveImageFile(
                           _imageBytes!, "mailpiece.jpg");
@@ -350,7 +345,7 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                   ),*/
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () {
