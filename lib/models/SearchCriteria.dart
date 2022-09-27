@@ -14,11 +14,7 @@ class SearchCriteria {
     DateTime? _potentialEnd;
     String _potentialKeyword = "";
 
-    if (params.isEmpty) {
-      // default init
-      _potentialStart = DateTime.now();
-      _potentialEnd = DateTime.now();
-    } else {
+    if (params.isNotEmpty) {
       for (var param in params) {
         try {
           var potentialDate = DateFormat('MM/d/yyyy').parse(param);

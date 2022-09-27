@@ -9,8 +9,7 @@ import '../models/SearchCriteria.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
-  static const defaultValue = <String>[];
-  const SearchWidget({this.parameters = defaultValue});
+  const SearchWidget({this.parameters = const []});
   @override
   SearchWidgetState createState() => SearchWidgetState();
 }
@@ -36,7 +35,7 @@ class SearchWidgetState extends State<SearchWidget> {
   // Apply and passed in search parameters to the filters
   void applyFilters() {
     if (this.widget.parameters.isEmpty) return;
-    SearchCriteria filters = SearchCriteria.withList(this.widget.parameters);
+    final filters = SearchCriteria.withList(this.widget.parameters);
 
     // Update local variables
     _start = filters.startDate ?? _start;
