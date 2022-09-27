@@ -16,6 +16,12 @@ class BottomBarState extends State<BottomBar> {
       child: Row(
         children: <Widget>[
           // TODO: Add other icons
+          IconButton(
+          icon: const Icon(Icons.markunread_mailbox_outlined, color: Color(0xFFFFFFFF)),
+            onPressed: () {
+            Navigator.pushNamed(context, "/search");
+            },
+          ),
           Spacer(),
           IconButton(
             tooltip: "Open chat bot",

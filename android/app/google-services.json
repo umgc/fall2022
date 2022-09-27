@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "872576625259",
+    "project_id": "swen670-b197f",
+    "storage_bucket": "swen670-b197f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872576625259:android:accd56b745157ebc7f1f2e",
+        "android_client_info": {
+          "package_name": "com.umgc.summer2022"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "872576625259-ubminu2an58mntu8l7ains085ch6tdfq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHQngn9lxLsHjQSIPn1BBxjTywrM27YOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "872576625259-ubminu2an58mntu8l7ains085ch6tdfq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.summer2022"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
