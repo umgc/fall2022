@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
+import 'package:summer2022/utility/ComparisonHelpers.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -181,9 +182,8 @@ class SearchWidgetState extends State<SearchWidget> {
                           )
                       ),
                       onSuggestionSelected: (suggestion) {
-                        // TODO: Should we just go directly to the mail view for the item selected here?
-                        // Alternatively we can do nothing upon selection and just keep the keyword
-                        // Allowing this to act as a preview for the items on the result
+                        // TODO: Go directly to mail item if the user clicks a suggestion
+                        // This is how GMail does this feature
                       },
                       suggestionsCallback: (pattern) {
                         // TODO: Populate items from cache
@@ -248,8 +248,8 @@ class SearchWidgetState extends State<SearchWidget> {
   // Filter mail items based on keyword search
   Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
     return Iterable.castFrom(
-        mailItems.where((mailItem) => mailItem.ImageText.contains(keyword)
-          || mailItem.Sender.contains(keyword))
+        mailItems.where((mailItem) => mailItem.ImageText.containsIgnoreCase(keyword)
+          || mailItem.Sender.containsIgnoreCase(keyword))
     );
   }
 }
