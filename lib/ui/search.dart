@@ -2,8 +2,10 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:summer2022/models/MailPiece.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SearchWidget extends StatefulWidget {
   @override
@@ -170,15 +172,37 @@ class SearchWidgetState extends State<SearchWidget> {
                   ),
                 ),
                 Container(
-                  child:
-                  TextField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2, color: _buttonColor)),
-                        hintText: 'Enter a keyword to search'
-                    ),
-                  ),
+                    child: TypeAheadField(
+                      textFieldConfiguration: TextFieldConfiguration(
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(
+                              labelText: 'Keyword',
+                              border: OutlineInputBorder()
+                          )
+                      ),
+                      onSuggestionSelected: (suggestion) {
+                        // TODO: Should we just go directly to the mail view for the item selected here?
+                        // Alternatively we can do nothing upon selection and just keep the keyword
+                        // Allowing this to act as a preview for the items on the result
+                      },
+                      suggestionsCallback: (pattern) {
+                        // TODO: Populate items from cache
+                        var mailItems  = <MailPiece>[
+                          MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
+                          MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
+                        ];
+                        // Filter items based on pattern
+                        return _filterMailItems(pattern, mailItems);
+                      },
+                      itemBuilder: (context, itemData) {
+                        return ListTile(
+                          title:  Text("From: ${(itemData as MailPiece).Sender}, "
+                              "Date: ${DateFormat('MM/dd/yyyy').format(itemData.Timestamp)}"),
+                          subtitle: Text("Contents: "
+                              "${itemData.ImageText}"),
+                        );
+                      },
+                    )
                 ),
                 Row(
                     children: [
@@ -218,6 +242,14 @@ class SearchWidgetState extends State<SearchWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  // Filter mail items based on keyword search
+  Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
+    return Iterable.castFrom(
+        mailItems.where((mailItem) => mailItem.ImageText.contains(keyword)
+          || mailItem.Sender.contains(keyword))
     );
   }
 }
