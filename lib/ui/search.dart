@@ -8,10 +8,13 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
+import '../models/SearchCriteria.dart';
+
 class SearchWidget extends StatefulWidget {
+  final List<String> parameters;
+  const SearchWidget({this.parameters = const []});
   @override
   SearchWidgetState createState() => SearchWidgetState();
-
 }
 
 class SearchWidgetState extends State<SearchWidget> {
@@ -29,10 +32,25 @@ class SearchWidgetState extends State<SearchWidget> {
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
   DateTime _start = DateTime.now();
   DateTime _end = DateTime.now();
+  String _keyword = "";
+  TextEditingController keywordInput = TextEditingController();
+
+  // Apply and passed in search parameters to the filters
+  void applyFilters() {
+    if (this.widget.parameters.isEmpty) return;
+    final filters = SearchCriteria.withList(this.widget.parameters);
+
+    // Update local variables
+    _start = filters.startDate ?? _start;
+    _end = filters.endDate ?? _end;
+    _keyword = filters.keyword;
+  }
 
   @override
   Widget build(BuildContext context) {
+    applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
+    keywordInput.text = _keyword;
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),

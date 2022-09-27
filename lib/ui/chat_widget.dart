@@ -125,6 +125,10 @@ class _ChatWidgetState extends State<ChatWidget> {
     switch (chatFunction.methodName) {
       case 'navigateTo':
         Navigator.pushNamed(context, chatFunction.parameters![0]);
+        break;
+      case 'performSearch':
+        Navigator.pushNamed(context, '/search', arguments: chatFunction.parameters);
+        break;
     }
   }
 
