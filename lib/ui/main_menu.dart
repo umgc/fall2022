@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:io';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/image_processing/imageProcessing.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,11 @@ import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:global_configuration/global_configuration.dart';
+
 
 class MainWidget extends StatefulWidget {
   const MainWidget({Key? key}) : super(key: key);
@@ -45,6 +51,15 @@ class MainWidgetState extends State<MainWidget> {
   @override
   void initState() {
     super.initState();
+    locator<AnalyticsService>().logScreens(name: "Main Menu");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Main Menu");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Main Menu',
+        'screenClass': 'main_menu.dart',
+      },
+    );*/
   }
 
   void setMailType(String type) {
@@ -57,7 +72,7 @@ class MainWidgetState extends State<MainWidget> {
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       textStyle:
           TextStyle(fontWeight: FontWeight.w700, fontSize: commonFontSize),
-      primary: primary,
+      backgroundColor: primary,
       shadowColor: shadow,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
@@ -68,7 +83,7 @@ class MainWidgetState extends State<MainWidget> {
   ButtonStyle commonButtonStyleText(Color? primary, Color? shadow) {
     return TextButton.styleFrom(
       textStyle: TextStyle(fontWeight: commonFontWt, fontSize: commonFontSize),
-      primary: primary,
+      backgroundColor: primary,
       shadowColor: shadow,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
@@ -84,7 +99,9 @@ class MainWidgetState extends State<MainWidget> {
       height: commonButtonHeight, // LATEST Button
       child: OutlinedButton(
         onPressed: () async {
-          if (mailType == "Email") {
+            Navigator.pushNamed(context, '/search');
+          },
+          /*if (mailType == "Email") {
             context.loaderOverlay.show();
             await getEmails(false, DateTime.now());
             if (emails.isNotEmpty) {
@@ -105,7 +122,7 @@ class MainWidgetState extends State<MainWidget> {
             }
             context.loaderOverlay.hide();
           }
-        },
+        },*/
         style: commonButtonStyleElevated(Colors.white, Colors.grey),
         child: const Text("Latest", style: TextStyle(color: Colors.black)),
       ),
@@ -140,13 +157,10 @@ class MainWidgetState extends State<MainWidget> {
         child: const Text("Unread", style: TextStyle(color: Colors.black)),
       ),
     );
+
     return Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),
-        /*PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: TopBar(title: "Main Menu"),
-      ),*/
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -157,7 +171,8 @@ class MainWidgetState extends State<MainWidget> {
                 child:
                 ElevatedButton.icon(
                   onPressed: () async {
-                    if (mailType == "Email") {
+                      Navigator.pushNamed(context, '/search');
+                    /*if (mailType == "Email") {
                       context.loaderOverlay.show();
                       await getEmails(false, DateTime.now());
                       if (emails.isNotEmpty) {
@@ -177,7 +192,7 @@ class MainWidgetState extends State<MainWidget> {
                         showNoDigestDialog();
                       }
                       context.loaderOverlay.hide();
-                    }
+                    }*/
                   },
                   style: commonButtonStyleElevated(
                       Colors.grey, Colors.grey),
@@ -275,7 +290,6 @@ class MainWidgetState extends State<MainWidget> {
                     if (pickedFile != null) {
                       _image = File(pickedFile.path);
                       _imageBytes = _image!.readAsBytesSync();
-
                       await deleteImageFiles();
                       await saveImageFile(
                           _imageBytes!, "mailpiece.jpg");
@@ -335,25 +349,25 @@ class MainWidgetState extends State<MainWidget> {
                           )),
                     ),
                   ),*/
-              Padding(
-                padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
-                child:
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/settings');
-                  },
-                  style: commonButtonStyleElevated(
-                      Colors.grey, Colors.grey),
-                  icon: new Image.asset("assets/icon/settings-icon.png", width: 50, height: 50),
-                  label: Text("Settings",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: commonFontSize - 3,
-                      )),
-                ),
-              ),
-            ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
+                    child:
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                      style: commonButtonStyleElevated(
+                          Colors.grey, Colors.grey),
+                      icon: new Image.asset("assets/icon/settings-icon.png", width: 50, height: 50),
+                      label: Text("Settings",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: commonFontSize - 3,
+                          )),
+                    ),
+                  ),
+          ],
           ),
         )
     );

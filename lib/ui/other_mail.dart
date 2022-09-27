@@ -1,9 +1,14 @@
 import 'package:enough_mail/enough_mail.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 
 class OtherMailWidget extends StatefulWidget {
   final List<Digest> emails;
@@ -27,6 +32,15 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
     // index must be initialed before build or emails won't iterate
     super.initState();
     index = widget.emails.length - 1;
+    locator<AnalyticsService>().logScreens(name: "Email");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Email");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Email',
+        'screenClass': 'other_mail.dart',
+      },
+    );*/
   }
 
   MimeMessage getCurrentEmailMessage() {
@@ -99,21 +113,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
       onHorizontalDragEnd: swipeLeftRight,
        child: Scaffold(
           bottomNavigationBar: const BottomBar(),
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-              formatted,
-              style: TextStyle(fontWeight: commonFontWt, fontSize: commonFontSize),
-            ),
-            backgroundColor: Colors.grey,
-            leading: Builder(
-              builder: (BuildContext context) {
-                return BackButton(
-                  onPressed: () { navKey.currentState!.pushNamed('/main');},
-                );
-              },
-            ),
-          ),
+         appBar: TopBar(title: "Other Mail"),
           body: SafeArea(
             child: Column(
               children: [
