@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import 'bottom_app_bar.dart';
 
 
@@ -19,25 +20,13 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("notifications", this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Notifications"),
-        backgroundColor: Colors.grey,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return BackButton(
-              onPressed: () { navKey.currentState!.pushNamed('/main');},
-            );
-          },
-        ),
-      ),
+      appBar: TopBar(title: "Notifications"),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
