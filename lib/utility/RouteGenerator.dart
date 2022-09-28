@@ -11,6 +11,9 @@ import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/ui/mail_view.dart';
 
+import '../services/mail_service.dart';
+import '../ui/mail_view_indv.dart';
+
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
 
@@ -49,6 +52,10 @@ class RouteGenerator {
       case '/mail_view':
         return MaterialPageRoute(
             builder: (_) => MailViewWidget());
+      case '/mail_piece_view':
+        var parameters =  settings.arguments as MailPiece;
+        return MaterialPageRoute(
+            builder: (_) => MailPieceViewWidget(mailPiece: parameters));
       default:
         return MaterialPageRoute(builder: (_) {
           return Scaffold(

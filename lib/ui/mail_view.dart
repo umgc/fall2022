@@ -23,6 +23,46 @@ class MailViewWidget extends StatelessWidget {
   );
   @override
   Widget build(BuildContext context) {
+    Widget _buildMailPiece(MailPiece mailPiece) {
+      return Container(
+        color: Colors.white10,
+        child: ListTile(
+          horizontalTitleGap: 10.0,
+          contentPadding: EdgeInsets.all(5),
+          dense: true,
+          onTap: () {
+            Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
+          },
+          leading: mailPiece.mailImage,
+          title:
+          Row(
+              children:[
+                Container(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child:
+                  Text(
+                    mailPiece.sender,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Expanded(
+                  child:
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children:[
+                        Text(DateFormat('EEE hh:mm').format(mailPiece.timeStamp)
+                        ),
+                        Text(DateFormat('MM/dd/yyyy').format(mailPiece.timeStamp)
+                        ),
+                      ]),
+                ),
+              ]
+          ),
+          subtitle: Text(mailPiece.mailDescription.toString()),
+        ),
+      );
+    };
+
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
       appBar: AppBar(
@@ -42,44 +82,6 @@ class MailViewWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _buildMailPiece(MailPiece mailPiece) {
-  return Container(
-    color: Colors.white10,
-    child: ListTile(
-      horizontalTitleGap: 10.0,
-      contentPadding: EdgeInsets.all(5),
-      dense: true,
-      onTap: () {},
-      leading: mailPiece.mailImage,
-      title:
-      Row(
-          children:[
-            Container(
-              padding: EdgeInsets.only(right: 10.0),
-              child:
-              Text(
-                mailPiece.sender,
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-            Expanded(
-              child:
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children:[
-                    Text(DateFormat('EEE hh:mm').format(mailPiece.timeStamp)
-                    ),
-                    Text(DateFormat('MM/dd/yyyy').format(mailPiece.timeStamp)
-                    ),
-                  ]),
-            ),
-          ]
-      ),
-      subtitle: Text(mailPiece.mailDescription.toString()),
-    ),
-  );
 }
 
 class MailPiece {

@@ -7,7 +7,7 @@ void main() async {
 
   DateTime today = DateTime.now();
 
-  MailPiece mail = new MailPiece("", "", "", "", "test", today);
+  MailPieceTemp mail = new MailPieceTemp("", "", "", "", "test", today);
 
   test("Search mail by keyword", () {
     bool result = search.matchesKeyword(mail, "test");
