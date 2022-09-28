@@ -2,13 +2,20 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:summer2022/models/MailPiece.dart';
+import 'package:summer2022/utility/ComparisonHelpers.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+
+import '../models/SearchCriteria.dart';
 
 class SearchWidget extends StatefulWidget {
+  final List<String> parameters;
+  const SearchWidget({this.parameters = const []});
   @override
   SearchWidgetState createState() => SearchWidgetState();
-
 }
 
 class SearchWidgetState extends State<SearchWidget> {
@@ -26,20 +33,36 @@ class SearchWidgetState extends State<SearchWidget> {
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
   DateTime _start = DateTime.now();
   DateTime _end = DateTime.now();
+  String _keyword = "";
+  TextEditingController keywordInput = TextEditingController();
+
+  // Apply and passed in search parameters to the filters
+  void applyFilters() {
+    if (this.widget.parameters.isEmpty) return;
+    final filters = SearchCriteria.withList(this.widget.parameters);
+
+    // Update local variables
+    _start = filters.startDate ?? _start;
+    _end = filters.endDate ?? _end;
+    _keyword = filters.keyword;
+  }
 
   @override
   Widget build(BuildContext context) {
+    applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
+    keywordInput.text = _keyword;
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
+      appBar: TopBar(title: 'Mail Search'),
+      /*appBar: AppBar(
         title: Text('Mail Search',  style:
         TextStyle(fontWeight: _commonFontWeight, fontSize: _commonFontSize),
         ),
         backgroundColor: _buttonColor,
         centerTitle: true,
-      ),
+      ),*/
       body:
       SingleChildScrollView(
         child:
@@ -170,15 +193,37 @@ class SearchWidgetState extends State<SearchWidget> {
                   ),
                 ),
                 Container(
-                  child:
-                  TextField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2, color: _buttonColor)),
-                        hintText: 'Enter a keyword to search'
-                    ),
-                  ),
+                    child: TypeAheadField(
+                      textFieldConfiguration: TextFieldConfiguration(
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(
+                              labelText: 'Keyword',
+                              border: OutlineInputBorder()
+                          ),
+                        controller: keywordInput
+                      ),
+                      onSuggestionSelected: (suggestion) {
+                        // TODO: Go directly to mail item if the user clicks a suggestion
+                        // This is how GMail does this feature
+                      },
+                      suggestionsCallback: (pattern) {
+                        // TODO: Populate items from cache
+                        var mailItems  = <MailPiece>[
+                          MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
+                          MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
+                        ];
+                        // Filter items based on pattern
+                        return _filterMailItems(pattern, mailItems);
+                      },
+                      itemBuilder: (context, itemData) {
+                        return ListTile(
+                          title:  Text("From: ${(itemData as MailPiece).sender}, "
+                              "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                          subtitle: Text("Contents: "
+                              "${itemData.imageText}"),
+                        );
+                      },
+                    )
                 ),
                 Row(
                     children: [
@@ -218,6 +263,14 @@ class SearchWidgetState extends State<SearchWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  // Filter mail items based on keyword search
+  Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
+    return Iterable.castFrom(
+        mailItems.where((mailItem) => mailItem.imageText.containsIgnoreCase(keyword)
+          || mailItem.sender.containsIgnoreCase(keyword))
     );
   }
 }

@@ -1,8 +1,9 @@
-import 'dart:collection';
 import 'package:summer2022/exceptions/invalid_command_exception.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/bases/chat_bot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
+
+import '../models/SearchCriteria.dart';
 
 class ChatBotService implements ChatBot {
   // This list of functions should be available on all pages
@@ -13,7 +14,7 @@ class ChatBotService implements ChatBot {
     SiteAreas.Home: <String>["search", "settings", ...availableOnAllPages],
     SiteAreas.Settings: <String>["home", ...availableOnAllPages],
     SiteAreas.SearchResults: <String>["home", "settings", ...availableOnAllPages],
-    SiteAreas.Search: <String>["home", "settings", ...availableOnAllPages],
+    SiteAreas.Search: <String>["home", "settings", "search", ...availableOnAllPages],
     SiteAreas.MailView: <String>["home", "settings", ...availableOnAllPages],
     SiteAreas.NotificationView: <String>["home", "settings", ...availableOnAllPages],
     SiteAreas.NotificationManage: <String>["home", "settings", ...availableOnAllPages],
@@ -65,8 +66,13 @@ class ChatBotService implements ChatBot {
         // Perform return home function
         return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/main"]);
       case "search":
-        // Perform navigate to search function
-        return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/search"]);
+        if (parameters.isNotEmpty) {
+          // Perform search using parameters
+          return ApplicationFunction(methodName: "performSearch", parameters: parameters);
+        } else {
+          // Perform navigate to search function
+          return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/search"]);
+        }
       case "settings":
         // Perform navigate to settings function
         return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/settings"]);
