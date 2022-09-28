@@ -48,6 +48,9 @@ class MailFetcher {
   MailPiece _processMailImage(String mailImage, DateTime timestamp, String? sender) {
     var ocrScanResult = _getOcrScan(mailImage);
 
+
+    //test
+
     // Sender text is actually sometimes included in the Email body as text for "partners".
     // We prefer to use this rather than try and deduce it using the image itself.
     if (sender == null || sender.isEmpty) {
