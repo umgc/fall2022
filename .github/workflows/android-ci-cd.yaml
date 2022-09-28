@@ -55,7 +55,7 @@ jobs:
       - name: Release app to internal track
         uses: r0adkll/upload-google-play@v1
         with:
-          packageName: com.umgc.fall2022
+          packageName: com.umgc.summer2022
           releaseFile: build/app/outputs/bundle/release/app-release.aab
           track: internal
           status: draft
