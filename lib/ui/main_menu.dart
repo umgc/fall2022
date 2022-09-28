@@ -213,6 +213,30 @@ class MainWidgetState extends State<MainWidget> {
                                       ),
                                     ),
                                   ),
+                                  SizedBox(
+                                    height: commonButtonHeight,
+                                    child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey
+                                              .shade300, //background color of dropdown button
+                                          borderRadius: BorderRadius.circular(
+                                              commonCornerRadius), //border raiuds of dropdown button
+                                        ),
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, '/notifications');
+                                          },
+                                          icon: const Icon(
+                                            Icons.notifications,
+                                            size: 45,
+                                          ),
+                                          label: const Text(""),
+                                          style: commonButtonStyleText(
+                                              Colors.black, Colors.grey),
+                                        ),
+                                    ),
+                                  ),
                                 ]),
                           ),
                           Row(
