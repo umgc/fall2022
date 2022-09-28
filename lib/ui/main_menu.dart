@@ -325,27 +325,8 @@ class MainWidgetState extends State<MainWidget> {
                       )),
                 ),
               ),
-              //chatbot
-              /*Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
-                    child:
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/chat');
-                      },
-                      style: commonButtonStyleElevated(
-                          Colors.grey, Colors.grey),
-                      icon: new Image.asset("assets/icon/chatbot-icon.png", width: 50, height: 50),
-                      label: Text("Chatbot",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: commonFontSize - 3,
-                          )),
-                    ),
-                  ),*/
                   Padding(
-                    padding: const EdgeInsets.only(top: 0, bottom: 10),
+                    padding: const EdgeInsets.only(top: 0, bottom: 10, left: 10, right: 10),
                     child:
                     ElevatedButton.icon(
                       onPressed: () {
