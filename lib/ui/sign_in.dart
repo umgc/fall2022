@@ -1,9 +1,10 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
@@ -29,7 +30,7 @@ class SignInWidgetState extends State<SignInWidget> {
         'screenName': 'SignIn',
         'screenClass': 'signIn.dart',
       },
-    );*/    
+    );*/
   }
 
   @override
@@ -66,12 +67,7 @@ class SignInWidgetState extends State<SignInWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Sign-In"),
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey,
-      ),
+      appBar: TopBar(title: "Sign In"),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
@@ -150,7 +146,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                                primary: Colors.black,
                                 shadowColor: Colors.grey,
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:

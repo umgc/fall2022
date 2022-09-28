@@ -11,8 +11,7 @@ class BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      color: Color(0xff004B87),
-
+      color: Color.fromRGBO(51, 51, 102, 1),
       child: Row(
         children: <Widget>[
           // TODO: Add other icons
@@ -25,7 +24,7 @@ class BottomBarState extends State<BottomBar> {
           Spacer(),
           IconButton(
             tooltip: "Open chat bot",
-            icon: const Icon(Icons.headset_mic, color: Color(0xFFFFFFFF)),
+            icon: new Image.asset("assets/icon/chatbot-icon.png"),
             onPressed: () {
               Navigator.pushNamed(context, "/chat");
             },

@@ -11,7 +11,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:uuid/uuid.dart';
+
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
@@ -48,44 +51,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/main');
-          },
-          child: Icon(
-              Icons.arrow_back
-          )
-      ),
-      centerTitle: true,
-      title: Text(
-        "Chat Support",
-        style:
-        TextStyle(fontWeight: _commonFontWt, fontSize: _commonFontSize),
-      ),
-      actions: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(right:20.0),
-            child: GestureDetector(
-                onTap: () {},
-                child: Icon(
-                    Icons.settings
-                )
-            )
-        ),
-        Padding(
-            padding: EdgeInsets.only(right:20.0),
-            child: GestureDetector(
-                onTap: () {},
-                child: Icon(
-                    Icons.logout
-                )
-            )
-        )
-      ],
-      automaticallyImplyLeading: false,
-      backgroundColor: Color(0xff004B87),
-    ),
+    appBar: TopBar(title: 'Chat Support'),
     body: Chat(
       messages: _messages,
       onMessageTap: _handleMessageTap,

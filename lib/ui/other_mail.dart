@@ -7,6 +7,8 @@ import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 
 class OtherMailWidget extends StatefulWidget {
   final List<Digest> emails;
@@ -38,7 +40,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
         'screenName': 'Email',
         'screenClass': 'other_mail.dart',
       },
-    );*/ 
+    );*/
   }
 
   MimeMessage getCurrentEmailMessage() {
@@ -111,21 +113,7 @@ class OtherMailWidgetState extends State<OtherMailWidget> {
       onHorizontalDragEnd: swipeLeftRight,
        child: Scaffold(
           bottomNavigationBar: const BottomBar(),
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-              formatted,
-              style: TextStyle(fontWeight: commonFontWt, fontSize: commonFontSize),
-            ),
-            backgroundColor: Colors.grey,
-            leading: Builder(
-              builder: (BuildContext context) {
-                return BackButton(
-                  onPressed: () { navKey.currentState!.pushNamed('/main');},
-                );
-              },
-            ),
-          ),
+         appBar: TopBar(title: "Other Mail"),
           body: SafeArea(
             child: Column(
               children: [

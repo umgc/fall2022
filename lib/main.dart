@@ -14,6 +14,7 @@ import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -62,6 +63,7 @@ void main() async {
 
 Widget buildScreen(bool emailAuthenticated) {
   return Scaffold(
+    appBar: TopBar(title: "Main"),
     body:
         emailAuthenticated == true ? const MainWidget() : const SignInWidget(),
     bottomNavigationBar: const BottomBar(),
