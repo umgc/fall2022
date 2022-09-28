@@ -11,11 +11,16 @@ class BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      color: Color(0xff004B87),
-
+      color: Color.fromRGBO(51, 51, 102, 1),
       child: Row(
         children: <Widget>[
           // TODO: Add other icons
+          IconButton(
+          icon: const Icon(Icons.markunread_mailbox_outlined, color: Color(0xFFFFFFFF)),
+            onPressed: () {
+            Navigator.pushNamed(context, "/search");
+            },
+          ),
           Spacer(),
           IconButton(
             tooltip: "Open chat bot",

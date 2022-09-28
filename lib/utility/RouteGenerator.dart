@@ -8,6 +8,8 @@ import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/backend_testing.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
+import 'package:summer2022/ui/search.dart';
+import 'package:summer2022/ui/mail_view.dart';
 
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
@@ -40,6 +42,13 @@ class RouteGenerator {
             builder: (_) => ChatWidget(
               currentPage: previousRoute
         ));
+      case '/search':
+        var parameters = settings.arguments != null ? settings.arguments as List<String> : <String>[];
+        return MaterialPageRoute(
+            builder: (_) => SearchWidget(parameters: parameters));
+      case '/mail_view':
+        return MaterialPageRoute(
+            builder: (_) => MailViewWidget());
       default:
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
@@ -55,11 +64,17 @@ class RouteGenerator {
   // TODO: Probably a better way to handle this with Navigator/navkey
   static void _updatePreviousRoute(String newRoute) {
     switch (newRoute) {
+      case '/mail_view':
+        previousRoute = SiteAreas.MailView;
+        break;
       case '/main':
         previousRoute = SiteAreas.Home;
         break;
       case '/settings':
         previousRoute = SiteAreas.Settings;
+        break;
+      case '/search':
+        previousRoute = SiteAreas.Search;
         break;
       default:
         break;

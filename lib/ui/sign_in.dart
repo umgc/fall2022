@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
-import 'package:summer2022/main.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
@@ -19,7 +22,15 @@ class SignInWidgetState extends State<SignInWidget> {
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("signIn");
+    locator<AnalyticsService>().logScreens(name: "signIn");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'SignIn',
+        'screenClass': 'signIn.dart',
+      },
+    );*/
   }
 
   @override
@@ -56,12 +67,7 @@ class SignInWidgetState extends State<SignInWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Sign-In"),
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey,
-      ),
+      appBar: TopBar(title: "Sign In"),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
