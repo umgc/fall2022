@@ -67,21 +67,6 @@ class MailWidgetState extends State<MailWidget> {
     );*/
   }
 
-  Future<void> autoplay() async {
-    // Wait a few seconds before starting to check if speaking is done
-    await Future.delayed(const Duration(seconds: 3));
-    if (GlobalConfiguration().getValue("autoplay")) {
-      if (mounted) {
-        await Future.delayed(const Duration(seconds: 5));
-        if (attachmentIndex < (widget.digest.attachments.length - 1)) {
-          setState(() {
-            seekForward();
-          });
-        }
-      }
-    }
-  }
-
   void swipeLeftRight(DragEndDetails details) {
     if (details.primaryVelocity! > 0) {
       // User swiped Left
