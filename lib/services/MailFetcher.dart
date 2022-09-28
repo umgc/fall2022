@@ -38,7 +38,7 @@ class MailFetcher {
   }
 
   /// Retrieve emails based on a start date, sender filter, and subject filter
-  List<String> _getEmails(DateTime startDate, senderFilter, subjectFilter) {
+  List<String> _getEmails(DateTime startDate, String senderFilter, String subjectFilter) {
     List<String> emails = <String>[];
     emails.add("this should actually be an email object"); //todo: log in and grab actual emails using the provided 3 filters
     return emails;
