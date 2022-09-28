@@ -6,10 +6,10 @@ import 'package:summer2022/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/models/Digest.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
-
 
 class MailWidget extends StatefulWidget {
   final Digest digest;
@@ -67,21 +67,6 @@ class MailWidgetState extends State<MailWidget> {
     );*/
   }
 
-  Future<void> autoplay() async {
-    // Wait a few seconds before starting to check if speaking is done
-    await Future.delayed(const Duration(seconds: 3));
-    if (GlobalConfiguration().getValue("autoplay")) {
-      if (mounted) {
-        await Future.delayed(const Duration(seconds: 5));
-        if (attachmentIndex < (widget.digest.attachments.length - 1)) {
-          setState(() {
-            seekForward();
-          });
-        }
-      }
-    }
-  }
-
   void swipeLeftRight(DragEndDetails details) {
     if (details.primaryVelocity! > 0) {
       // User swiped Left
@@ -111,18 +96,7 @@ class MailWidgetState extends State<MailWidget> {
       onHorizontalDragEnd: swipeLeftRight,
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Digest"),
-          backgroundColor: Colors.grey,
-          leading: Builder(
-            builder: (BuildContext context) {
-              return BackButton(
-                onPressed: () { navKey.currentState!.pushNamed('/main');},
-              );
-            },
-          ),
-        ),
+        appBar: TopBar(title: "Mail"),
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
