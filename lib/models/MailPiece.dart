@@ -1,10 +1,10 @@
+import 'Address.dart';
+
 class MailPiece {
-  int _mail_ID;
-  DateTime _informedDate;
-  String _LogoText;
-  AddressObject _senderAddress;
+  final int mailId;
+  final DateTime informedDate;
+  final String logoText;
+  final AddressObject senderAddress;
 
-   MailPiece( this._mail_ID, this._informedDate, this._LogoText, this._senderAddress );
-
-  
+   MailPiece(this.mailId, this.informedDate, this.logoText, this.senderAddress);
 }
