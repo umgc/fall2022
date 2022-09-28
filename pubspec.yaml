@@ -74,7 +74,7 @@ dev_dependencies:
 flutter_icons:
  android: true
  ios: true
- image_path: "assets/icon/icon.png"
+ image_path: "assets/icon/app-icon.png"
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -120,6 +120,8 @@ flutter:
     - assets/icon/search-icon.png
     - assets/icon/back-icon.png
     - assets/icon/chatbot-icon.png
+    - assets/icon/uploadmail-icon.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/utility/ComparisonHelpers.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -54,13 +55,14 @@ class SearchWidgetState extends State<SearchWidget> {
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
+      appBar: TopBar(title: 'Mail Search'),
+      /*appBar: AppBar(
         title: Text('Mail Search',  style:
         TextStyle(fontWeight: _commonFontWeight, fontSize: _commonFontSize),
         ),
         backgroundColor: _buttonColor,
         centerTitle: true,
-      ),
+      ),*/
       body:
       SingleChildScrollView(
         child:
