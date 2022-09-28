@@ -312,7 +312,7 @@ class MainWidgetState extends State<MainWidget> {
                 child:
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushNamed(context, '');
+                    Navigator.pushNamed(context, '/notifications');
                   },
                   style: commonButtonStyleElevated(
                       Colors.grey, Colors.grey),

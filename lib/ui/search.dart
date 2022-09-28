@@ -2,9 +2,12 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:summer2022/models/MailPiece.dart';
+import 'package:summer2022/utility/ComparisonHelpers.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../models/SearchCriteria.dart';
 
@@ -190,16 +193,37 @@ class SearchWidgetState extends State<SearchWidget> {
                   ),
                 ),
                 Container(
-                  child:
-                  TextField(
-                    controller: keywordInput,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2, color: _buttonColor)),
-                        hintText: 'Enter a keyword to search'
-                    ),
-                  ),
+                    child: TypeAheadField(
+                      textFieldConfiguration: TextFieldConfiguration(
+                          style: TextStyle(fontSize: 20),
+                          decoration: InputDecoration(
+                              labelText: 'Keyword',
+                              border: OutlineInputBorder()
+                          ),
+                        controller: keywordInput
+                      ),
+                      onSuggestionSelected: (suggestion) {
+                        // TODO: Go directly to mail item if the user clicks a suggestion
+                        // This is how GMail does this feature
+                      },
+                      suggestionsCallback: (pattern) {
+                        // TODO: Populate items from cache
+                        var mailItems  = <MailPiece>[
+                          MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
+                          MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
+                        ];
+                        // Filter items based on pattern
+                        return _filterMailItems(pattern, mailItems);
+                      },
+                      itemBuilder: (context, itemData) {
+                        return ListTile(
+                          title:  Text("From: ${(itemData as MailPiece).sender}, "
+                              "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                          subtitle: Text("Contents: "
+                              "${itemData.imageText}"),
+                        );
+                      },
+                    )
                 ),
                 Row(
                     children: [
@@ -239,6 +263,14 @@ class SearchWidgetState extends State<SearchWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  // Filter mail items based on keyword search
+  Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
+    return Iterable.castFrom(
+        mailItems.where((mailItem) => mailItem.imageText.containsIgnoreCase(keyword)
+          || mailItem.sender.containsIgnoreCase(keyword))
     );
   }
 }

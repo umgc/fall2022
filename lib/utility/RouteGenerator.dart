@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:summer2022/ui/chat_widget.dart';
 import 'package:summer2022/ui/mail_widget.dart';
 import 'package:summer2022/ui/main_menu.dart';
+import 'package:summer2022/ui/notifications.dart';
 import 'package:summer2022/ui/other_mail.dart';
 import 'package:summer2022/ui/settings.dart';
 import 'package:summer2022/ui/sign_in.dart';
@@ -56,6 +57,9 @@ class RouteGenerator {
         var parameters =  settings.arguments as MailPiece;
         return MaterialPageRoute(
             builder: (_) => MailPieceViewWidget(mailPiece: parameters));
+      case '/notifications':
+        return MaterialPageRoute(
+            builder: (_) => NotificationsWidget());
       default:
         return MaterialPageRoute(builder: (_) {
           return Scaffold(

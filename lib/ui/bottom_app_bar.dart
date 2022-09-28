@@ -24,7 +24,7 @@ class BottomBarState extends State<BottomBar> {
           Spacer(),
           IconButton(
             tooltip: "Open chat bot",
-            icon: const Icon(Icons.headset_mic, color: Color(0xFFFFFFFF)),
+            icon: new Image.asset("assets/icon/chatbot-icon.png"),
             onPressed: () {
               Navigator.pushNamed(context, "/chat");
             },
