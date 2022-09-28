@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:summer2022/exceptions/fetch_mail_exception.dart';
+import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/services/mail_service.dart';
 
 void main() async {
@@ -7,7 +8,7 @@ void main() async {
 
   DateTime today = DateTime.now();
 
-  MailPieceTemp mail = new MailPieceTemp("", "", "", "", "test", today);
+  MailPiece mail = new MailPiece("", "", today, "", "test", "");
 
   test("Search mail by keyword", () {
     bool result = search.matchesKeyword(mail, "test");

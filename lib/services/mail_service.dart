@@ -6,28 +6,7 @@ import 'package:enough_mail/enough_mail.dart';
 import 'package:summer2022/exceptions/fetch_mail_exception.dart';
 import 'package:summer2022/models/Digest.dart';
 
-/// todo: remove this once mailpiece class is properly implemented
-class MailPieceTemp {
-  String id = "";
-  String emailId = "";
-  DateTime timeStamp = new DateTime(2022, 1, 1);
-  String sender = "";
-  String midId = "";
-  String imageText = "";
-
-  MailPieceTemp(this.id, this.emailId, this.midId, this.imageText, this.sender,
-      this.timeStamp);
-
-  factory MailPieceTemp.fromJson(dynamic json) {
-    return MailPieceTemp(
-        json['id'] as String,
-        json['emailId'] as String,
-        json['midId'] as String,
-        json['imageText'] as String,
-        json['sender'] as String,
-        json['timeStamp'] as DateTime);
-  }
-}
+import '../models/MailPiece.dart';
 
 class MailService {
   /// Location of mail data file
@@ -55,7 +34,7 @@ class MailService {
       var mailList = jsonDecode(mailParsed) as List;
 
       return mailList
-          .map((x) => MailPieceTemp.fromJson(x))
+          .map((x) => MailPiece.fromJson(x))
           .where((x) => matchesKeyword(x, keyword))
           .where((x) => isWithinDateRange(x, startDate, endDate))
           .toList();
@@ -65,14 +44,14 @@ class MailService {
   }
 
   /// returns true if [mail] mail has a sender or imageText value that matches [keyword]
-  bool matchesKeyword(MailPieceTemp mail, String? keyword) {
+  bool matchesKeyword(MailPiece mail, String? keyword) {
     return mail.sender.contains(keyword ?? "") ||
         mail.imageText.contains(keyword ?? "");
   }
 
   /// returns true if [mail] has a timestamp within [startDate] and [endDate]
   bool isWithinDateRange(
-      MailPieceTemp mail, DateTime? startDate, DateTime? endDate) {
+      MailPiece mail, DateTime? startDate, DateTime? endDate) {
     //if either value is null, both should be null and the filter should not be applied
     if (startDate == null || endDate == null) {
       return true;
@@ -88,7 +67,7 @@ class MailService {
         new DateTime(endDate.year, endDate.month, endDate.day)
             .add(Duration(days: 1, milliseconds: -1));
 
-    return mail.timeStamp.isAfter(convertedStartDate) &&
-        mail.timeStamp.isBefore(convertedEndDate);
+    return mail.timestamp.isAfter(convertedStartDate) &&
+        mail.timestamp.isBefore(convertedEndDate);
   }
 }

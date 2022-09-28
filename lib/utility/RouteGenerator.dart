@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/chat_widget.dart';
 import 'package:summer2022/ui/mail_widget.dart';
 import 'package:summer2022/ui/main_menu.dart';

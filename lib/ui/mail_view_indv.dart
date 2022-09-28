@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 
 import 'mail_view.dart';
@@ -29,10 +30,8 @@ class MailPieceViewWidget extends StatelessWidget{
         child: Center(
           child: Column(children: [
             Text(mailPiece.sender),
-            Text(mailPiece.timeStamp.toString()),
-            Text(mailPiece.mailDescription),
-            Text(mailPiece.imageText),
-             mailPiece.mailImage
+            Text(mailPiece.timestamp.toString()),
+            Text(mailPiece.imageText)
           ],)
         ),
       ),
