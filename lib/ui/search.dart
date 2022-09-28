@@ -199,7 +199,8 @@ class SearchWidgetState extends State<SearchWidget> {
                           decoration: InputDecoration(
                               labelText: 'Keyword',
                               border: OutlineInputBorder()
-                          )
+                          ),
+                        controller: keywordInput
                       ),
                       onSuggestionSelected: (suggestion) {
                         // TODO: Go directly to mail item if the user clicks a suggestion
@@ -216,10 +217,10 @@ class SearchWidgetState extends State<SearchWidget> {
                       },
                       itemBuilder: (context, itemData) {
                         return ListTile(
-                          title:  Text("From: ${(itemData as MailPiece).Sender}, "
-                              "Date: ${DateFormat('MM/dd/yyyy').format(itemData.Timestamp)}"),
+                          title:  Text("From: ${(itemData as MailPiece).sender}, "
+                              "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
                           subtitle: Text("Contents: "
-                              "${itemData.ImageText}"),
+                              "${itemData.imageText}"),
                         );
                       },
                     )
@@ -268,8 +269,8 @@ class SearchWidgetState extends State<SearchWidget> {
   // Filter mail items based on keyword search
   Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
     return Iterable.castFrom(
-        mailItems.where((mailItem) => mailItem.ImageText.containsIgnoreCase(keyword)
-          || mailItem.Sender.containsIgnoreCase(keyword))
+        mailItems.where((mailItem) => mailItem.imageText.containsIgnoreCase(keyword)
+          || mailItem.sender.containsIgnoreCase(keyword))
     );
   }
 }
