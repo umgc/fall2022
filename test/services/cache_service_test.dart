@@ -19,8 +19,10 @@ void main() {
   final fetcher = MockMailFetcher();
   final notifier = MockMailNotifier();
   final storage = MockMailStorage();
+  final username = "test";
+  final password = "test";
 
-  final subject = CacheService(fetcher, storage, notifier);
+  final subject = CacheService(fetcher, storage, notifier, username, password);
 
   final now = DateTime.now();
 
@@ -31,7 +33,7 @@ void main() {
       MailPiece("3", "test-3", now, "test", "some text", "test"),
     ];
 
-    when(fetcher.fetchMail(any)).thenAnswer((_) => Future.value(mailPieces));
+    when(fetcher.fetchMail(any, any, any)).thenAnswer((_) => Future.value(mailPieces));
     when(storage.saveMailPiece(any)).thenAnswer((_) => Future.value(true));
     when(storage.lastTimestamp).thenAnswer((_) => Future.value(now));
 

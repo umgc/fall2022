@@ -38,7 +38,7 @@ class _FakeDateTime_0 extends _i1.SmartFake implements DateTime {
 /// See the documentation for Mockito's code generation for more information.
 class MockMailFetcher extends _i1.Mock implements _i2.MailFetcher {
   @override
-  _i3.Future<List<_i4.MailPiece>> fetchMail(DateTime? lastTimestamp) =>
+  _i3.Future<List<_i4.MailPiece>> fetchMail(DateTime? lastTimestamp, String? username, String? password) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchMail,
