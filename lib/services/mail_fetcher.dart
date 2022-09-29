@@ -65,6 +65,7 @@ class MailFetcher {
       sender = _getOcrSender(ocrScanResult);
     }
 
+    final id = "$sender-$timestamp-$index";
     var text = _getOcrBody(ocrScanResult);
     var mid = _getMID(mailImage);
     //todo: save list of URLs found on the ocrScanResult (including text URLs, barcodes, and QR codes)
@@ -73,10 +74,10 @@ class MailFetcher {
 
     //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
     //todo: otherwise the date is probably fine since there is only one USPS ID email per day
-    final id = "$sender-$timestamp-$index";
+    final emailId = timestamp.toString();
 
     return new MailPiece(
-        id, timestamp.toString(), timestamp, sender, text, mid);
+        id, emailId, timestamp, sender, text, mid);
   }
 
   /// Get the MID metadata field from the mail image (supposed to be some kind of metadata as per the customer)
