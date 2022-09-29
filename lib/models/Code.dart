@@ -26,6 +26,6 @@ class CodeObject {
   //   return codeObject(type: parsedJson["type"], info: parsedJson["info"]);
   // }
   factory CodeObject.fromJson(Map<String, dynamic> code) =>
-      _$codeObjectFromJson(code);
-  Map<String, dynamic> toJson() => _$codeObjectToJson(this);
+      _$CodeObjectFromJson(code);
+  Map<String, dynamic> toJson() => _$CodeObjectToJson(this);
 }

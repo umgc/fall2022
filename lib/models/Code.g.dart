@@ -6,12 +6,12 @@ part of 'Code.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CodeObject _$codeObjectFromJson(Map<String, dynamic> json) => CodeObject(
-      info: json['info'],
-      type: json['type'],
+CodeObject _$CodeObjectFromJson(Map<String, dynamic> json) => CodeObject(
+      info: json['info'] as String? ?? '',
+      type: json['type'] as String? ?? '',
     );
 
-Map<String, dynamic> _$codeObjectToJson(CodeObject instance) =>
+Map<String, dynamic> _$CodeObjectToJson(CodeObject instance) =>
     <String, dynamic>{
       'type': instance.type,
       'info': instance.info,
