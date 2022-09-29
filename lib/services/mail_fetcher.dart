@@ -5,16 +5,19 @@ class MailFetcher {
   /// Fetch all pieces of mail since the provided timestamp
   /// from `uspsinformeddelivery@email.informeddelivery.usps.com`
   /// with the subject `Your Daily Digest`.
-  Stream<MailPiece> fetchMail(DateTime lastTimestamp) {
+  Future<List<MailPiece>> fetchMail(DateTime lastTimestamp) async {
     List<MailPiece> mailPieces = <MailPiece>[];
-    List<String> emails = _getEmails(lastTimestamp, "uspsinformeddelivery@email.informeddelivery.usps.com", "Your Daily Digest");
+    List<String> emails = _getEmails(
+        lastTimestamp,
+        "uspsinformeddelivery@email.informeddelivery.usps.com",
+        "Your Daily Digest");
 
     // Process each email
     for (var i = 0; i < emails.length; i++) {
       mailPieces.addAll(_processEmail(emails[i]));
     }
 
-    return new Stream.fromIterable(mailPieces);
+    return mailPieces;
   }
 
   /// Process an individual email, converting it into a list of MailPieces
@@ -24,28 +27,36 @@ class MailFetcher {
     // todo: could iterate through the email message differently, but below is just a guide of the general logic
     bool mailUnread = true;
     while (mailUnread) {
-      String? sender; //todo: check for "Sender" text already listed above the image
-      String mailImage = "This is the actual image object"; //todo: get actual mail image
-      DateTime timestamp = DateTime.now(); //todo: get timestamp from email object instead
+      String?
+          sender; //todo: check for "Sender" text already listed above the image
+      String mailImage =
+          "This is the actual image object"; //todo: get actual mail image
+      DateTime timestamp =
+          DateTime.now(); //todo: get timestamp from email object instead
 
       // Process the mail image
-      mailPieces.add(_processMailImage(mailImage, timestamp, sender));
+      mailPieces.add(
+          _processMailImage(mailImage, timestamp, sender, mailPieces.length));
 
-      mailUnread = false; //todo: use some kind of end-of-file check or iterate through a list instead
+      mailUnread =
+          false; //todo: use some kind of end-of-file check or iterate through a list instead
     }
 
     return mailPieces;
   }
 
   /// Retrieve emails based on a start date, sender filter, and subject filter
-  List<String> _getEmails(DateTime startDate, String senderFilter, String subjectFilter) {
+  List<String> _getEmails(
+      DateTime startDate, String senderFilter, String subjectFilter) {
     List<String> emails = <String>[];
-    emails.add("this should actually be an email object"); //todo: log in and grab actual emails using the provided 3 filters
+    emails.add(
+        "this should actually be an email object"); //todo: log in and grab actual emails using the provided 3 filters
     return emails;
   }
 
   /// Process an individual mail image, converting it into a MailPiece
-  MailPiece _processMailImage(String mailImage, DateTime timestamp, String? sender) {
+  MailPiece _processMailImage(
+      String mailImage, DateTime timestamp, String? sender, int index) {
     var ocrScanResult = _getOcrScan(mailImage);
 
     // Sender text is actually sometimes included in the Email body as text for "partners".
@@ -62,7 +73,10 @@ class MailFetcher {
 
     //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
     //todo: otherwise the date is probably fine since there is only one USPS ID email per day
-    return new MailPiece.fromEmail(timestamp.toString(), timestamp, sender, text, mid);
+    final id = "$sender-$timestamp-$index";
+
+    return new MailPiece(
+        id, timestamp.toString(), timestamp, sender, text, mid);
   }
 
   /// Get the MID metadata field from the mail image (supposed to be some kind of metadata as per the customer)
