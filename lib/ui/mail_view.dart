@@ -14,45 +14,56 @@ class MailViewWidget extends StatelessWidget {
   );
   @override
   Widget build(BuildContext context) {
-    Widget _buildMailPiece(MailPiece mailPiece) {
+    Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
       return Container(
         color: Colors.white10,
-        child: ListTile(
-          horizontalTitleGap: 10.0,
-          contentPadding: EdgeInsets.all(5),
-          dense: true,
-          onTap: () {
-            Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
-          },
-          //leading: mailPiece.mailImage,
-          title:
-          Row(
-              children:[
-                Container(
-                  padding: EdgeInsets.only(right: 10.0),
-                  child:
-                  Text(
-                    mailPiece.sender,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Expanded(
-                  child:
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children:[
-                        Text(DateFormat('EEE hh:mm').format(mailPiece.timestamp)
-                        ),
-                        Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
-                        ),
-                      ]),
-                ),
-              ]
+        child:
+        GestureDetector(
+          child:
+          Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Letter from ${mailPiece.sender} received on ${DateFormat('EEE MMM,d,yyyy').format(mailPiece.timestamp)}",
+            hint: "Double tap to select.",
+            child:
+            ListTile(
+              horizontalTitleGap: 10.0,
+              contentPadding: EdgeInsets.all(5),
+              dense: true,
+              onTap: () {
+                Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
+              },
+              //leading: mailPiece.mailImage,
+              title:
+              Row(
+                  children:[
+                    Container(
+                      padding: EdgeInsets.only(right: 10.0),
+                      child:
+                      Text(
+                        mailPiece.sender,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Expanded(
+                      child:
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children:[
+                            Text(DateFormat('EEE hh:mm').format(mailPiece.timestamp)
+                            ),
+                            Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
+                            ),
+                          ]),
+                    ),
+                  ]
+              ),
+              subtitle: Text(mailPiece.imageText.toString()),
+            ),
           ),
-          subtitle: Text(mailPiece.imageText.toString()),
         ),
       );
-    };
+    }
 
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
@@ -72,55 +83,4 @@ class MailViewWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
-  return Container(
-    color: Colors.white10,
-    child:
-    GestureDetector(
-      child:
-      Semantics(
-        excludeSemantics: true,
-        button: true,
-        label: "Letter from ${mailPiece.sender} received on ${DateFormat('EEE MMM,d,yyyy').format(mailPiece.timeStamp)}",
-        hint: "Double tap to select.",
-        child:
-        ListTile(
-          horizontalTitleGap: 10.0,
-          contentPadding: EdgeInsets.all(5),
-          dense: true,
-          onTap: () {
-            Navigator.pushNamed(context, '/singleMailView');
-            },
-          leading: mailPiece.mailImage,
-          title:
-          Row(
-              children:[
-                Container(
-                  padding: EdgeInsets.only(right: 10.0),
-                  child:
-                  Text(
-                    mailPiece.sender,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Expanded(
-                  child:
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children:[
-                        Text(DateFormat('EEE hh:mm').format(mailPiece.timeStamp)
-                        ),
-                        Text(DateFormat('MM/dd/yyyy').format(mailPiece.timeStamp)
-                        ),
-                      ]),
-                ),
-              ]
-          ),
-          subtitle: Text(mailPiece.mailDescription.toString()),
-        ),
-      ),
-    ),
-  );
 }
