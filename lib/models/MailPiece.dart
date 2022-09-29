@@ -7,6 +7,20 @@ class MailPiece {
   final String sender;
   final String imageText;
   final String midId;
-  MailPiece(this.id, this.emailId, this.timestamp, this.sender, this.imageText,
+
+  MailPiece(this.id, this.mailId, this.timestamp, this.sender, this.imageText,
       this.midId);
+  MailPiece.fromEmail(
+      this.mailId, this.timestamp, this.sender, this.imageText, this.midId);
+
+  factory MailPiece.fromJson(dynamic json) {
+    return MailPiece(
+        json['id'] as String,
+        json['mailId'] as String,
+        json['timeStamp'] as DateTime,
+        json['sender'] as String,
+        json['imageText'] as String,
+        json['midId'] as String
+        );
+  }
 }
