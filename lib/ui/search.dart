@@ -28,7 +28,6 @@ class SearchWidgetState extends State<SearchWidget> {
   final double _buttonIconSize = 35;
   final double _buttonTextSize = 20.0;
   final FontWeight _commonFontWeight = FontWeight.w500;
-  final double _commonFontSize = 30;
   final double _buttonLabelTextSize = 26;
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
   DateTime _start = DateTime.now();
@@ -56,13 +55,6 @@ class SearchWidgetState extends State<SearchWidget> {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(title: 'Mail Search'),
-      /*appBar: AppBar(
-        title: Text('Mail Search',  style:
-        TextStyle(fontWeight: _commonFontWeight, fontSize: _commonFontSize),
-        ),
-        backgroundColor: _buttonColor,
-        centerTitle: true,
-      ),*/
       body:
       SingleChildScrollView(
         child:
@@ -103,38 +95,51 @@ class SearchWidgetState extends State<SearchWidget> {
                         child:
                         Padding(padding: EdgeInsets.only(right:5.0),
                           child:
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children:[
-                                Text(
-                                  "Start Date:",
-                                  style: TextStyle(
-                                      fontSize: _buttonLabelTextSize,
-                                      fontWeight: _commonFontWeight,
-                                      color: Color.fromRGBO(51, 51, 102, 100)
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 50.0,
-                                  child:
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
+                          Semantics(
+                            excludeSemantics: true,
+                            button: true,
+                            label: "Start Date",
+                            hint: " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                            child:
+                            MergeSemantics(
+                              child:
+                              Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children:[
+                                    Text(
+                                      "Start Date:",
+                                      style: TextStyle(
+                                          fontSize: _buttonLabelTextSize,
+                                          fontWeight: _commonFontWeight,
+                                          color: Color.fromRGBO(51, 51, 102, 100)
+                                      ),
                                     ),
-                                    icon: Icon(Icons.calendar_month_outlined,
-                                        size: _buttonIconSize,
-                                        color: Colors.white
+                                    SizedBox(
+                                      height: 50.0,
+                                      child:
+                                      ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
+                                        ),
+                                        icon: Icon(Icons.calendar_month_outlined,
+                                            size: _buttonIconSize,
+                                            color: Colors.white
+                                        ),
+                                        label: Text('${_dateFormat.format(_start)}',
+                                            style: TextStyle(
+                                                fontWeight: _buttonFontWeight,
+                                                fontSize: _buttonTextSize,
+                                                color: _buttonTextColor
+                                            )
+                                        ),
+                                        onPressed: () {
+                                          //TODO: add function that types in date and displays it in the calendar view
+                                        },
+                                      ),
                                     ),
-                                    label: Text('${_dateFormat.format(_start)}',
-                                        style: TextStyle(
-                                            fontWeight: _buttonFontWeight,
-                                            fontSize: _buttonTextSize,
-                                            color: _buttonTextColor
-                                        )
-                                    ), onPressed: () {},
-                                  ),
-                                ),
-                              ]
+                                  ]
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -142,39 +147,51 @@ class SearchWidgetState extends State<SearchWidget> {
                         child:
                         Padding(padding: EdgeInsets.only(left:5.0),
                           child:
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children:[
-                                Text(
-                                  "End Date:",
-                                  style: TextStyle(
-                                      fontWeight: _commonFontWeight,
-                                      fontSize: _buttonLabelTextSize,
-                                      color: Color.fromRGBO(51, 51, 102, 100)
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: _preferredButtonHeight,
-                                  child:
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: _buttonColor,
+                          Semantics(
+                            excludeSemantics: true,
+                            button: true,
+                            label: "End Date",
+                            hint: "${DateFormat('MMM,d,yyyy').format(_end)}",
+                            child:
+                            MergeSemantics(
+                              child:
+                              Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children:[
+                                    Text(
+                                      "End Date:",
+                                      style: TextStyle(
+                                          fontWeight: _commonFontWeight,
+                                          fontSize: _buttonLabelTextSize,
+                                          color: Color.fromRGBO(51, 51, 102, 100)
+                                      ),
                                     ),
-                                    icon: Icon(Icons.calendar_month_outlined,
-                                        size: 35,
-                                        color: Colors.white
+                                    SizedBox(
+                                      height: _preferredButtonHeight,
+                                      child:
+                                      ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: _buttonColor,
+                                        ),
+                                        icon: Icon(Icons.calendar_month_outlined,
+                                            size: 35,
+                                            color: Colors.white
+                                        ),
+                                        label: Text('${_dateFormat.format(_end)}',
+                                            style: TextStyle(
+                                                fontWeight: _buttonFontWeight,
+                                                fontSize: _buttonTextSize,
+                                                color: _buttonTextColor
+                                            )
+                                        ),
+                                        onPressed: (){
+                                          //TODO: add function that types in date and displays it in the calendar view
+                                        },
+                                      ),
                                     ),
-                                    label: Text('${_dateFormat.format(_end)}',
-                                        style: TextStyle(
-                                            fontWeight: _buttonFontWeight,
-                                            fontSize: _buttonTextSize,
-                                            color: _buttonTextColor
-                                        )
-                                    ),
-                                    onPressed: (){},
-                                  ),
-                                ),
-                              ]
+                                  ]
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -193,37 +210,43 @@ class SearchWidgetState extends State<SearchWidget> {
                   ),
                 ),
                 Container(
-                    child: TypeAheadField(
-                      textFieldConfiguration: TextFieldConfiguration(
-                          style: TextStyle(fontSize: 20),
-                          decoration: InputDecoration(
-                              labelText: 'Keyword',
-                              border: OutlineInputBorder()
-                          ),
-                        controller: keywordInput
-                      ),
-                      onSuggestionSelected: (suggestion) {
-                        // TODO: Go directly to mail item if the user clicks a suggestion
-                        // This is how GMail does this feature
-                      },
-                      suggestionsCallback: (pattern) {
-                        // TODO: Populate items from cache
-                        var mailItems  = <MailPiece>[
-                          MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
-                          MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
-                        ];
-                        // Filter items based on pattern
-                        return _filterMailItems(pattern, mailItems);
-                      },
-                      itemBuilder: (context, itemData) {
-                        return ListTile(
-                          title:  Text("From: ${(itemData as MailPiece).sender}, "
-                              "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
-                          subtitle: Text("Contents: "
-                              "${itemData.imageText}"),
-                        );
-                      },
-                    )
+                    child: Semantics(
+                      excludeSemantics: true,
+                      textField: true,
+                      label: "Keyword",
+                      hint: "Enter keyword to search",
+                      child: TypeAheadField(
+                        textFieldConfiguration: TextFieldConfiguration(
+                            style: TextStyle(fontSize: 20),
+                            decoration: InputDecoration(
+                                labelText: 'Enter keyword to search',
+                                border: OutlineInputBorder()
+                            ),
+                          controller: keywordInput
+                        ),
+                        onSuggestionSelected: (suggestion) {
+                          // TODO: Go directly to mail item if the user clicks a suggestion
+                          // This is how GMail does this feature
+                        },
+                        suggestionsCallback: (pattern) {
+                          // TODO: Populate items from cache
+                          var mailItems  = <MailPiece>[
+                            MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
+                            MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
+                          ];
+                          // Filter items based on pattern
+                          return _filterMailItems(pattern, mailItems);
+                        },
+                        itemBuilder: (context, itemData) {
+                          return ListTile(
+                            title:  Text("From: ${(itemData as MailPiece).sender}, "
+                                "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                            subtitle: Text("Contents: "
+                                "${itemData.imageText}"),
+                          );
+                        },
+                      )
+                  ),
                 ),
                 Row(
                     children: [
