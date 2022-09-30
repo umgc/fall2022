@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
-
-import 'mail_view.dart';
 
 class MailPieceViewWidget extends StatelessWidget{
 
@@ -28,11 +27,36 @@ class MailPieceViewWidget extends StatelessWidget{
       body: Container(
         padding: EdgeInsets.all(15.0),
         child: Center(
-          child: Column(children: [
-            Text(mailPiece.sender),
-            Text(mailPiece.timestamp.toString()),
-            Text(mailPiece.imageText)
-          ],)
+          child: Column(
+            children: [
+                Image.asset('assets/mail.test.02.png'), //load link to photo
+                Container(
+                padding: EdgeInsets.all(15),
+                child:
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child:
+                      Wrap(
+                        direction: Axis.vertical,
+                        alignment: WrapAlignment.start,
+                        spacing: 15,
+                        children: [
+                          Text('RECEIVED: ' + DateFormat('yyyy/MM/dd').format(mailPiece.timestamp) + ' ' + DateFormat('EEE hh:mm a').format(mailPiece.timestamp),
+                              style: TextStyle(fontSize: 15)),
+                          Text('SENT BY: ' + mailPiece.sender,
+                              style: TextStyle(fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromRGBO(51, 51, 102, 1.0)),
+                          ),
+                          Text('RELEVANT TEXT: \n' + mailPiece.imageText,
+                              style: TextStyle(fontSize: 15,
+                                color: Color.fromRGBO(51, 51, 102, 1.0) ))
+                        ]
+                      ),
+                    ),
+                ),
+            ],
+          ),
         ),
       ),
     );

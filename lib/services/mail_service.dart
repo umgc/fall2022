@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
 import 'package:summer2022/exceptions/fetch_mail_exception.dart';
 import 'package:summer2022/models/Digest.dart';
+import 'package:summer2022/utility/ComparisonHelpers.dart';
 
 import '../models/MailPiece.dart';
 
@@ -45,8 +46,8 @@ class MailService {
 
   /// returns true if [mail] mail has a sender or imageText value that matches [keyword]
   bool matchesKeyword(MailPiece mail, String? keyword) {
-    return mail.sender.contains(keyword ?? "") ||
-        mail.imageText.contains(keyword ?? "");
+    return mail.sender.containsIgnoreCase(keyword ?? "") ||
+        mail.imageText.containsIgnoreCase(keyword ?? "");
   }
 
   /// returns true if [mail] has a timestamp within [startDate] and [endDate]
