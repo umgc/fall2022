@@ -28,6 +28,8 @@ class Attachment {
   String attachment = "";
   String attachmentNoFormatting = "";
   late MailResponse detailedInformation;
+  String contentID = "";
+  String sender = "";
 }
 
 class Link {
