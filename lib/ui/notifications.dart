@@ -24,40 +24,46 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: const BottomBar(),
-      appBar: TopBar(title: "Notifications"),
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                color: const Color.fromRGBO(228, 228, 228, 0.6),
-                child: Column(
-                  children: [
-                    Row(
-                      children: const [
-                        Expanded(
-                            child: Text(
-                              "Notifications",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                        Expanded(
-                          child: Text(
-                            "Manage",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ))
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+    return DefaultTabController(
+      initialIndex: 1,
+      length: 2,
+      child: Scaffold(
+        bottomNavigationBar: const BottomBar(),
+        appBar: AppBar(
+            actions: <Widget>[
+              IconButton(
+                  icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');} ),
+              IconButton(
+                  icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/sign_in');} ),
             ],
+            leading:
+            IconButton(
+              icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30), onPressed: () { navKey.currentState!.pushNamed('/main');}, ),
+            centerTitle: true,
+
+            title: Text("Notifications",
+              style:
+              TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+            ),
+            automaticallyImplyLeading: false,
+            backgroundColor: Color.fromRGBO(51, 51, 102, 1),
+            bottom: const TabBar(
+              tabs: <Widget>[
+                Tab(text: "Notifications",), Tab(text: "Manage",)
+            ]
           ),
+        ),
+        body: const TabBarView(
+          children: <Widget>[
+            Center(
+              child: Text("It's cloudy here"),
+            ),
+            Center(
+              child: Text("It's rainy here"),
+            ),
+          ],
         ),
       ),
     );
-  }
+    }
 }
