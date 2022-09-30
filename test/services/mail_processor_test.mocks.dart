@@ -42,7 +42,7 @@ class MockMailFetcher extends _i1.Mock implements _i2.MailFetcher {
       (super.noSuchMethod(
         Invocation.method(
           #fetchMail,
-          [lastTimestamp],
+          [lastTimestamp, username, password],
         ),
         returnValue: _i3.Future<List<_i4.MailPiece>>.value(<_i4.MailPiece>[]),
         returnValueForMissingStub:

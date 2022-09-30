@@ -8,10 +8,10 @@ class MailFetcher {
   /// Fetch all pieces of mail since the provided timestamp
   /// from `uspsinformeddelivery@email.informeddelivery.usps.com`
   /// with the subject `Your Daily Digest`.
-  Future<List<MailPiece>> fetchMail(DateTime lastTimestamp, String username, String password) async {
+  Future<List<MailPiece>> fetchMail(DateTime lastTimestamp, String? username, String? password) async {
     List<MailPiece> mailPieces = <MailPiece>[];
     List<MimeMessage> emails = await _getEmails(
-        lastTimestamp, username, password,
+        lastTimestamp, username!, password!,
         "uspsinformeddelivery@email.informeddelivery.usps.com",
         "Your Daily Digest");
 
