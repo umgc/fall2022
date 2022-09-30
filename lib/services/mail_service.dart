@@ -6,28 +6,7 @@ import 'package:enough_mail/enough_mail.dart';
 import 'package:summer2022/exceptions/fetch_mail_exception.dart';
 import 'package:summer2022/models/Digest.dart';
 
-/// todo: remove this once mailpiece class is properly implemented
-class MailPiece {
-  String id;
-  String emailId;
-  DateTime timeStamp = new DateTime(2022, 1, 1);
-  String sender;
-  String midId;
-  String imageText;
-
-  MailPiece(this.id, this.emailId, this.midId, this.imageText, this.sender,
-      this.timeStamp);
-
-  factory MailPiece.fromJson(dynamic json) {
-    return MailPiece(
-        json['id'] as String,
-        json['emailId'] as String,
-        json['midId'] as String,
-        json['imageText'] as String,
-        json['sender'] as String,
-        json['timeStamp'] as DateTime);
-  }
-}
+import '../models/MailPiece.dart';
 
 class MailService {
   /// Location of mail data file
@@ -88,7 +67,7 @@ class MailService {
         new DateTime(endDate.year, endDate.month, endDate.day)
             .add(Duration(days: 1, milliseconds: -1));
 
-    return mail.timeStamp.isAfter(convertedStartDate) &&
-        mail.timeStamp.isBefore(convertedEndDate);
+    return mail.timestamp.isAfter(convertedStartDate) &&
+        mail.timestamp.isBefore(convertedEndDate);
   }
 }
