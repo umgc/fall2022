@@ -24,7 +24,8 @@ class BottomBarState extends State<BottomBar> {
           Spacer(),
           IconButton(
             tooltip: "Open chat bot",
-            icon: new Image.asset("assets/icon/chatbot-icon.png"),
+            //icon: new Image.asset("assets/icon/chatbot-icon.png"),
+            icon: Image.asset("assets/icon/chatbot-icon.png", width: 50, height: 50),
             onPressed: () {
               Navigator.pushNamed(context, "/chat");
             },

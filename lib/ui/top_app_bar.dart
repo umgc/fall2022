@@ -18,8 +18,8 @@ class TopBarState extends State<TopBar> {
 
       return AppBar(
           actions: <Widget>[
-            IconButton(
-                icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');} ),
+            /*IconButton(
+                icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');} ),*/
             IconButton(
                 icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/sign_in');} ),
           ],
