@@ -40,7 +40,7 @@ void main() async {
 
   // Cache emails
   if (emailAuthenticated) {
-    await CacheService.updateMail(username ?? '', password ?? '');
+    await CacheService.updateMail(username, password);
   }
 
   if (Firebase.apps.length == 0) {
