@@ -62,10 +62,5 @@ void main() async {
 }
 
 Widget buildScreen(bool emailAuthenticated) {
-  return Scaffold(
-    appBar: TopBar(title: "Main"),
-    body:
-        emailAuthenticated == true ? const MainWidget() : const SignInWidget(),
-    bottomNavigationBar: const BottomBar(),
-  );
+  return emailAuthenticated == true ? const MainWidget() : const SignInWidget();
 }
