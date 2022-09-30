@@ -12,7 +12,7 @@ String _dbPath = "mail.db";
 
 Future<Database> get database async {
   return await openDatabase(_dbPath,
-      version: 1,
+      version: 2,
       onConfigure: _configureClient,
       onUpgrade: _createTables,
       singleInstance: true);
@@ -51,6 +51,12 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
       subscription_keyword STRING  NOT NULL REFERENCES $NOTIFICATION_SUBSCRIPTION_TABLE(keyword) ON DELETE CASCADE
     );
   """);
+
+  if (prev <= 1) {
+    await db.execute("""
+      ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN midId TEXT;
+    """);
+  }
 }
 
 Future<void> setUpTestDatabase() async {

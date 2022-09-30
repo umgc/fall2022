@@ -21,4 +21,14 @@ class MailPiece {
         json['midId'] as String
         );
   }
+
+  bool operator ==(Object other) =>
+      other is MailPiece &&
+      other.id == this.id &&
+      other.emailId == this.emailId &&
+      other.timestamp.millisecondsSinceEpoch ==
+          this.timestamp.millisecondsSinceEpoch &&
+      other.sender == this.sender &&
+      other.imageText == this.imageText &&
+      other.midId == this.midId;
 }
