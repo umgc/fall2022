@@ -18,6 +18,7 @@ class TopBarState extends State<TopBar> {
     return AppBar(
         actions:
         <Widget>[
+          Spacer(),
           if(this.widget.title != "Sign In")...[
             /*Semantics(
               excludeSemantics: true,
