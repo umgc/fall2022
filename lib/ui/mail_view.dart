@@ -26,39 +26,42 @@ class MailViewWidget extends StatelessWidget {
             label: "Letter from ${mailPiece.sender} received on ${DateFormat('EEE MMM,d,yyyy').format(mailPiece.timestamp)}",
             hint: "Double tap to select.",
             child:
-            ListTile(
-              horizontalTitleGap: 10.0,
-              contentPadding: EdgeInsets.all(5),
-              dense: true,
-              onTap: () {
-                Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
-              },
-              //leading: mailPiece.mailImage,
-              title:
-              Row(
-                  children:[
-                    Container(
-                      padding: EdgeInsets.only(right: 10.0),
-                      child:
-                      Text(
-                        mailPiece.sender,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    Expanded(
-                      child:
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children:[
-                            Text(DateFormat('EEE hh:mm').format(mailPiece.timestamp)
+            Container(
+              child:
+                ListTile(
+                    horizontalTitleGap: 10.0,
+                    contentPadding: EdgeInsets.all(5),
+                    dense: true,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
+                    },
+                    //leading: mailPiece.mailImage,
+                    title:
+                    Row(
+                        children:[
+                          Container(
+                            padding: EdgeInsets.only(right: 10.0),
+                            child:
+                            Text(
+                              mailPiece.sender,
+                              style: TextStyle(fontSize: 20),
                             ),
-                            Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
-                            ),
-                          ]),
+                          ),
+                          Expanded(
+                            child:
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children:[
+                                  Text(DateFormat('EEE hh:mm a').format(mailPiece.timestamp)
+                                  ),
+                                  Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
+                                  ),
+                                ]),
+                          ),
+                        ]
                     ),
-                  ]
-              ),
-              subtitle: Text(mailPiece.imageText.toString()),
+                    subtitle: Text(mailPiece.imageText.toString()),
+                ),
             ),
           ),
         ),
@@ -70,16 +73,49 @@ class MailViewWidget extends StatelessWidget {
       appBar: TopBar(
           title: "Search Results"
       ),
-      body: Container(
-        padding: EdgeInsets.all(15.0),
-        child: Center(
-          child: ListView.builder(
-              itemCount: mailPieces.length,
-              itemBuilder: (context, int index) {
-                return _buildMailPiece(context, mailPieces[index]);
-              }
-          ),
-        ),
+      body: SafeArea(
+        child:
+          Container(
+            padding: EdgeInsets.all(15.0),
+            child:
+              Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+
+                    child:
+                    Row(
+                        children:[
+                          Container(
+                            child:
+                            Text('SENT BY:',
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child:
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children:[
+                                  Text('TIME & DATE:',
+                                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold) ),
+                                ]),
+                          ),
+                        ]),
+                  ),
+                  Expanded(
+                    child:
+                      ListView.builder(
+                      itemCount: mailPieces.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, int index) {
+                        return _buildMailPiece(context, mailPieces[index]);
+                        }
+                      ),
+                  ),
+                ]),
+            ),
       ),
     );
   }

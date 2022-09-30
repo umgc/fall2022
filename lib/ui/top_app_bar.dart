@@ -19,7 +19,7 @@ class TopBarState extends State<TopBar> {
         actions:
         <Widget>[
           if(this.widget.title != "Sign In")...[
-            Semantics(
+            /*Semantics(
               excludeSemantics: true,
               button: true,
               label: "Settings",
@@ -27,7 +27,7 @@ class TopBarState extends State<TopBar> {
               IconButton(
                   icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');}
               ),
-            ),
+            ),*/
             Semantics(
               excludeSemantics: true,
               button: true,
