@@ -1,4 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:summer2022/image_processing/imageProcessing.dart';
+import 'package:summer2022/models/MailResponse.dart';
+
 
 class BottomBar extends StatefulWidget {
   const BottomBar({Key? key}) : super(key: key);
@@ -7,14 +13,62 @@ class BottomBar extends StatefulWidget {
   BottomBarState createState() => BottomBarState();
 }
 
+
+
 class BottomBarState extends State<BottomBar> {
+  DateTime selectedDate = DateTime.now();
+  String mailType = "Email";
+  File? _image;
+  Uint8List? _imageBytes;
+  final picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
       color: Color.fromRGBO(51, 51, 102, 1),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          // TODO: Add other icons
+          Spacer(),
+          Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Search Mail",
+            child:
+            IconButton(
+              icon: new Image.asset("assets/icon/search-icon.png"),
+              onPressed: () {
+                Navigator.pushNamed(context, "/search");
+              },
+            ),
+          ),
+          Spacer(),
+          Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Scan Mail",
+            child:
+            IconButton(
+              icon: new Image.asset("assets/icon/scanmail-icon.png"),
+              onPressed: () async {
+                final pickedFile = await picker.pickImage(
+                    source: ImageSource.camera);
+                print(pickedFile!.path);
+                if (pickedFile != null) {
+                  _image = File(pickedFile.path);
+                  _imageBytes = _image!.readAsBytesSync();
+                  await deleteImageFiles();
+                  await saveImageFile(
+                      _imageBytes!, "mailpiece.jpg");
+                  MailResponse s = await processImage(
+                      "$imagePath/mailpiece.jpg");
+                  print(s.toJson());
+                } else {
+                  return;
+                }
+              },
+            ),
+          ),
           Spacer(),
           Semantics(
             excludeSemantics: true,
@@ -28,6 +82,7 @@ class BottomBarState extends State<BottomBar> {
                 },
             ),
           ),
+          Spacer(),
         ],
       ),
     );
