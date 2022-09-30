@@ -4,8 +4,8 @@ import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
-import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
 class SignInWidget extends StatefulWidget {
@@ -129,8 +129,7 @@ class SignInWidgetState extends State<SignInWidget> {
                             padding: const EdgeInsets.only(left: 50, right: 50),
                             child: OutlinedButton(
                               onPressed: () async {
-                                String email =
-                                    emailController.text.toString();
+                                String email = emailController.text.toString();
                                 String password =
                                     passwordController.text.toString();
                                 //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
@@ -139,6 +138,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                 //Store the credentials into the the secure storage only if validated
                                 if (loggedIn) {
                                   Keychain().addCredentials(email, password);
+                                  await CacheService.updateMail();
                                   Navigator.pushNamed(context, '/main');
                                 } else {
                                   showLoginErrorDialog();

@@ -15,20 +15,18 @@ class BottomBarState extends State<BottomBar> {
       child: Row(
         children: <Widget>[
           // TODO: Add other icons
-          IconButton(
-          icon: const Icon(Icons.markunread_mailbox_outlined, color: Color(0xFFFFFFFF)),
-            onPressed: () {
-            Navigator.pushNamed(context, "/search");
-            },
-          ),
           Spacer(),
-          IconButton(
-            tooltip: "Open chat bot",
-            //icon: new Image.asset("assets/icon/chatbot-icon.png"),
-            icon: Image.asset("assets/icon/chatbot-icon.png", width: 50, height: 50),
-            onPressed: () {
-              Navigator.pushNamed(context, "/chat");
-            },
+          Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Chatbot",
+            child:
+            IconButton(
+              icon: new Image.asset("assets/icon/chatbot-icon.png"),
+              onPressed: () {
+                Navigator.pushNamed(context, "/chat");
+                },
+            ),
           ),
         ],
       ),
