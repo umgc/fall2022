@@ -87,7 +87,7 @@ class MailFetcher {
         await client.login(username, password);
         await client.selectInbox();
 
-        String searchCriteria = 'FROM ${senderFilter} SUBJECT "${subjectFilter}"'; //todo: figure out the syntax for "Date After"
+        String searchCriteria = 'FROM ${senderFilter} SINCE ${_formatTargetDateForSearch(startDate)} SUBJECT "${subjectFilter}"'; //todo: figure out the syntax for "Date After"
 
         List<ReturnOption> returnOptions = [];
         ReturnOption option = ReturnOption("all");
