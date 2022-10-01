@@ -1,4 +1,11 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:summer2022/models/MailResponse.dart';
+
+import '../models/Address.dart';
 import '../models/MailPiece.dart';
+import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 
 /// The `MailFetcher` class requests new mail from a mail server.
 class MailFetcher {
@@ -14,14 +21,14 @@ class MailFetcher {
 
     // Process each email
     for (var i = 0; i < emails.length; i++) {
-      mailPieces.addAll(_processEmail(emails[i]));
+      mailPieces.addAll(await _processEmail(emails[i]));
     }
 
     return mailPieces;
   }
 
   /// Process an individual email, converting it into a list of MailPieces
-  List<MailPiece> _processEmail(String email) {
+  Future<List<MailPiece>> _processEmail(String email) async {
     List<MailPiece> mailPieces = <MailPiece>[];
 
     // todo: could iterate through the email message differently, but below is just a guide of the general logic
@@ -29,6 +36,14 @@ class MailFetcher {
     while (mailUnread) {
       String?
           sender; //todo: check for "Sender" text already listed above the image
+
+      // TODO: Delete this when we get image coming with mail data properly
+      // This just provides an example of how to parse and image and will give valid results
+      // during OCR conversion
+      //var image = await rootBundle.load('assets/mail.test.01.jpg');
+      //var buffer = image.buffer;
+      //var mailImage = base64.encode(Uint8List.view(buffer));
+
       String mailImage =
           "This is the actual image object"; //todo: get actual mail image
       DateTime timestamp =
@@ -36,7 +51,7 @@ class MailFetcher {
 
       // Process the mail image
       mailPieces.add(
-          _processMailImage(mailImage, timestamp, sender, mailPieces.length));
+          await _processMailImage(mailImage, timestamp, sender, mailPieces.length));
 
       mailUnread =
           false; //todo: use some kind of end-of-file check or iterate through a list instead
@@ -55,9 +70,9 @@ class MailFetcher {
   }
 
   /// Process an individual mail image, converting it into a MailPiece
-  MailPiece _processMailImage(
-      String mailImage, DateTime timestamp, String? sender, int index) {
-    var ocrScanResult = _getOcrScan(mailImage);
+  Future<MailPiece> _processMailImage(
+      String mailImage, DateTime timestamp, String? sender, int index) async {
+    var ocrScanResult = await _getOcrScan(mailImage);
 
     // Sender text is actually sometimes included in the Email body as text for "partners".
     // We prefer to use this rather than try and deduce it using the image itself.
@@ -86,13 +101,20 @@ class MailFetcher {
   }
 
   /// Perform OCR scan once on the mail image to get the results for further processing
-  String _getOcrScan(String mailImage) {
-    return "return actual google cloud vision object here"; //todo: perform OCR scan on actual image
+  Future<String> _getOcrScan(String mailImage) async {
+    CloudVisionApi vision = CloudVisionApi();
+    MailResponse mailResponse = await vision.search(mailImage);
+
+    return mailResponse.toJson().toString();
   }
 
   /// Determine the sender of the mail piece based on an OCR scan of the mail image
   String _getOcrSender(String ocrScanResult) {
-    return "Unknown Sender"; //todo: use OCR scan to determine sender if possible, otherwise return "Unknown Sender" if the scan cannot figure it out
+    Map<String, dynamic> ocrResultMap = jsonDecode(ocrScanResult);
+    MailResponse mailResponse = MailResponse.fromJson(ocrResultMap);
+    // use OCR scan to determine sender if possible, otherwise return "Unknown Sender" if the scan cannot figure it out
+    // TODO: Maybe this should return the address object instead
+    return mailResponse.addresses.first.toJson().toString() ?? "Unknown Sender";
   }
 
   String _getOcrBody(String ocrScanResult) {
