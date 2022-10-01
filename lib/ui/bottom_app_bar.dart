@@ -13,8 +13,6 @@ class BottomBar extends StatefulWidget {
   BottomBarState createState() => BottomBarState();
 }
 
-
-
 class BottomBarState extends State<BottomBar> {
   DateTime selectedDate = DateTime.now();
   String mailType = "Email";
