@@ -37,7 +37,7 @@ void main() async {
       expect(addresses[1].getName, 'Deborah Keenan');
       expect(addresses[1].getAddress,
           '1006 Morgan Station Dr; Severn, MD 21144-1245');
-    });
+    }, skip: true);
     //TODO: re-enable when account is re-activated
     test('Cloud Vision Logo Detection Test - Receives Logo information',
         () async {
