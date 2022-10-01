@@ -12,9 +12,9 @@ class CacheService {
 
   CacheService(this._fetcher, this._storage, this._notifier);
 
-  /// Builds a default CacheService and uses it to fetch the lastest mail.
-  static Future<void> updateMail() async {
-    await CacheService(MailFetcher(), MailStorage(), MailNotifier())
+  /// Builds a default CacheService and uses it to fetch the latest mail.
+  static Future<void> updateMail(String? username, String? password) async {
+    await CacheService(MailFetcher(username, password), MailStorage(), MailNotifier())
         .fetchAndProcessLatestMail();
   }
 

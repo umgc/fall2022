@@ -138,7 +138,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                 //Store the credentials into the the secure storage only if validated
                                 if (loggedIn) {
                                   Keychain().addCredentials(email, password);
-                                  await CacheService.updateMail();
+                                  await CacheService.updateMail(email, password);
                                   Navigator.pushNamed(context, '/main');
                                 } else {
                                   showLoginErrorDialog();

@@ -19,6 +19,8 @@ void main() {
   final fetcher = MockMailFetcher();
   final notifier = MockMailNotifier();
   final storage = MockMailStorage();
+  final username = "test";
+  final password = "test";
 
   final subject = CacheService(fetcher, storage, notifier);
 

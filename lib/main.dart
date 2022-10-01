@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/cache_service.dart';
-import 'package:summer2022/services/mail_fetcher.dart';
-import 'package:summer2022/services/mail_notifier.dart';
-import 'package:summer2022/services/mail_storage.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/ui/main_menu.dart';
@@ -40,7 +37,7 @@ void main() async {
 
   // Cache emails
   if (emailAuthenticated) {
-    await CacheService.updateMail();
+    await CacheService.updateMail(username, password);
   }
 
   if (Firebase.apps.length == 0) {
@@ -62,10 +59,5 @@ void main() async {
 }
 
 Widget buildScreen(bool emailAuthenticated) {
-  return Scaffold(
-    appBar: TopBar(title: "Main"),
-    body:
-        emailAuthenticated == true ? const MainWidget() : const SignInWidget(),
-    bottomNavigationBar: const BottomBar(),
-  );
+  return emailAuthenticated == true ? const MainWidget() : const SignInWidget();
 }
