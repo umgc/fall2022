@@ -10,6 +10,7 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../models/SearchCriteria.dart';
+import '../services/mail_service.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -34,6 +35,7 @@ class SearchWidgetState extends State<SearchWidget> {
   DateTime _end = DateTime.now();
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
+  final _mailService = MailService();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {
@@ -225,17 +227,12 @@ class SearchWidgetState extends State<SearchWidget> {
                           controller: keywordInput
                         ),
                         onSuggestionSelected: (suggestion) {
-                          // TODO: Go directly to mail item if the user clicks a suggestion
-                          // This is how GMail does this feature
+                          // Go directly to mail item if the user clicks a suggestion
+                          Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
                         },
                         suggestionsCallback: (pattern) {
-                          // TODO: Populate items from cache
-                          var mailItems  = <MailPiece>[
-                            MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
-                            MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
-                          ];
-                          // Filter items based on pattern
-                          return _filterMailItems(pattern, mailItems);
+                          // Populate items from cache
+                          return _mailService.fetchMail(pattern, _start, _end);
                         },
                         itemBuilder: (context, itemData) {
                           return ListTile(
@@ -286,14 +283,6 @@ class SearchWidgetState extends State<SearchWidget> {
           ),
         ),
       ),
-    );
-  }
-
-  // Filter mail items based on keyword search
-  Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
-    return Iterable.castFrom(
-        mailItems.where((mailItem) => mailItem.imageText.containsIgnoreCase(keyword)
-          || mailItem.sender.containsIgnoreCase(keyword))
     );
   }
 }

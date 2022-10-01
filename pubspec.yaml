@@ -67,6 +67,7 @@ dependencies:
   get_it: ^7.2.0
   syncfusion_flutter_datepicker: ^20.2.50
   flutter_typeahead: ^4.1.1
+  layout: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -106,6 +107,7 @@ flutter:
 
   assets:
     - assets/credentials.json
+    - assets/icon/app-icon.png
     - assets/Image1.png
     - assets/rectangle4.svg
     - assets/rectangle5.svg
@@ -126,6 +128,12 @@ flutter:
     - assets/icon/back-icon.png
     - assets/icon/chatbot-icon.png
     - assets/icon/uploadmail-icon.png
+    - assets/icon/search_mail_icon_lg.png
+    - assets/icon/daily_digest_icon_lg.png
+    - assets/icon/settings_icon_lg.png
+    - assets/icon/notification_icon_lg.png
+    - assets/icon/upload_image_lg.png
+    - assets/icon/scan_mail_icon_lg.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

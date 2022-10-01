@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/Notification.dart';
 import 'package:summer2022/services/mail_notifier.dart';
 import 'package:summer2022/services/sqlite_database.dart';
 
@@ -171,6 +172,51 @@ void main() {
       await subject.updateNotifications(now);
 
       await _expectNotificationCount(0);
+    });
+  });
+
+  group('when managing notifications', () {
+    setUp(() async {
+      await _createMailPiece("test-one", "someone", "test something", now);
+      await _createMailPiece("test-two", "someone", "test something", now);
+      final subscriptionOne = NotificationSubscription("test");
+      final subscriptionSomething = NotificationSubscription("something");
+      await subject.createSubscription(subscriptionOne);
+      await subject.createSubscription(subscriptionSomething);
+      await subject.updateNotifications(lastTimestamp);
+      await _expectNotificationCount(4);
+    });
+
+    test('it can retrieve all notifications', () async {
+      final notifications = await subject.getNotifications();
+      expect(notifications.length, 4);
+      expect(
+          notifications,
+          containsAll([
+            Notification("test-one", "test"),
+            Notification("test-one", "something"),
+            Notification("test-two", "test"),
+            Notification("test-two", "something"),
+          ]));
+    });
+
+    test('it can clear a notification', () async {
+      await subject.clearNotification(Notification("test-one", "something"));
+      final notifications = await subject.getNotifications();
+      expect(notifications.length, 3);
+      expect(
+          notifications,
+          containsAll([
+            Notification("test-one", "test"),
+            Notification("test-two", "test"),
+            Notification("test-two", "something"),
+          ]));
+    });
+
+    test('it can clear all notifications', () async {
+      await subject.clearAllNotifications();
+      final notifications = await subject.getNotifications();
+      expect(notifications.length, 0);
     });
   });
 }
