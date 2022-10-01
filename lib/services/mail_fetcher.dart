@@ -44,7 +44,7 @@ class MailFetcher {
     final mailPieceAttachments = await _getAttachments(email);
     for (final attachment in mailPieceAttachments) {
       mailPieces.add(
-          _processMailImage(attachment, email.decodeDate()!, mailPieces.length));
+          await _processMailImage(attachment, email.decodeDate()!, mailPieces.length));
     }
 
     return mailPieces;
@@ -139,14 +139,14 @@ class MailFetcher {
   }
 
   /// Process an individual mail image, converting it into a MailPiece
-  MailPiece _processMailImage(
-      Attachment attachment, DateTime timestamp, int index) {
-    var ocrScanResult = _getOcrScan(attachment.attachment);
+  Future<MailPiece> _processMailImage(
+      Attachment attachment, DateTime timestamp, int index) async {
+    var ocrScanResult = await _getOcrScan(attachment.attachment);
 
     // Sender text is actually sometimes included in the Email body as text for "partners".
     // We prefer to use this rather than try and deduce it using the image itself.
     if (attachment.sender.isEmpty) {
-      attachment.sender = _getOcrSender(ocrScanResult);
+      attachment.sender = await _getOcrSender(ocrScanResult);
     }
 
     final id = "${attachment.sender}-$timestamp-$index";
@@ -165,23 +165,22 @@ class MailFetcher {
   }
 
   /// Perform OCR scan once on the mail image to get the results for further processing
-  Future<String> _getOcrScan(String mailImage) async {
+  Future<MailResponse> _getOcrScan(String mailImage) async {
     CloudVisionApi vision = CloudVisionApi();
     MailResponse mailResponse = await vision.search(mailImage);
 
-    return mailResponse.toJson().toString();
+    return mailResponse;
   }
 
   /// Determine the sender of the mail piece based on an OCR scan of the mail image
-  String _getOcrSender(String ocrScanResult) {
-    Map<String, dynamic> ocrResultMap = jsonDecode(ocrScanResult);
-    MailResponse mailResponse = MailResponse.fromJson(ocrResultMap);
+  String _getOcrSender(MailResponse ocrScanResult) {
     // use OCR scan to determine sender if possible, otherwise return "Unknown Sender" if the scan cannot figure it out
     // TODO: Maybe this should return the address object instead
-    return mailResponse.addresses.first.toJson().toString() ?? "Unknown Sender";
+    return ocrScanResult.addresses.first.getName ?? "Unknown Sender";
   }
 
-  String _getOcrBody(String ocrScanResult) {
-    return "Get full text content of scan here"; //todo: pull all text content from OCR scan result
+  String _getOcrBody(MailResponse ocrScanResult) {
+    //todo: pull all text content from OCR scan result (may need to update MailResponse for this)
+    return ocrScanResult.logos.first.name ?? "Get full text content of scan here";
   }
 }
