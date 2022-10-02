@@ -1,14 +1,8 @@
-import 'dart:convert';
-
-import 'package:flutter/services.dart';
 import 'package:summer2022/models/MailResponse.dart';
-
-import '../models/Address.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
 import '../models/Digest.dart';
-import '../models/MailPiece.dart';
 import 'package:intl/intl.dart';
 
 /// The `MailFetcher` class requests new mail from a mail server.
@@ -141,16 +135,16 @@ class MailFetcher {
   /// Process an individual mail image, converting it into a MailPiece
   Future<MailPiece> _processMailImage(
       Attachment attachment, DateTime timestamp, int index) async {
-    var ocrScanResult = await _getOcrScan(attachment.attachment);
+    MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
     // Sender text is actually sometimes included in the Email body as text for "partners".
     // We prefer to use this rather than try and deduce it using the image itself.
     if (attachment.sender.isEmpty) {
-      attachment.sender = await _getOcrSender(ocrScanResult);
+      attachment.sender = ocrScanResult.addresses.first.name;
     }
 
     final id = "${attachment.sender}-$timestamp-$index";
-    var text = _getOcrBody(ocrScanResult);
+    var text = ocrScanResult.textAnnotations.first.text;
     var mid = attachment.contentID; //todo: couldn't determine where MID might be at a first glance, this seemed fitting for now
     //todo: save list of URLs found on the ocrScanResult (including text URLs, barcodes, and QR codes)
     //todo: save list of Emails found on the ocrScanResult
@@ -161,26 +155,12 @@ class MailFetcher {
     final emailId = timestamp.toString();
 
     return new MailPiece(
-        id, emailId, timestamp, attachment.sender, text, mid);
+        id, emailId, timestamp, attachment.sender, text!, mid);
   }
 
   /// Perform OCR scan once on the mail image to get the results for further processing
   Future<MailResponse> _getOcrScan(String mailImage) async {
     CloudVisionApi vision = CloudVisionApi();
-    MailResponse mailResponse = await vision.search(mailImage);
-
-    return mailResponse;
-  }
-
-  /// Determine the sender of the mail piece based on an OCR scan of the mail image
-  String _getOcrSender(MailResponse ocrScanResult) {
-    // use OCR scan to determine sender if possible, otherwise return "Unknown Sender" if the scan cannot figure it out
-    // TODO: Maybe this should return the address object instead
-    return ocrScanResult.addresses.first.getName ?? "Unknown Sender";
-  }
-
-  String _getOcrBody(MailResponse ocrScanResult) {
-    //todo: pull all text content from OCR scan result (may need to update MailResponse for this)
-    return ocrScanResult.logos.first.name ?? "Get full text content of scan here";
+    return await vision.search(mailImage);
   }
 }
