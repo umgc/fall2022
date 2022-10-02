@@ -53,9 +53,14 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
   """);
 
   if (prev <= 1) {
-    await db.execute("""
+    try {
+      await db.execute("""
       ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN midId TEXT;
     """);
+    }
+    catch (e) {
+      // Do nothing, prevent duplicate column from being added
+    }
   }
 }
 
