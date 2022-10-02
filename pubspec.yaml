@@ -134,6 +134,8 @@ flutter:
     - assets/icon/notification_icon_lg.png
     - assets/icon/upload_image_lg.png
     - assets/icon/scan_mail_icon_lg.png
+    - assets/icon/applogo-mailspeak.png
+    - assets/icon/applogo-mailspeak-200.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
