@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:googleapis/vision/v1.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:summer2022/models/Address.dart';
 import 'package:summer2022/models/Logo.dart';
@@ -30,7 +31,8 @@ void main() async {
       var buffer = image.buffer;
       var a = base64.encode(Uint8List.view(buffer));
       //print("Image: $image\nBuffer: $buffer\na: $a\n");
-      List<AddressObject> addresses = await vision.searchImageForText(a);
+      List<TextAnnotation> textAnnotations = await vision.convertImageToText(a);
+      List<AddressObject> addresses = await vision.searchImageForText(textAnnotations);
       //print(s.toJson());
       expect(addresses[0].getName, 'GEICO');
       expect(addresses[0].getAddress, '2563 Forest Dr; Annapolis, MD 21401');
