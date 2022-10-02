@@ -6,7 +6,6 @@ import 'package:summer2022/image_processing/imageProcessing.dart';
 import 'package:summer2022/models/MailResponse.dart';
 
 
-
 class BottomBar extends StatefulWidget {
   const BottomBar({Key? key}) : super(key: key);
 
