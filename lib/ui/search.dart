@@ -3,14 +3,13 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
-import 'package:summer2022/utility/ComparisonHelpers.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../models/SearchCriteria.dart';
-import '../services/mail_service.dart';
+import '../services/mail_storage.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -35,7 +34,7 @@ class SearchWidgetState extends State<SearchWidget> {
   DateTime _end = DateTime.now();
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
-  final _mailService = MailService();
+  final _mailStorage = MailStorage();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {
@@ -232,7 +231,7 @@ class SearchWidgetState extends State<SearchWidget> {
                         },
                         suggestionsCallback: (pattern) {
                           // Populate items from cache
-                          return _mailService.fetchMail(pattern, _start, _end);
+                          return _mailStorage.searchMailsPieces(pattern);
                         },
                         itemBuilder: (context, itemData) {
                           return ListTile(
