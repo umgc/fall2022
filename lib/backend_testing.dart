@@ -123,7 +123,8 @@ class _BackendPageState extends State<BackendPage> {
     var a = base64.encode(Uint8List.view(buffer));
     //print("Image: $image\nBuffer: $buffer\na: $a\n");
     //await vision!.searchImageForText(a);
-    var objAddressList = await vision!.searchImageForText(a);
+    var textAnnotations = await vision!.convertImageToText(a);
+    var objAddressList = await vision!.searchImageForText(textAnnotations);
     var output = '';
     for (var address in objAddressList) {
       address.validated =

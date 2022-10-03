@@ -50,7 +50,7 @@ void main() async {
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-    title: "USPS Informed Delivery Visual Assistance App",
+    title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
     initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
     onGenerateRoute: RouteGenerator.generateRoute,
     home: buildScreen(emailAuthenticated),

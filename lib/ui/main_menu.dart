@@ -44,6 +44,10 @@ class MainWidgetState extends State<MainWidget> {
   double commonCornerRadius = 8;
   bool selectDigest = false;
   bool ranTutorial = false;
+  var appbarPresent = true;
+  var bottomBarPresent = true;
+  var columnCount = 2;
+  var minRowCountOnScreen = 3;
 
 
   @override
@@ -92,15 +96,17 @@ class MainWidgetState extends State<MainWidget> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
-    /*24 is for notification bar on Android*/
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-    final double itemWidth = size.width / 2;
+    var width = size.width;
+    var height = size.height;
+    if(appbarPresent){
+      height -= kToolbarHeight;
+    }
+    if(bottomBarPresent){
+      height -= kBottomNavigationBarHeight;
+    }
 
     String formattedSelectedDate =
-    DateFormat('yyyy-MM-dd').format(selectedDate);
-
-    /* ### latestButton not used - part of old program - should delete eventually ###
+      DateFormat('yyyy-MM-dd').format(selectedDate);
     var latestButton = SizedBox(
       height: commonButtonHeight, // LATEST Button
       child: OutlinedButton(
@@ -132,7 +138,6 @@ class MainWidgetState extends State<MainWidget> {
       ),
     );
 
-    ### unreadButton not used...part of old program.  should delete eventually ###
     var unreadButton = SizedBox(
       height: commonButtonHeight, // UNREAD Button
       child: OutlinedButton(
@@ -162,17 +167,17 @@ class MainWidgetState extends State<MainWidget> {
         style: commonButtonStyleElevated(Colors.white, Colors.grey),
         child: const Text("Unread", style: TextStyle(color: Colors.black)),
       ),
-    ); //##end of unreadButton##
-    */
-
+    );
+    var aspectRatio = (width / columnCount) / (height / minRowCountOnScreen);
+    double commonFontSize = (this.commonFontSize * aspectRatio);
     return Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),
         body: GridView.count(
           primary: false,
           padding: const EdgeInsets.all(4),
-          crossAxisSpacing: 6,
-          childAspectRatio: 0.86,
+          crossAxisSpacing: columnCount.toDouble(),
+          childAspectRatio: aspectRatio+.05,
           mainAxisSpacing: 6,
           crossAxisCount: 2,
           controller: new ScrollController(keepScrollOffset: false),
@@ -186,8 +191,8 @@ class MainWidgetState extends State<MainWidget> {
                         const Text('Search Mail'),
                         Image.asset(
                           "assets/icon/search_mail_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
@@ -228,8 +233,8 @@ class MainWidgetState extends State<MainWidget> {
                         const Text('Daily Digest'),
                         Image.asset(
                           "assets/icon/daily_digest_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
@@ -259,8 +264,8 @@ class MainWidgetState extends State<MainWidget> {
                         const Text('Upload Mail'),
                         Image.asset(
                           "assets/icon/upload_image_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
@@ -290,8 +295,8 @@ class MainWidgetState extends State<MainWidget> {
                         const Text('Scan Mail'),
                         Image.asset(
                           "assets/icon/scan_mail_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
@@ -307,8 +312,8 @@ class MainWidgetState extends State<MainWidget> {
                         const Text('Settings'),
                         Image.asset(
                           "assets/icon/settings_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
@@ -324,8 +329,8 @@ class MainWidgetState extends State<MainWidget> {
                         const Text('Notifications'),
                         Image.asset(
                           "assets/icon/notification_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),

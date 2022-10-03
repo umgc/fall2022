@@ -1,6 +1,8 @@
+import 'package:summer2022/models/MailResponse.dart';
+import '../models/MailPiece.dart';
+import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
 import '../models/Digest.dart';
-import '../models/MailPiece.dart';
 import 'package:intl/intl.dart';
 
 /// The `MailFetcher` class requests new mail from a mail server.
@@ -36,7 +38,7 @@ class MailFetcher {
     final mailPieceAttachments = await _getAttachments(email);
     for (final attachment in mailPieceAttachments) {
       mailPieces.add(
-          _processMailImage(attachment, email.decodeDate()!, mailPieces.length));
+          await _processMailImage(attachment, email.decodeDate()!, mailPieces.length));
     }
 
     return mailPieces;
@@ -131,18 +133,18 @@ class MailFetcher {
   }
 
   /// Process an individual mail image, converting it into a MailPiece
-  MailPiece _processMailImage(
-      Attachment attachment, DateTime timestamp, int index) {
-    var ocrScanResult = _getOcrScan(attachment.attachment);
+  Future<MailPiece> _processMailImage(
+      Attachment attachment, DateTime timestamp, int index) async {
+    MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
     // Sender text is actually sometimes included in the Email body as text for "partners".
     // We prefer to use this rather than try and deduce it using the image itself.
     if (attachment.sender.isEmpty) {
-      attachment.sender = _getOcrSender(ocrScanResult);
+      attachment.sender = ocrScanResult.addresses.first.name;
     }
 
     final id = "${attachment.sender}-$timestamp-$index";
-    var text = _getOcrBody(ocrScanResult);
+    var text = ocrScanResult.textAnnotations.first.text;
     var mid = attachment.contentID; //todo: couldn't determine where MID might be at a first glance, this seemed fitting for now
     //todo: save list of URLs found on the ocrScanResult (including text URLs, barcodes, and QR codes)
     //todo: save list of Emails found on the ocrScanResult
@@ -153,20 +155,12 @@ class MailFetcher {
     final emailId = timestamp.toString();
 
     return new MailPiece(
-        id, emailId, timestamp, attachment.sender, text, mid);
+        id, emailId, timestamp, attachment.sender, text!, mid);
   }
 
   /// Perform OCR scan once on the mail image to get the results for further processing
-  String _getOcrScan(String mailImage) {
-    return "return actual google cloud vision object here"; //todo: perform OCR scan on actual image
-  }
-
-  /// Determine the sender of the mail piece based on an OCR scan of the mail image
-  String _getOcrSender(String ocrScanResult) {
-    return "Unknown Sender"; //todo: use OCR scan to determine sender if possible, otherwise return "Unknown Sender" if the scan cannot figure it out
-  }
-
-  String _getOcrBody(String ocrScanResult) {
-    return "Get full text content of scan here"; //todo: pull all text content from OCR scan result
+  Future<MailResponse> _getOcrScan(String mailImage) async {
+    CloudVisionApi vision = CloudVisionApi();
+    return await vision.search(mailImage);
   }
 }
