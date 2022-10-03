@@ -3,11 +3,12 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'bottom_app_bar.dart';
+import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/Notification.dart';
 
 
 class NotificationsWidget extends StatefulWidget {
   const NotificationsWidget({Key? key}) : super(key: key);
-
   @override
   NotificationsWidgetState createState() => NotificationsWidgetState();
 }
@@ -16,7 +17,12 @@ GlobalConfiguration cfg = GlobalConfiguration();
 
 class NotificationsWidgetState extends State<NotificationsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
-
+  late final NotificationSubscription notificationSubscription;
+  final List<NotificationSubscription> notificationSubscriptions = List.generate(
+      3,
+          (index) =>
+      new NotificationSubscription("Testing")
+  );
   @override
   void initState() {
     super.initState();
@@ -53,13 +59,51 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
               ]
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: <Widget>[
             Center(
               child: Text("It's cloudy here"),
             ),
-            Center(
-              child: Text("It's rainy here"),
+            Container(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        child: Text('Keyword(s)'), padding: EdgeInsets.only(left: 40),
+                      ),
+                      Container(
+                          child: OutlinedButton(
+                            child: Text('Add', style: TextStyle(color: Colors.white),),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateColor.resolveWith((states) => Colors.green),
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                            ),
+                            onPressed: () {},
+                          ),
+                        padding: EdgeInsets.only(left: 190),
+                      )
+                    ]
+                  ),
+                  Divider(
+                    height: 20,
+                    thickness: 2,
+                    color: Colors.black,
+                  ),
+                  Container(
+                    child: ListView.builder(
+                          itemCount: 3,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Card(
+                              child: ListTile(
+                                title: Text("This is title"),
+                              ),
+                            );
+                          }
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),
@@ -67,3 +111,12 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
     );
   }
 }
+
+/*Container(
+                      child: ListView.builder(
+                          itemCount: notificationSubscriptions.length,
+                          itemBuilder: (context, int index) {
+                            return Text(notificationSubscriptions[index].toString());
+                          }
+                      ),
+                    ),*/
