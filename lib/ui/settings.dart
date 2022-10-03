@@ -1,7 +1,12 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
-import 'bottom_app_bar.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
+
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({Key? key}) : super(key: key);
@@ -18,25 +23,22 @@ class SettingWidgetState extends State<SettingsWidget> {
   @override
   void initState() {
     super.initState();
-    stt.setCurrentPage("settings", this);
+    locator<AnalyticsService>().logScreens(name: "Settings");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Settings',
+        'screenClass': 'settings.dart',
+      },
+    );*/
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Settings"),
-        backgroundColor: Colors.grey,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return BackButton(
-              onPressed: () { navKey.currentState!.pushNamed('/main');},
-            );
-          },
-        ),
-      ),
+      appBar: TopBar(title: 'Settings'),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
@@ -290,43 +292,6 @@ class SettingWidgetState extends State<SettingsWidget> {
                                 });
                               },
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: const Text("Autoplay: "),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.only(right: 50),
-                                  child: Switch(
-                                    value: cfg.getValue("autoplay"),
-                                    activeTrackColor: Colors.lightGreenAccent,
-                                    activeColor: Colors.green,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        cfg.updateValue("autoplay", value);
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: const Text("Next Command"),
                           ),
                         ],
                       ),

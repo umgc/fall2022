@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -10,7 +11,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class ChatWidget extends StatefulWidget {
   final SiteAreas currentPage;
@@ -31,49 +37,21 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   void initState() {
     super.initState();
+    locator<AnalyticsService>().logScreens(name: "Chatbot");
+    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
+    /*FirebaseAnalytics.instance.logEvent(
+      name: 'screen_view',
+      parameters: {
+        'screenName': 'Chatbot',
+        'screenClass': 'chat_widget.dart',
+      },
+    );*/
     _addSystemMessage("How may I assist you?");
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/main');
-          },
-          child: Icon(
-              Icons.arrow_back
-          )
-      ),
-      centerTitle: true,
-      title: Text(
-        "Chat Support",
-        style:
-        TextStyle(fontWeight: _commonFontWt, fontSize: _commonFontSize),
-      ),
-      actions: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(right:20.0),
-            child: GestureDetector(
-                onTap: () {},
-                child: Icon(
-                    Icons.settings
-                )
-            )
-        ),
-        Padding(
-            padding: EdgeInsets.only(right:20.0),
-            child: GestureDetector(
-                onTap: () {},
-                child: Icon(
-                    Icons.logout
-                )
-            )
-        )
-      ],
-      automaticallyImplyLeading: false,
-      backgroundColor: Color(0xff004B87),
-    ),
+    appBar: TopBar(title: 'Chat Support'),
     body: Chat(
       messages: _messages,
       onMessageTap: _handleMessageTap,
@@ -113,6 +91,10 @@ class _ChatWidgetState extends State<ChatWidget> {
     switch (chatFunction.methodName) {
       case 'navigateTo':
         Navigator.pushNamed(context, chatFunction.parameters![0]);
+        break;
+      case 'performSearch':
+        Navigator.pushNamed(context, '/search', arguments: chatFunction.parameters);
+        break;
     }
   }
 
