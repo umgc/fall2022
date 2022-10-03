@@ -7,12 +7,12 @@ import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/ui/notifications.dart';
 import 'package:summer2022/ui/other_mail.dart';
 import 'package:summer2022/ui/settings.dart';
-import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/backend_testing.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/ui/mail_view.dart';
+import 'package:summer2022/ui/sign_in.dart';
 
 import '../services/mail_service.dart';
 import '../ui/mail_view_indv.dart';
