@@ -32,8 +32,8 @@ CloudVisionApi? vision = CloudVisionApi();
 bool? _completed;
 
 class MainWidgetState extends State<MainWidget> {
-  DateTime selectedDate = DateTime.now();
-  String mailType = "Email";
+  DateTime selectedDate = DateTime.now() /*.subtract(const Duration(days: 1)) */;
+  String mailType = "Digest";
   File? _image;
   Uint8List? _imageBytes;
   final picker = ImagePicker();
@@ -99,6 +99,8 @@ class MainWidgetState extends State<MainWidget> {
 
     String formattedSelectedDate =
     DateFormat('yyyy-MM-dd').format(selectedDate);
+
+    /* ### latestButton not used - part of old program - should delete eventually ###
     var latestButton = SizedBox(
       height: commonButtonHeight, // LATEST Button
       child: OutlinedButton(
@@ -129,6 +131,8 @@ class MainWidgetState extends State<MainWidget> {
         child: const Text("Latest", style: TextStyle(color: Colors.black)),
       ),
     );
+
+    ### unreadButton not used...part of old program.  should delete eventually ###
     var unreadButton = SizedBox(
       height: commonButtonHeight, // UNREAD Button
       child: OutlinedButton(
@@ -158,7 +162,9 @@ class MainWidgetState extends State<MainWidget> {
         style: commonButtonStyleElevated(Colors.white, Colors.grey),
         child: const Text("Unread", style: TextStyle(color: Colors.black)),
       ),
-    );
+    ); //##end of unreadButton##
+    */
+
     return Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),
@@ -189,6 +195,8 @@ class MainWidgetState extends State<MainWidget> {
                   ),
                   ElevatedButton(
                       onPressed: () async {
+
+                        /* ##probably won't need this section because we are just using Digest only##
                         if (mailType == "Email") {
                           context.loaderOverlay.show();
                           await getEmails(false, DateTime.now());
@@ -201,15 +209,18 @@ class MainWidgetState extends State<MainWidget> {
                           context.loaderOverlay.hide();
                         } else {
                           context.loaderOverlay.show();
-                          await getDigest();
-                          if (!digest.isNull()) {
+                          */
+                          debugPrint('About to get digest from date ' + selectedDate.toString());
+                          await getDigest(selectedDate);
+                          debugPrint('Did this operation finish?');
+                              if (!digest.isNull()) {
                             Navigator.pushNamed(context, '/digest_mail',
                                 arguments: MailWidgetArguments(digest));
                           } else {
                             showNoDigestDialog();
                           }
-                          context.loaderOverlay.hide();
-                        }
+                          //context.loaderOverlay.hide();
+                        //} ##part of else -> for context.loadOverlay.show()
                       },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -451,6 +462,7 @@ class MainWidgetState extends State<MainWidget> {
       }
     }
 
+    //late Digest digest;
     late Digest digest;
     late List<Digest> emails;
 
@@ -462,6 +474,7 @@ class MainWidgetState extends State<MainWidget> {
             .then((value) => digest = value);
       } catch (e) {
         showErrorDialog();
+        debugPrint('The getDigest error was triggered');
         context.loaderOverlay.hide();
       }
     }

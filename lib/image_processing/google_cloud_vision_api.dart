@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:googleapis/vision/v1.dart';
 import '../models/MailResponse.dart';
 import '../models/Address.dart';
@@ -18,17 +19,23 @@ class Block {
 
 class CloudVisionApi {
   final _client = CredentialsProvider().client;
+
   Future<MailResponse> search(String image) async {
+    debugPrint('Attempting to search for text on image');
     List<AddressObject> addresses = await searchImageForText(image);
+    debugPrint('Attempting to search for logos on image');
     List<LogoObject> logos = await searchImageForLogo(image);
     MailResponse response = MailResponse(addresses: addresses, logos: logos);
-    // print(response.toJson().toString());
+    print(response.toJson().toString());
     return response;
   }
 
   //This function looks for text in image and returns a List of Addresses Found
   Future<List<AddressObject>> searchImageForText(String image) async {
+    debugPrint("Program about to try accessing GoogleAPI");
+    debugPrint(_client.toString());
     var vision = VisionApi(await _client);
+    debugPrint('On to next step');
     var api = vision.images;
     String s = '';
     List<Block> blocks = [];
@@ -43,10 +50,10 @@ class CloudVisionApi {
         }
       ]
     }));
-    // print("Image to Text Search");
+    print("Image to Text Search");
     if (response.responses != null) {
       for (var data in response.responses!) {
-        //print(data.fullTextAnnotation!.text);
+        print(data.fullTextAnnotation!.text);
         if (data.fullTextAnnotation != null) {
           if (data.fullTextAnnotation!.pages != null) {
             for (var page in data.fullTextAnnotation!.pages!) {
@@ -107,14 +114,14 @@ class CloudVisionApi {
               } else {}
             }
           } else {
-            // print("No Pages were found");
+            print("No Pages were found");
           }
         } else {
-          // print("No Full Text Annotation Object Found");
+          print("No Full Text Annotation Object Found");
         }
       }
     } else {
-      // print("Image Text Search failed.");
+      print("Image Text Search failed.");
     }
     List<int> sB = _findBlocksWithAddresses(blocks);
     for (int sb = 0; sb < sB.length; sb++) {

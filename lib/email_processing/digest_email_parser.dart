@@ -1,7 +1,9 @@
 import 'dart:convert';
+//import 'dart:html';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
@@ -11,6 +13,11 @@ import 'package:summer2022/image_processing/barcode_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:summer2022/image_processing/usps_address_verification.dart';
+
+/*
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart';
+*/
 
 class DigestEmailParser {
   String _userName = ''; // Add your credentials
@@ -28,7 +35,15 @@ class DigestEmailParser {
       _password = password;
       _targetDate = targetDate;
       Digest digest = Digest(await _getDigestEmail());
-      if (!digest.isNull()) {
+
+      /*
+      debugPrint('Sender: ' +digest.message.decodeSender().toString());
+      debugPrint('Subject: ' + digest.message.decodeSubject().toString());
+      debugPrint('Date: ' + digest.message.decodeDate().toString());
+      HtmlDocument a = Document.html(digest.message.decodeTextHtmlPart().toString()) as HtmlDocument;
+      */
+
+        if (!digest.isNull()) {
         digest.attachments = await _getAttachments(digest.message);
         digest.links = _getLinks(digest.message);
       }
@@ -41,7 +56,7 @@ class DigestEmailParser {
   Future<List<Attachment>> _getAttachments(MimeMessage m) async {
     try {
       List<Attachment> list = [];
-      await deleteImageFiles();
+      await deleteImageFiles(); //this method deletes the current list of user images in the app local directory
       for (int x = 0; x < m.mimeData!.parts!.length; x++) {
         if (m.mimeData!.parts!
                 .elementAt(x)
@@ -49,20 +64,24 @@ class DigestEmailParser {
                 ?.value
                 .toString()
                 .contains("image") ??
-            false) {
-          var attachment = Attachment();
-          attachment.attachment = m.mimeData!.parts!
+            false)
+          {
+            debugPrint('###Found an image at position $x !');
+            var attachment = Attachment();
+            attachment.attachment = m.mimeData!.parts!
               .elementAt(x)
               .decodeMessageData()
               .toString(); //These are base64 encoded images with formatting
-          attachment.attachmentNoFormatting = attachment.attachment
+            attachment.attachmentNoFormatting = attachment.attachment
               .toString()
               .replaceAll(
                   "\r\n", ""); //These are base64 encoded images with formatting
+            /* get the position of element with value "image" and save to attachment.  delete all returns */
           await saveImageFile(base64Decode(attachment.attachmentNoFormatting),
               "mailpiece$x.jpg");
-          attachment.detailedInformation = await processImage(filePath);
-          list.add(attachment);
+          debugPrint("##Starting image processing##");
+          attachment.detailedInformation = await processImage(filePath); //process image defined below
+          list.add(attachment); //add attachment to list of attachments
         }
       }
       return list;
@@ -116,6 +135,8 @@ class DigestEmailParser {
     final client = ImapClient(isLogEnabled: true);
     try {
       DateTime targetDate = _targetDate ?? DateTime.now();
+
+      debugPrint('The program is trying to get Digest email on date ' + targetDate.toString());
       //Retrieve the imap server config
       var config = await Discover.discover(_userName, isLogEnabled: false);
       if (config == null) {
@@ -156,6 +177,7 @@ class DigestEmailParser {
     } finally {
       if (client.isLoggedIn) {
         await client.logout();
+        debugPrint('###Successfully logged out of email client, end of _getDigestEmail###');
       }
     }
   }
@@ -199,6 +221,7 @@ class DigestEmailParser {
 
   Future<bool> saveImageFile(Uint8List imageBytes, String fileName) async {
     Directory? directory;
+    debugPrint('###Trying to save image###');
     try {
       if (Platform.isAndroid) {
         if (await _requestPermission(Permission.storage)) {
@@ -232,10 +255,11 @@ class DigestEmailParser {
 
         filePath = saveFile.path;
         print("Directory${directory.listSync()}");
+        debugPrint("##Completed printing the directory##");
         return true;
       }
     } catch (e) {
-      print("Something happened in saveImageFile method");
+      debugPrint("Something happened in saveImageFile method");
     }
     return false;
   }
