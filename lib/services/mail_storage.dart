@@ -48,12 +48,12 @@ class MailStorage {
         await db.query(MAIL_PIECE_TABLE, where: "id = ?", whereArgs: [id]);
     if (result.isEmpty) return null;
     return MailPiece(
-        result[0]["id"].toString() ?? "",
-        result[0]["email_id"].toString() ?? "",
+        result[0]["id"]?.toString() ?? "",
+        result[0]["email_id"]?.toString() ?? "",
         DateTime.fromMillisecondsSinceEpoch(result[0]["timestamp"] as int),
-        result[0]["sender"].toString() ?? "",
-        result[0]["image_text"].toString() ?? "",
-        result[0]["midId"].toString() ?? "");
+        result[0]["sender"]?.toString() ?? "",
+        result[0]["image_text"]?.toString() ?? "",
+        result[0]["midId"]?.toString() ?? "");
   }
 
   /// Returns all mail pieces that match the provided query.
