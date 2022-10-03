@@ -48,30 +48,29 @@ class MailStorage {
         await db.query(MAIL_PIECE_TABLE, where: "id = ?", whereArgs: [id]);
     if (result.isEmpty) return null;
     return MailPiece(
-        result[0]["id"] as String,
-        result[0]["email_id"] as String,
+        result[0]["id"].toString() ?? "",
+        result[0]["email_id"].toString() ?? "",
         DateTime.fromMillisecondsSinceEpoch(result[0]["timestamp"] as int),
-        result[0]["sender"] as String,
-        result[0]["image_text"] as String,
-        result[0]["midId"] as String);
+        result[0]["sender"].toString() ?? "",
+        result[0]["image_text"].toString() ?? "",
+        result[0]["midId"].toString() ?? "");
   }
 
   /// Returns all mail pieces that match the provided query.
   /// Any empty or null query returns all mail pieces.
   Future<List<MailPiece>> searchMailsPieces(String? query) async {
     final db = await database;
-    final result = query == null
-        ? await db.query(MAIL_PIECE_TABLE)
-        : await db.query(MAIL_PIECE_TABLE,
-            where: "image_text LIKE '%' || ? || '%'", whereArgs: [query]);
+    final result = await db.query(MAIL_PIECE_TABLE,
+        where: "image_text LIKE '%' || ? || '%'", whereArgs: [query ?? ""]);
     return result
-        .map((row) => MailPiece(
-            row["id"] as String,
-            row["email_id"] as String,
+        .map((row) =>
+        MailPiece(
+            row["id"].toString() ?? "",
+            row["email_id"]?.toString() ?? "",
             DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
-            row["sender"] as String,
-            row["image_text"] as String,
-            row["midId"] as String))
+            row["sender"]?.toString() ?? "",
+            row["image_text"]?.toString() ?? "",
+            row["midId"]?.toString() ?? ""))
         .toList();
   }
 }
