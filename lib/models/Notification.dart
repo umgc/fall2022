@@ -1,14 +1,13 @@
-import 'package:json_annotation/json_annotation.dart';
+/// This class represents a notification for a specific piece of mail recieved
+/// by the USPS. The associated mail piece will have matches the associated
+/// subscription keyword.
+class Notification {
+  final String mailPieceId;
+  final String subscriptionKeyword;
+  Notification(this.mailPieceId, this.subscriptionKeyword);
 
-class NotificationObject {
-  String TimeStamp;
-  String EmailID;
-  String MID;
-  String NotificationSubscriptionKeyword;
-
-  NotificationObject(
-      {this.TimeStamp = '',
-        this.EmailID = '',
-        this.MID = '',
-        this.NotificationSubscriptionKeyword = ''});
+  bool operator ==(Object other) =>
+      other is Notification &&
+      other.mailPieceId == this.mailPieceId &&
+      other.subscriptionKeyword == this.subscriptionKeyword;
 }

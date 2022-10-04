@@ -52,44 +52,6 @@ class _ChatWidgetState extends State<ChatWidget> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: TopBar(title: 'Chat Support'),
-    /*appBar: AppBar(
-      leading: GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/main');
-          },
-          child: Icon(
-              Icons.arrow_back
-          )
-      ),
-      centerTitle: true,
-      title: Text(
-        "Chat Support",
-        style:
-        TextStyle(fontWeight: _commonFontWt, fontSize: _commonFontSize),
-      ),
-      actions: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(right:20.0),
-            child: GestureDetector(
-                onTap: () {},
-                child: Icon(
-                    Icons.settings
-                )
-            )
-        ),
-        Padding(
-            padding: EdgeInsets.only(right:20.0),
-            child: GestureDetector(
-                onTap: () {},
-                child: Icon(
-                    Icons.logout
-                )
-            )
-        )
-      ],
-      automaticallyImplyLeading: false,
-      backgroundColor: Color(0xff004B87),
-    ),*/
     body: Chat(
       messages: _messages,
       onMessageTap: _handleMessageTap,
