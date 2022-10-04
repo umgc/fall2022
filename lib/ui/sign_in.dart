@@ -114,7 +114,6 @@ class SignInWidgetState extends State<SignInWidget> {
       };
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -384,7 +383,7 @@ class SignInWidgetState extends State<SignInWidget> {
       },
     );
   }
-
+  
   Future<void> _signInWithGoogle() async {
     // Trigger the authentication flow
     final googleUser = await GoogleSignIn().signIn();

@@ -32,6 +32,9 @@ class BottomBarState extends State<BottomBar> {
             excludeSemantics: true,
             button: true,
             label: "Search Mail",
+            onTap: () {
+              Navigator.pushNamed(context, "/search");
+            },
             child:
             IconButton(
               icon: new Image.asset("assets/icon/search-icon.png"),
@@ -45,26 +48,11 @@ class BottomBarState extends State<BottomBar> {
             excludeSemantics: true,
             button: true,
             label: "Scan Mail",
+            onTap: _scanMail,
             child:
             IconButton(
               icon: new Image.asset("assets/icon/scanmail-icon.png"),
-              onPressed: () async {
-                final pickedFile = await picker.pickImage(
-                    source: ImageSource.camera);
-                print(pickedFile!.path);
-                if (pickedFile != null) {
-                  _image = File(pickedFile.path);
-                  _imageBytes = _image!.readAsBytesSync();
-                  await deleteImageFiles();
-                  await saveImageFile(
-                      _imageBytes!, "mailpiece.jpg");
-                  MailResponse s = await processImage(
-                      "$imagePath/mailpiece.jpg");
-                  print(s.toJson());
-                } else {
-                  return;
-                }
-              },
+              onPressed: _scanMail,
             ),
           ),
           Spacer(),
@@ -72,6 +60,9 @@ class BottomBarState extends State<BottomBar> {
             excludeSemantics: true,
             button: true,
             label: "Chatbot",
+            onTap: () {
+              Navigator.pushNamed(context, "/chat");
+            },
             child:
             IconButton(
               icon: new Image.asset("assets/icon/chatbot-icon.png"),
@@ -84,5 +75,22 @@ class BottomBarState extends State<BottomBar> {
         ],
       ),
     );
+  }
+  void _scanMail() async {
+    final pickedFile = await picker.pickImage(
+        source: ImageSource.camera);
+    print(pickedFile!.path);
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      _imageBytes = _image!.readAsBytesSync();
+      await deleteImageFiles();
+      await saveImageFile(
+          _imageBytes!, "mailpiece.jpg");
+      MailResponse s = await processImage(
+          "$imagePath/mailpiece.jpg");
+      print(s.toJson());
+    } else {
+      return;
+    }
   }
 }
