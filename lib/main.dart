@@ -50,12 +50,15 @@ void main() async {
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-    title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
-    initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
-    onGenerateRoute: RouteGenerator.generateRoute,
-    home: buildScreen(emailAuthenticated),
-    navigatorKey: navKey,
-  )));
+        //showSemanticsDebugger: true,
+        title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
+        initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
+        onGenerateRoute: RouteGenerator.generateRoute,
+        home: buildScreen(emailAuthenticated),
+        navigatorKey: navKey,
+      )
+  )
+  );
 }
 
 Widget buildScreen(bool emailAuthenticated) {

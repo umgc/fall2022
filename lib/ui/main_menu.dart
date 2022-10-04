@@ -177,14 +177,24 @@ class MainWidgetState extends State<MainWidget> {
           primary: false,
           padding: const EdgeInsets.all(4),
           crossAxisSpacing: columnCount.toDouble(),
-          childAspectRatio: aspectRatio+.05,
+          childAspectRatio: aspectRatio + .05,
           mainAxisSpacing: 6,
           crossAxisCount: 2,
           controller: new ScrollController(keepScrollOffset: false),
           shrinkWrap: true,
           children: <Widget>[
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Search Mail",
+              onTap: () async {
+                Navigator.pushNamed(context, '/search');
+                },
+              child:
                   ElevatedButton(
-                    onPressed: () async {Navigator.pushNamed(context, '/search');},
+                    onPressed: () async {
+                      Navigator.pushNamed(context, '/search');
+                      },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -198,35 +208,15 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Daily Digest",
+              onTap: _getDailyDigest,
+              child:
                   ElevatedButton(
-                      onPressed: () async {
-
-                        /* ##probably won't need this section because we are just using Digest only##
-                        if (mailType == "Email") {
-                          context.loaderOverlay.show();
-                          await getEmails(false, DateTime.now());
-                          if (emails.isNotEmpty) {
-                            Navigator.pushNamed(context, '/other_mail',
-                                arguments: EmailWidgetArguments(emails));
-                          } else {
-                            showNoEmailsDialog();
-                          }
-                          context.loaderOverlay.hide();
-                        } else {
-                          context.loaderOverlay.show();
-                          */
-                          debugPrint('About to get digest from date ' + selectedDate.toString());
-                          await getDigest(selectedDate);
-                          debugPrint('Did this operation finish?');
-                              if (!digest.isNull()) {
-                            Navigator.pushNamed(context, '/digest_mail',
-                                arguments: MailWidgetArguments(digest));
-                          } else {
-                            showNoDigestDialog();
-                          }
-                          //context.loaderOverlay.hide();
-                        //} ##part of else -> for context.loadOverlay.show()
-                      },
+                    onPressed: _getDailyDigest,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -240,24 +230,15 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Upload Mail",
+              onTap: _uploadMail,
+              child:
                   ElevatedButton(
-                    onPressed: () async {
-                      final pickedFile = await picker.pickImage(
-                          source: ImageSource.gallery);
-                      print(pickedFile!.path);
-                      if (pickedFile != null) {
-                        _image = File(pickedFile.path);
-                        _imageBytes = _image!.readAsBytesSync();
-                        await deleteImageFiles();
-                        await saveImageFile(
-                            _imageBytes!, "mailpiece.jpg");
-                        MailResponse s = await processImage(
-                            "$imagePath/mailpiece.jpg");
-                        print(s.toJson());
-                      } else {
-                        return;
-                      }
-                    },
+                    onPressed: _uploadMail,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -271,24 +252,15 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Scan Mail",
+            onTap: _scanMail,
+            child:
                   ElevatedButton(
-                    onPressed: () async {
-                      final pickedFile = await picker.pickImage(
-                          source: ImageSource.camera);
-                      print(pickedFile!.path);
-                      if (pickedFile != null) {
-                        _image = File(pickedFile.path);
-                        _imageBytes = _image!.readAsBytesSync();
-                        await deleteImageFiles();
-                        await saveImageFile(
-                            _imageBytes!, "mailpiece.jpg");
-                        MailResponse s = await processImage(
-                            "$imagePath/mailpiece.jpg");
-                        print(s.toJson());
-                      } else {
-                        return;
-                      }
-                    },
+                    onPressed: _scanMail,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -302,10 +274,19 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Settings",
+              onTap: () {
+                Navigator.pushNamed(context, '/settings');
+                },
+              child:
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/settings');
-                    },
+                      },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -319,6 +300,15 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Notifications",
+              onTap: (){
+                Navigator.pushNamed(context, '/notifications');
+                },
+              child:
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/notifications');
@@ -336,10 +326,71 @@ class MainWidgetState extends State<MainWidget> {
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
-                ],
             ),
+          ],
+        ),
       );
+  }
+
+  void _getDailyDigest() async {
+    if (mailType == "Email") {
+      context.loaderOverlay.show();
+      await getEmails(false, DateTime.now());
+      if (emails.isNotEmpty) {
+        Navigator.pushNamed(context, '/other_mail',
+            arguments: EmailWidgetArguments(emails));
+      } else {
+        showNoEmailsDialog();
+      }
+      context.loaderOverlay.hide();
+    } else {
+      context.loaderOverlay.show();
+      await getDigest();
+      if (!digest.isNull()) {
+        Navigator.pushNamed(context, '/digest_mail',
+            arguments: MailWidgetArguments(digest));
+      } else {
+        showNoDigestDialog();
+      }
+      context.loaderOverlay.hide();
     }
+  }
+
+  void _uploadMail() async {
+    final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery);
+    print(pickedFile!.path);
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      _imageBytes = _image!.readAsBytesSync();
+      await deleteImageFiles();
+      await saveImageFile(
+          _imageBytes!, "mailpiece.jpg");
+      MailResponse s = await processImage(
+          "$imagePath/mailpiece.jpg");
+      print(s.toJson());
+    } else {
+      return;
+    }
+  }
+
+  void _scanMail() async {
+      final pickedFile = await picker.pickImage(
+          source: ImageSource.camera);
+      print(pickedFile!.path);
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        _imageBytes = _image!.readAsBytesSync();
+        await deleteImageFiles();
+        await saveImageFile(
+            _imageBytes!, "mailpiece.jpg");
+        MailResponse s = await processImage(
+            "$imagePath/mailpiece.jpg");
+        print(s.toJson());
+      } else {
+        return;
+      }
+  }
 
     Future<void> selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(

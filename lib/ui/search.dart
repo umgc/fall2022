@@ -97,10 +97,10 @@ class SearchWidgetState extends State<SearchWidget> {
                         Padding(padding: EdgeInsets.only(right:5.0),
                           child:
                           Semantics(
-                            excludeSemantics: true,
-                            button: true,
                             label: "Start Date",
-                            hint: " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                            onTap: (){
+                              //TODO: add function that types in date and displays it in the calendar view
+                            },
                             child:
                             MergeSemantics(
                               child:
@@ -109,6 +109,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   children:[
                                     Text(
                                       "Start Date:",
+                                      semanticsLabel: "",
                                       style: TextStyle(
                                           fontSize: _buttonLabelTextSize,
                                           fontWeight: _commonFontWeight,
@@ -127,6 +128,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                             color: Colors.white
                                         ),
                                         label: Text('${_dateFormat.format(_start)}',
+                                            semanticsLabel: " ${DateFormat('MMM,d,yyyy').format(_start)}",
                                             style: TextStyle(
                                                 fontWeight: _buttonFontWeight,
                                                 fontSize: _buttonTextSize,
@@ -141,7 +143,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   ]
                               ),
                             ),
-                          ),
+                         ),
                         ),
                       ),
                       Expanded(
@@ -149,10 +151,10 @@ class SearchWidgetState extends State<SearchWidget> {
                         Padding(padding: EdgeInsets.only(left:5.0),
                           child:
                           Semantics(
-                            excludeSemantics: true,
-                            button: true,
                             label: "End Date",
-                            hint: "${DateFormat('MMM,d,yyyy').format(_end)}",
+                            onTap: (){
+                              //TODO: add function that types in date and displays it in the calendar view
+                            },
                             child:
                             MergeSemantics(
                               child:
@@ -161,6 +163,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   children:[
                                     Text(
                                       "End Date:",
+                                      semanticsLabel: "",
                                       style: TextStyle(
                                           fontWeight: _commonFontWeight,
                                           fontSize: _buttonLabelTextSize,
@@ -178,7 +181,9 @@ class SearchWidgetState extends State<SearchWidget> {
                                             size: 35,
                                             color: Colors.white
                                         ),
-                                        label: Text('${_dateFormat.format(_end)}',
+                                        label: Text(
+                                            '${_dateFormat.format(_end)}',
+                                            semanticsLabel: "${DateFormat('MMM,d,yyyy').format(_end)}",
                                             style: TextStyle(
                                                 fontWeight: _buttonFontWeight,
                                                 fontSize: _buttonTextSize,
