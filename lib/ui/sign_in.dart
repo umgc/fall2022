@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
@@ -8,6 +9,8 @@ import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import 'AssistantState.dart';
+
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
 
@@ -15,13 +18,14 @@ class SignInWidget extends StatefulWidget {
   SignInWidgetState createState() => SignInWidgetState();
 }
 
-class SignInWidgetState extends State<SignInWidget> {
+class SignInWidgetState extends AssistantState<SignInWidget> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+
     locator<AnalyticsService>().logScreens(name: "signIn");
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
     /*FirebaseAnalytics.instance.logEvent(
@@ -31,6 +35,12 @@ class SignInWidgetState extends State<SignInWidget> {
         'screenClass': 'signIn.dart',
       },
     );*/
+  }
+
+  @override
+  void processFunction(ApplicationFunction function)
+  {
+    //TODO put a dialog explaining why this won't work.
   }
 
   @override
