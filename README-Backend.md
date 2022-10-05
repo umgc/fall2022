@@ -1,5 +1,5 @@
-# summer2022
-SWEN 670 Capstone Course. Summer Cohort
+# fall2022
+SWEN 670 Capstone Course. fall Cohort
 
 -------------------------------------------------------------------
 (07-09-2022)

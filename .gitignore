@@ -49,7 +49,7 @@ doc/api/
 
 android/local.properties
 .idea/
-*summer2022.iml*
+*fall2022.iml*
 
 # Avoid committing generated Javascript files:
 *.dart.js

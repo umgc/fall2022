@@ -1,7 +1,7 @@
-import 'package:summer2022/exceptions/invalid_command_exception.dart';
-import 'package:summer2022/models/ApplicationFunction.dart';
-import 'package:summer2022/services/bases/chat_bot.dart';
-import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:fall2022/exceptions/invalid_command_exception.dart';
+import 'package:fall2022/models/ApplicationFunction.dart';
+import 'package:fall2022/services/bases/chat_bot.dart';
+import 'package:fall2022/utility/RouteGenerator.dart';
 
 import '../models/SearchCriteria.dart';
 

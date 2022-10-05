@@ -1,6 +1,6 @@
 import 'package:enough_mail/enough_mail.dart';
 import 'package:intl/intl.dart';
-import 'package:summer2022/models/Digest.dart';
+import 'package:fall2022/models/Digest.dart';
 
 class OtherMailParser {
   String _userName = ''; // Add your credentials

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:summer2022/models/MailPiece.dart';
-import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:fall2022/models/MailPiece.dart';
+import 'package:fall2022/ui/bottom_app_bar.dart';
 
 class MailPieceViewWidget extends StatelessWidget{
 

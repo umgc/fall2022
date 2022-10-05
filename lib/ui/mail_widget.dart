@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:summer2022/main.dart';
+import 'package:fall2022/main.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:summer2022/models/MailResponse.dart';
-import 'package:summer2022/models/Digest.dart';
-import 'package:summer2022/ui/top_app_bar.dart';
-import 'package:summer2022/ui/bottom_app_bar.dart';
-import 'package:summer2022/services/analytics_service.dart';
-import 'package:summer2022/utility/locator.dart';
+import 'package:fall2022/models/MailResponse.dart';
+import 'package:fall2022/models/Digest.dart';
+import 'package:fall2022/ui/top_app_bar.dart';
+import 'package:fall2022/ui/bottom_app_bar.dart';
+import 'package:fall2022/services/analytics_service.dart';
+import 'package:fall2022/utility/locator.dart';
 
 class MailWidget extends StatefulWidget {
   final Digest digest;

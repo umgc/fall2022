@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-import 'package:summer2022/image_processing/barcode_scanner.dart';
-import 'package:summer2022/models/Code.dart';
+import 'package:fall2022/image_processing/barcode_scanner.dart';
+import 'package:fall2022/models/Code.dart';
 
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();

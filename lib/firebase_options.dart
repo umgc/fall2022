@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     projectId: 'swen670-b197f',
     storageBucket: 'swen670-b197f.appspot.com',
     iosClientId: '872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com',
-    iosBundleId: 'com.example.summer2022',
+    iosBundleId: 'com.example.fall2022',
   );
 
   /*
@@ -85,7 +85,7 @@ class DefaultFirebaseOptions {
     projectId: 'swen670-b197f',
     storageBucket: 'swen670-b197f.appspot.com',
     iosClientId: '872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com',
-    iosBundleId: 'com.example.summer2022',
+    iosBundleId: 'com.example.fall2022',
   );*/
 }
 

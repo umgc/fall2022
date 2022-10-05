@@ -1,5 +1,5 @@
 
-import 'package:summer2022/models/Digest.dart';
+import 'package:fall2022/models/Digest.dart';
 
 class EmailWidgetArguments {
   final List<Digest> emails;

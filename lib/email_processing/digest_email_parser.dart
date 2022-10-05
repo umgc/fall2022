@@ -3,14 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
 import 'package:intl/intl.dart';
-import 'package:summer2022/models/MailResponse.dart';
-import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
-import 'package:summer2022/models/Digest.dart';
-import 'package:summer2022/models/Code.dart';
-import 'package:summer2022/image_processing/barcode_scanner.dart';
+import 'package:fall2022/models/MailResponse.dart';
+import 'package:fall2022/image_processing/google_cloud_vision_api.dart';
+import 'package:fall2022/models/Digest.dart';
+import 'package:fall2022/models/Code.dart';
+import 'package:fall2022/image_processing/barcode_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:summer2022/image_processing/usps_address_verification.dart';
+import 'package:fall2022/image_processing/usps_address_verification.dart';
 
 class DigestEmailParser {
   String _userName = ''; // Add your credentials
