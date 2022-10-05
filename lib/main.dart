@@ -3,17 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:fall2022/services/cache_service.dart';
-import 'package:fall2022/utility/Client.dart';
-import 'package:fall2022/utility/Keychain.dart';
-import 'package:fall2022/ui/main_menu.dart';
-import 'package:fall2022/ui/sign_in.dart';
-import 'package:fall2022/utility/RouteGenerator.dart';
-import 'package:fall2022/ui/top_app_bar.dart';
-import 'package:fall2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/cache_service.dart';
+import 'package:summer2022/utility/Client.dart';
+import 'package:summer2022/utility/Keychain.dart';
+import 'package:summer2022/ui/main_menu.dart';
+import 'package:summer2022/ui/sign_in.dart';
+import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fall2022/utility/locator.dart';
+import 'package:summer2022/utility/locator.dart';
 import 'firebase_options.dart';
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fall2022/models/NotificationSubscription.dart';
-import 'package:fall2022/models/Notification.dart';
-import 'package:fall2022/services/mail_notifier.dart';
-import 'package:fall2022/services/sqlite_database.dart';
+import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/Notification.dart';
+import 'package:summer2022/services/mail_notifier.dart';
+import 'package:summer2022/services/sqlite_database.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

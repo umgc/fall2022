@@ -1,4 +1,4 @@
-package com.example.fall2022
+package com.example.summer2022
 
 import io.flutter.embedding.android.FlutterActivity
 

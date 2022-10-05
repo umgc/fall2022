@@ -3,12 +3,12 @@ import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fall2022/models/Logo.dart';
-import 'package:fall2022/image_processing/barcode_scanner.dart';
+import 'package:summer2022/models/Logo.dart';
+import 'package:summer2022/image_processing/barcode_scanner.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:fall2022/image_processing/usps_address_verification.dart';
-import 'package:fall2022/image_processing/google_cloud_vision_api.dart';
+import 'package:summer2022/image_processing/usps_address_verification.dart';
+import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 
 void main() {
   runApp(const MyApp());

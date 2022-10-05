@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:fall2022/image_processing/imageProcessing.dart';
-import 'package:fall2022/models/MailResponse.dart';
+import 'package:summer2022/image_processing/imageProcessing.dart';
+import 'package:summer2022/models/MailResponse.dart';
 
 
 class BottomBar extends StatefulWidget {

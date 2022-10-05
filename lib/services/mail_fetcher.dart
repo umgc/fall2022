@@ -1,6 +1,6 @@
-import 'package:fall2022/models/MailResponse.dart';
+import 'package:summer2022/models/MailResponse.dart';
 import '../models/MailPiece.dart';
-import 'package:fall2022/image_processing/google_cloud_vision_api.dart';
+import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
 import '../models/Digest.dart';
 import 'package:intl/intl.dart';

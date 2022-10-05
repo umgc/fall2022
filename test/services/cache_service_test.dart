@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:fall2022/models/MailPiece.dart';
+import 'package:summer2022/models/MailPiece.dart';
 
-import 'package:fall2022/services/cache_service.dart';
-import 'package:fall2022/services/mail_fetcher.dart';
-import 'package:fall2022/services/mail_notifier.dart';
-import 'package:fall2022/services/mail_storage.dart';
+import 'package:summer2022/services/cache_service.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
+import 'package:summer2022/services/mail_notifier.dart';
+import 'package:summer2022/services/mail_storage.dart';
 
 @GenerateNiceMocks([
   MockSpec<MailFetcher>(),

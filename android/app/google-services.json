@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:872576625259:android:accd56b745157ebc7f1f2e",
         "android_client_info": {
-          "package_name": "com.umgc.fall2022"
+          "package_name": "com.umgc.summer2022"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.fall2022"
+                "bundle_id": "com.example.summer2022"
               }
             }
           ]

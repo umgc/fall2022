@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fall2022/utility/Keychain.dart';
-import 'package:fall2022/utility/Client.dart';
+import 'package:summer2022/utility/Keychain.dart';
+import 'package:summer2022/utility/Client.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:fall2022/services/analytics_service.dart';
-import 'package:fall2022/services/cache_service.dart';
-import 'package:fall2022/utility/locator.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/services/cache_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);

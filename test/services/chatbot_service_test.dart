@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fall2022/services/chat_bot_service.dart';
-import 'package:fall2022/utility/RouteGenerator.dart';
-import 'package:fall2022/models/SearchCriteria.dart';
+import 'package:summer2022/services/chat_bot_service.dart';
+import 'package:summer2022/utility/RouteGenerator.dart';
+import 'package:summer2022/models/SearchCriteria.dart';
 
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();

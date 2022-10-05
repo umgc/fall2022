@@ -1,5 +1,5 @@
 import 'package:enough_mail/enough_mail.dart';
-import 'package:fall2022/models/MailResponse.dart';
+import 'package:summer2022/models/MailResponse.dart';
 
 class Digest {
   MimeMessage message = MimeMessage();

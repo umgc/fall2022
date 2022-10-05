@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:googleapis/vision/v1.dart';
-import 'package:fall2022/image_processing/google_cloud_vision_api.dart';
-import 'package:fall2022/models/Address.dart';
-import 'package:fall2022/models/Logo.dart';
-import 'package:fall2022/models/MailResponse.dart';
+import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
+import 'package:summer2022/models/Address.dart';
+import 'package:summer2022/models/Logo.dart';
+import 'package:summer2022/models/MailResponse.dart';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:io' as io;

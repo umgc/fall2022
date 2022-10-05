@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:enough_mail/enough_mail.dart';
-import 'package:fall2022/exceptions/fetch_mail_exception.dart';
-import 'package:fall2022/models/Digest.dart';
-import 'package:fall2022/utility/ComparisonHelpers.dart';
+import 'package:summer2022/exceptions/fetch_mail_exception.dart';
+import 'package:summer2022/models/Digest.dart';
+import 'package:summer2022/utility/ComparisonHelpers.dart';
 
 import '../models/MailPiece.dart';
 

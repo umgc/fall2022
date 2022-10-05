@@ -1,22 +1,22 @@
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:intl/intl.dart';
-import 'package:fall2022/image_processing/imageProcessing.dart';
+import 'package:summer2022/image_processing/imageProcessing.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:fall2022/email_processing/digest_email_parser.dart';
-import 'package:fall2022/email_processing/other_mail_parser.dart';
-import 'package:fall2022/utility/Keychain.dart';
-import 'package:fall2022/image_processing/google_cloud_vision_api.dart';
-import 'package:fall2022/models/Arguments.dart';
-import 'package:fall2022/models/EmailArguments.dart';
-import 'package:fall2022/models/Digest.dart';
-import 'package:fall2022/models/MailResponse.dart';
-import 'package:fall2022/ui/top_app_bar.dart';
-import 'package:fall2022/ui/bottom_app_bar.dart';
-import 'package:fall2022/services/analytics_service.dart';
-import 'package:fall2022/utility/locator.dart';
+import 'package:summer2022/email_processing/digest_email_parser.dart';
+import 'package:summer2022/email_processing/other_mail_parser.dart';
+import 'package:summer2022/utility/Keychain.dart';
+import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
+import 'package:summer2022/models/Arguments.dart';
+import 'package:summer2022/models/EmailArguments.dart';
+import 'package:summer2022/models/Digest.dart';
+import 'package:summer2022/models/MailResponse.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 
 
