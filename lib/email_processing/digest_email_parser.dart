@@ -1,5 +1,4 @@
 import 'dart:convert';
-//import 'dart:html';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
@@ -13,11 +12,6 @@ import 'package:summer2022/image_processing/barcode_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:summer2022/image_processing/usps_address_verification.dart';
-
-/*
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart';
-*/
 
 class DigestEmailParser {
   String _userName = ''; // Add your credentials
@@ -35,13 +29,6 @@ class DigestEmailParser {
       _password = password;
       _targetDate = targetDate;
       Digest digest = Digest(await _getDigestEmail());
-
-      /*
-      debugPrint('Sender: ' +digest.message.decodeSender().toString());
-      debugPrint('Subject: ' + digest.message.decodeSubject().toString());
-      debugPrint('Date: ' + digest.message.decodeDate().toString());
-      HtmlDocument a = Document.html(digest.message.decodeTextHtmlPart().toString()) as HtmlDocument;
-      */
 
         if (!digest.isNull()) {
         digest.attachments = await _getAttachments(digest.message);
@@ -66,7 +53,6 @@ class DigestEmailParser {
                 .contains("image") ??
             false)
           {
-            debugPrint('###Found an image at position $x !');
             var attachment = Attachment();
             attachment.attachment = m.mimeData!.parts!
               .elementAt(x)
@@ -79,7 +65,6 @@ class DigestEmailParser {
             /* get the position of element with value "image" and save to attachment.  delete all returns */
           await saveImageFile(base64Decode(attachment.attachmentNoFormatting),
               "mailpiece$x.jpg");
-          debugPrint("##Starting image processing##");
           attachment.detailedInformation = await processImage(filePath); //process image defined below
           list.add(attachment); //add attachment to list of attachments
         }
@@ -135,8 +120,6 @@ class DigestEmailParser {
     final client = ImapClient(isLogEnabled: true);
     try {
       DateTime targetDate = _targetDate ?? DateTime.now();
-
-      debugPrint('The program is trying to get Digest email on date ' + targetDate.toString());
       //Retrieve the imap server config
       var config = await Discover.discover(_userName, isLogEnabled: false);
       if (config == null) {
@@ -177,7 +160,6 @@ class DigestEmailParser {
     } finally {
       if (client.isLoggedIn) {
         await client.logout();
-        debugPrint('###Successfully logged out of email client, end of _getDigestEmail###');
       }
     }
   }
@@ -221,7 +203,6 @@ class DigestEmailParser {
 
   Future<bool> saveImageFile(Uint8List imageBytes, String fileName) async {
     Directory? directory;
-    debugPrint('###Trying to save image###');
     try {
       if (Platform.isAndroid) {
         if (await _requestPermission(Permission.storage)) {
@@ -255,7 +236,6 @@ class DigestEmailParser {
 
         filePath = saveFile.path;
         print("Directory${directory.listSync()}");
-        debugPrint("##Completed printing the directory##");
         return true;
       }
     } catch (e) {

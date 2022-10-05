@@ -7,11 +7,28 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 
 class MailViewWidget extends StatelessWidget {
-  final List<MailPiece> mailPieces = List.generate(
-      10,
-          (index) =>
-          new MailPiece("", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ", "")
-  );
+
+  List<MailPiece> mailPieces = _createMailPieces();
+
+  static List<MailPiece> _createMailPieces() {
+    List<MailPiece> _mailPieces = List.generate(
+        10,
+            (index) => new MailPiece(
+            "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
+            ""),
+        growable: true
+    );
+
+    MailPiece m = new MailPiece(
+        "019304930", "0294019320", DateTime(2022, 10, 2), "CleanChoice Energy",
+        "## ImageText Contents ##", "1136403846-004.jpg_68460078334259");
+
+    _mailPieces.add(m);
+
+    return _mailPieces;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {

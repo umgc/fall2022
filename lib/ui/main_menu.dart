@@ -530,7 +530,6 @@ class MainWidgetState extends State<MainWidget> {
             .then((value) => digest = value);
       } catch (e) {
         showErrorDialog();
-        debugPrint('The getDigest error was triggered');
         context.loaderOverlay.hide();
       }
     }
