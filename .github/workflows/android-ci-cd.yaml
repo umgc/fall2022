@@ -36,13 +36,14 @@ jobs:
           channel: "stable"
       - name: Install Flutter dependencies
         run: flutter pub get
-      - name: Build Apk file
-        run: flutter build apk
-      - name: Upload Apk
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+      # Useful for quick download and use on personal phone, but using the playstore should be more ideal
+      #- name: Build Apk file
+      #  run: flutter build apk
+      #- name: Upload Apk
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: app-release.apk
+      #    path: build/app/outputs/flutter-apk/app-release.apk
       - name: Build App Bundle
         run: flutter build appbundle --release
       - name: Upload App Bundle
