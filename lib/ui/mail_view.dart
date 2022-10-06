@@ -13,16 +13,12 @@ class MailViewWidget extends StatelessWidget {
 
   final MailSearchParameters query;
 
-  MailService mailService = MailService();
+  final MailService _mailService = MailService();
+
   MailViewWidget({required this.query});
-
-
 
   @override
   Widget build(BuildContext context) {
-
-    List<MailPiece> mailPieces = [];
-    final Future<List<MailPiece>> mailPiecesFuture = mailService.fetchMail(query);
 
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
       return Container(
@@ -79,7 +75,7 @@ class MailViewWidget extends StatelessWidget {
     }
 
     var mailPieceListViewWidget = FutureBuilder<List<MailPiece>>(
-      future: mailService.fetchMail(query),
+      future: _mailService.fetchMail(query),
       builder: (context, AsyncSnapshot<List<MailPiece>> snapshot){
         if(snapshot.hasData) {
           return ListView.builder(

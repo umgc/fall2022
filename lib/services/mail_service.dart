@@ -10,7 +10,7 @@ class MailService {
   /// throws a [FetchMailException] error if retrieval, parsing, or filtering fails
   Future<List<MailPiece>> fetchMail(MailSearchParameters searchArgs) async {
     try {
-      formatDateTimeForSearch(searchArgs);
+      _formatDateTimeForSearch(searchArgs);
 
       return await searchMailPieces(searchArgs);
     } catch (e) {
@@ -19,7 +19,7 @@ class MailService {
   }
 
   /// Formats [searchArgs.startDate] and [searchArgs.endDate] for search
-  void formatDateTimeForSearch(MailSearchParameters searchArgs) {
+  void _formatDateTimeForSearch(MailSearchParameters searchArgs) {
     if (searchArgs.startDate != null) {
       searchArgs.startDate = new DateTime(searchArgs.startDate!.year,
               searchArgs.startDate!.month, searchArgs.startDate!.day)
