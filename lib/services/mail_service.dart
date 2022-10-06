@@ -8,11 +8,11 @@ class MailService {
   /// Retrieves all mail from local cache that matches [searchArgs.keyword] and is within [searchArgs.startDate] and [searchArgs.endDate]
   /// [searchArgs.startDate] and [searchArgs.endDate] should either both have values or both be null
   /// throws a [FetchMailException] error if retrieval, parsing, or filtering fails
-  Future<List> fetchMail(MailSearchParameters searchArgs) async {
+  Future<List<MailPiece>> fetchMail(MailSearchParameters searchArgs) async {
     try {
       formatDateTimeForSearch(searchArgs);
 
-      return searchMailPieces(searchArgs);
+      return await searchMailPieces(searchArgs);
     } catch (e) {
       throw new FetchMailException(e.toString());
     }

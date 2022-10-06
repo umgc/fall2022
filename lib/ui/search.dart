@@ -35,6 +35,7 @@ class SearchWidgetState extends State<SearchWidget> {
   DateTime _end = DateTime.now();
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
+
   final _mailStorage = MailStorage();
 
   // Apply and passed in search parameters to the filters
@@ -264,7 +265,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
                                 ),
                                 onPressed: () {
-                                  MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, null, null);
+                                  MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, _start, _end);
                                   Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
                                 },
                                 icon: const Icon(
