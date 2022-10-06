@@ -46,6 +46,10 @@ class MainWidgetState extends AssistantState<MainWidget> {
   double commonCornerRadius = 8;
   bool selectDigest = false;
   bool ranTutorial = false;
+  var appbarPresent = true;
+  var bottomBarPresent = true;
+  var columnCount = 2;
+  var minRowCountOnScreen = 3;
 
 
   @override
@@ -95,13 +99,17 @@ class MainWidgetState extends AssistantState<MainWidget> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
-    /*24 is for notification bar on Android*/
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-    final double itemWidth = size.width / 2;
+    var width = size.width;
+    var height = size.height;
+    if(appbarPresent){
+      height -= kToolbarHeight;
+    }
+    if(bottomBarPresent){
+      height -= kBottomNavigationBarHeight;
+    }
 
     String formattedSelectedDate =
-    DateFormat('yyyy-MM-dd').format(selectedDate);
+      DateFormat('yyyy-MM-dd').format(selectedDate);
     var latestButton = SizedBox(
       height: commonButtonHeight, // LATEST Button
       child: OutlinedButton(
@@ -162,150 +170,147 @@ class MainWidgetState extends AssistantState<MainWidget> {
         child: const Text("Unread", style: TextStyle(color: Colors.black)),
       ),
     );
+    var aspectRatio = (width / columnCount) / (height / minRowCountOnScreen);
+    double commonFontSize = (this.commonFontSize * aspectRatio);
     return Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),
         body: GridView.count(
           primary: false,
           padding: const EdgeInsets.all(4),
-          crossAxisSpacing: 6,
-          childAspectRatio: 0.86,
+          crossAxisSpacing: columnCount.toDouble(),
+          childAspectRatio: aspectRatio + .05,
           mainAxisSpacing: 6,
           crossAxisCount: 2,
           controller: new ScrollController(keepScrollOffset: false),
           shrinkWrap: true,
           children: <Widget>[
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Search Mail",
+              onTap: () async {
+                Navigator.pushNamed(context, '/search');
+                },
+              child:
                   ElevatedButton(
-                    onPressed: () async {Navigator.pushNamed(context, '/search');},
+                    onPressed: () async {
+                      Navigator.pushNamed(context, '/search');
+                      },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text('Search Mail'),
                         Image.asset(
                           "assets/icon/search_mail_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Daily Digest",
+              onTap: _getDailyDigest,
+              child:
                   ElevatedButton(
-                      onPressed: () async {
-                        if (mailType == "Email") {
-                          context.loaderOverlay.show();
-                          await getEmails(false, DateTime.now());
-                          if (emails.isNotEmpty) {
-                            Navigator.pushNamed(context, '/other_mail',
-                                arguments: EmailWidgetArguments(emails));
-                          } else {
-                            showNoEmailsDialog();
-                          }
-                          context.loaderOverlay.hide();
-                        } else {
-                          context.loaderOverlay.show();
-                          await getDigest();
-                          if (!digest.isNull()) {
-                            Navigator.pushNamed(context, '/digest_mail',
-                                arguments: MailWidgetArguments(digest));
-                          } else {
-                            showNoDigestDialog();
-                          }
-                          context.loaderOverlay.hide();
-                        }
-                      },
+                      onPressed: _getDailyDigest,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text('Daily Digest'),
                         Image.asset(
                           "assets/icon/daily_digest_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Upload Mail",
+              onTap: _uploadMail,
+              child:
                   ElevatedButton(
-                    onPressed: () async {
-                      final pickedFile = await picker.pickImage(
-                          source: ImageSource.gallery);
-                      print(pickedFile!.path);
-                      if (pickedFile != null) {
-                        _image = File(pickedFile.path);
-                        _imageBytes = _image!.readAsBytesSync();
-                        await deleteImageFiles();
-                        await saveImageFile(
-                            _imageBytes!, "mailpiece.jpg");
-                        MailResponse s = await processImage(
-                            "$imagePath/mailpiece.jpg");
-                        print(s.toJson());
-                      } else {
-                        return;
-                      }
-                    },
+                    onPressed: _uploadMail,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text('Upload Mail'),
                         Image.asset(
                           "assets/icon/upload_image_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Scan Mail",
+            onTap: _scanMail,
+            child:
                   ElevatedButton(
-                    onPressed: () async {
-                      final pickedFile = await picker.pickImage(
-                          source: ImageSource.camera);
-                      print(pickedFile!.path);
-                      if (pickedFile != null) {
-                        _image = File(pickedFile.path);
-                        _imageBytes = _image!.readAsBytesSync();
-                        await deleteImageFiles();
-                        await saveImageFile(
-                            _imageBytes!, "mailpiece.jpg");
-                        MailResponse s = await processImage(
-                            "$imagePath/mailpiece.jpg");
-                        print(s.toJson());
-                      } else {
-                        return;
-                      }
-                    },
+                    onPressed: _scanMail,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text('Scan Mail'),
                         Image.asset(
                           "assets/icon/scan_mail_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Settings",
+              onTap: () {
+                Navigator.pushNamed(context, '/settings');
+                },
+              child:
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/settings');
-                    },
+                      },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text('Settings'),
                         Image.asset(
                           "assets/icon/settings_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
+            ),
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Notifications",
+              onTap: (){
+                Navigator.pushNamed(context, '/notifications');
+                },
+              child:
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/notifications');
@@ -316,17 +321,78 @@ class MainWidgetState extends AssistantState<MainWidget> {
                         const Text('Notifications'),
                         Image.asset(
                           "assets/icon/notification_icon_lg.png",
-                          width: 100,
-                          height: 100,
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
                         ),
                       ],
                     ),
                     style: commonButtonStyleElevated(Colors.grey, Colors.grey),
                   ),
-                ],
             ),
+          ],
+        ),
       );
+  }
+
+  void _getDailyDigest() async {
+    if (mailType == "Email") {
+      context.loaderOverlay.show();
+      await getEmails(false, DateTime.now());
+      if (emails.isNotEmpty) {
+        Navigator.pushNamed(context, '/other_mail',
+            arguments: EmailWidgetArguments(emails));
+      } else {
+        showNoEmailsDialog();
+      }
+      context.loaderOverlay.hide();
+    } else {
+      context.loaderOverlay.show();
+      await getDigest();
+      if (!digest.isNull()) {
+        Navigator.pushNamed(context, '/digest_mail',
+            arguments: MailWidgetArguments(digest));
+      } else {
+        showNoDigestDialog();
+      }
+      context.loaderOverlay.hide();
     }
+  }
+
+  void _uploadMail() async {
+    final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery);
+    print(pickedFile!.path);
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      _imageBytes = _image!.readAsBytesSync();
+      await deleteImageFiles();
+      await saveImageFile(
+          _imageBytes!, "mailpiece.jpg");
+      MailResponse s = await processImage(
+          "$imagePath/mailpiece.jpg");
+      print(s.toJson());
+    } else {
+      return;
+    }
+  }
+
+  void _scanMail() async {
+      final pickedFile = await picker.pickImage(
+          source: ImageSource.camera);
+      print(pickedFile!.path);
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        _imageBytes = _image!.readAsBytesSync();
+        await deleteImageFiles();
+        await saveImageFile(
+            _imageBytes!, "mailpiece.jpg");
+        MailResponse s = await processImage(
+            "$imagePath/mailpiece.jpg");
+        print(s.toJson());
+      } else {
+        return;
+      }
+  }
 
     Future<void> selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(

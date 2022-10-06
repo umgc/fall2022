@@ -25,8 +25,6 @@ import 'dart:io' show Platform;
 import 'models/ApplicationFunction.dart';
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
-enum TtsState { playing, stopped, paused, continued }
-TtsState ttsState = TtsState.stopped;
 
 void main() async {
   WidgetsFlutterBinding
@@ -58,28 +56,17 @@ void main() async {
         .setUserProperty(name: 'email_domain', value: emailDomain);
   }
 
-  recieveIntent.Intent? intent = await recieveIntent.ReceiveIntent.getInitialIntent();
-
-  String initalRoute = emailAuthenticated == true ? "/main" : "/sign_in";
-  Widget screen = buildScreen(emailAuthenticated);
-
-  if (emailAuthenticated){
-    if (intent != null) {
-      ApplicationFunction? appFunction = AssistantService.ParseIntent(intent);
-
-    }
-  }
-
-
-
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-    title: "USPS Informed Delivery Visual Assistance App",
-    initialRoute: initalRoute,
-    onGenerateRoute: RouteGenerator.generateRoute,
-    home: buildScreen(emailAuthenticated),
-    navigatorKey: navKey,
-  )));
+        //showSemanticsDebugger: true,
+        title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
+        initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
+        onGenerateRoute: RouteGenerator.generateRoute,
+        home: buildScreen(emailAuthenticated),
+        navigatorKey: navKey,
+      )
+  )
+  );
 }
 
 Widget buildScreen(bool emailAuthenticated) {

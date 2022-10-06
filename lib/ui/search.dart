@@ -3,7 +3,6 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
-import 'package:summer2022/utility/ComparisonHelpers.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
@@ -13,6 +12,7 @@ import '../models/ApplicationFunction.dart';
 import '../models/SearchCriteria.dart';
 import '../services/mail_service.dart';
 import 'AssistantState.dart';
+import '../services/mail_storage.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -37,7 +37,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   DateTime _end = DateTime.now();
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
-  final _mailService = MailService();
+  final _mailStorage = MailStorage();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {
@@ -117,10 +117,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                         Padding(padding: EdgeInsets.only(right:5.0),
                           child:
                           Semantics(
-                            excludeSemantics: true,
-                            button: true,
                             label: "Start Date",
-                            hint: " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                            onTap: (){
+                              //TODO: add function that types in date and displays it in the calendar view
+                            },
                             child:
                             MergeSemantics(
                               child:
@@ -129,6 +129,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                   children:[
                                     Text(
                                       "Start Date:",
+                                      semanticsLabel: "",
                                       style: TextStyle(
                                           fontSize: _buttonLabelTextSize,
                                           fontWeight: _commonFontWeight,
@@ -147,6 +148,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                             color: Colors.white
                                         ),
                                         label: Text('${_dateFormat.format(_start)}',
+                                            semanticsLabel: " ${DateFormat('MMM,d,yyyy').format(_start)}",
                                             style: TextStyle(
                                                 fontWeight: _buttonFontWeight,
                                                 fontSize: _buttonTextSize,
@@ -161,7 +163,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                   ]
                               ),
                             ),
-                          ),
+                         ),
                         ),
                       ),
                       Expanded(
@@ -169,10 +171,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                         Padding(padding: EdgeInsets.only(left:5.0),
                           child:
                           Semantics(
-                            excludeSemantics: true,
-                            button: true,
                             label: "End Date",
-                            hint: "${DateFormat('MMM,d,yyyy').format(_end)}",
+                            onTap: (){
+                              //TODO: add function that types in date and displays it in the calendar view
+                            },
                             child:
                             MergeSemantics(
                               child:
@@ -181,6 +183,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                   children:[
                                     Text(
                                       "End Date:",
+                                      semanticsLabel: "",
                                       style: TextStyle(
                                           fontWeight: _commonFontWeight,
                                           fontSize: _buttonLabelTextSize,
@@ -198,7 +201,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                             size: 35,
                                             color: Colors.white
                                         ),
-                                        label: Text('${_dateFormat.format(_end)}',
+                                        label: Text(
+                                            '${_dateFormat.format(_end)}',
+                                            semanticsLabel: "${DateFormat('MMM,d,yyyy').format(_end)}",
                                             style: TextStyle(
                                                 fontWeight: _buttonFontWeight,
                                                 fontSize: _buttonTextSize,
@@ -251,7 +256,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                         },
                         suggestionsCallback: (pattern) {
                           // Populate items from cache
-                          return _mailService.fetchMail(pattern, _start, _end);
+                          return _mailStorage.searchMailsPieces(pattern);
                         },
                         itemBuilder: (context, itemData) {
                           return ListTile(
