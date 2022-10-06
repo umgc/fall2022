@@ -6,12 +6,20 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 
+import '../models/MailSearchParameters.dart';
+
 class MailViewWidget extends StatelessWidget {
+
+  final MailSearchParameters query;
+
+  MailViewWidget({required this.query});
+
   final List<MailPiece> mailPieces = List.generate(
       10,
           (index) =>
-          new MailPiece("", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ", "")
+      new MailPiece("", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ", "")
   );
+
   @override
   Widget build(BuildContext context) {
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
