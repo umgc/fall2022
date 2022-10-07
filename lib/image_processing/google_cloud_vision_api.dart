@@ -32,7 +32,6 @@ class CloudVisionApi {
   // This should be cached and parsed later for relevant fields
   Future<List<TextAnnotation>> convertImageToText(String image) async {
     var vision = VisionApi(await _client);
-    debugPrint('On to next step');
     var api = vision.images;
 
     var response = await api.annotate(BatchAnnotateImagesRequest.fromJson({

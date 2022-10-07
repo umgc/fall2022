@@ -8,6 +8,7 @@ import 'package:summer2022/ui/top_app_bar.dart';
 
 class MailViewWidget extends StatelessWidget {
 
+  //this is temporary for list view display, need to eventually delete when search results are achieved
   List<MailPiece> mailPieces = _createMailPieces();
 
   static List<MailPiece> _createMailPieces() {
@@ -20,14 +21,13 @@ class MailViewWidget extends StatelessWidget {
     );
 
     MailPiece m = new MailPiece(
-        "019304930", "0294019320", DateTime(2022, 10, 2), "CleanChoice Energy",
-        "## ImageText Contents ##", "1136403846-004.jpg_68460078334259");
+        "id", "emailId", DateTime(2022, 10, 3), "sender",
+        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'");
 
     _mailPieces.add(m);
 
     return _mailPieces;
   }
-
 
   @override
   Widget build(BuildContext context) {

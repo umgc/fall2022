@@ -1,30 +1,62 @@
-import 'dart:js';
-
-import 'package:enough_mail/enough_mail.dart';
+import 'dart:convert';
+import 'package:enough_mail/codecs.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import '../models/Digest.dart';
 import '../services/mail_retrieveByMailPiece.dart';
 
-class MailPieceViewWidget extends StatelessWidget{
+class MailPieceViewWidget extends StatefulWidget{
+
+  final MailPiece mailPiece;
+
+  const MailPieceViewWidget({Key? key, required this.mailPiece}) : super(key: key);
+
+  @override
+  MailPieceViewWidgetState createState() => MailPieceViewWidgetState(mailPiece);
+}
+
+  GlobalConfiguration cfg = GlobalConfiguration();
+
+  class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
+  GlobalConfiguration cfg = GlobalConfiguration();
 
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _commonFontSize = 30;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
+  final mailPiece;
+  late Digest digest;
+  late Image mailImage = Image.asset('assets/mail.test.02.png');
 
-  final MailPiece mailPiece;
-  MimeMessage ? email;
+  MailPieceViewWidgetState(this.mailPiece);
 
-  MailPieceViewWidget( {required this.mailPiece} );
+  @override
+  void initState() {
+    super.initState();
+    _getMailPieceEmail();
+  }
 
   Future<void> _getMailPieceEmail() async {
-    try {
-        await MailPieceEmailFetcher().getMailPieceEmail(await Keychain().getUsername(), await Keychain().getPassword(), mailPiece)
-            .then((value) => email = value);
-  } catch (e) {
-      debugPrint(e.toString());
+      MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(mailPiece);
+      digest = await mpef1.getMailPieceDigest();
+      _getImgFromEmail();
+  }
+
+  void _getImgFromEmail() async {
+    MimeMessage m = digest.message;
+    for (int x = 0; x < m.mimeData!.parts!.length; x++) {
+      if (m.mimeData!.parts!.elementAt(x).contentType?.value.toString().contains("image")??false) {
+        if (m.mimeData!.parts!.elementAt(x).toString().contains(mailPiece.midId)) {
+          var picture = m.mimeData!.parts!.elementAt(x).decodeMessageData().toString();
+          //These are base64 encoded images with formatting
+          picture = picture.replaceAll("\r\n", "");
+          //These are base64 encoded images with formatting
+
+          setState((){ mailImage = Image.memory(base64Decode(picture)); });
+        }
+      }
     }
   }
 
@@ -49,7 +81,7 @@ class MailPieceViewWidget extends StatelessWidget{
                   fontWeight: FontWeight.bold,
                   color: Color.fromRGBO(51, 51, 102, 1.0)),
               ),
-              Image.asset('assets/mail.test.02.png'), //load link to photo
+              mailImage, //load link to photo
               Container(
               padding: EdgeInsets.all(15),
               child:
@@ -63,10 +95,9 @@ class MailPieceViewWidget extends StatelessWidget{
                     children: [
                       Text('RECEIVED: ' + DateFormat('yyyy/MM/dd').format(mailPiece.timestamp) + ' ' + DateFormat('EEE hh:mm a').format(mailPiece.timestamp),
                           style: TextStyle(fontSize: 15)),
-
                       Text('RELEVANT TEXT: \n' + mailPiece.imageText,
                           style: TextStyle(fontSize: 15,
-                            color: Color.fromRGBO(51, 51, 102, 1.0) ))
+                            color: Color.fromRGBO(51, 51, 102, 1.0) )),
                     ]
                   ),
                 ),
