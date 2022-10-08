@@ -1,5 +1,4 @@
 // ignore_for_file: import_of_legacy_library_into_null_safe
-
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -11,14 +10,16 @@ import 'package:summer2022/utility/RouteGenerator.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:summer2022/ui/sign_in.dart';
+import 'package:summer2022/utility/auth_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // needed to access Keychain prior to main finishing
+  WidgetsFlutterBinding.ensureInitialized();
   GlobalConfiguration cfg = GlobalConfiguration();
   await setupLocator();
   await cfg.loadFromAsset("app_settings");
@@ -48,17 +49,24 @@ void main() async {
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-        //showSemanticsDebugger: true,
-        title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
-        initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
-        onGenerateRoute: RouteGenerator.generateRoute,
-        home: buildScreen(emailAuthenticated),
-        navigatorKey: navKey,
-      )
-  )
-  );
+    // showSemanticsDebugger: true,
+    title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
+    initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
+    onGenerateRoute: RouteGenerator.generateRoute,
+    home: AuthService().handleAuthState(),
+    navigatorKey: navKey,
+  )));
 }
 
-Widget buildScreen(bool emailAuthenticated) {
-  return emailAuthenticated == true ? const MainWidget() : const SignInWidget();
+class MailSpeakApp extends StatelessWidget {
+  const MailSpeakApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        themeMode: ThemeMode.system,
+        debugShowCheckedModeBanner: false,
+        home: AuthService().handleAuthState()
+        );
+  }
 }

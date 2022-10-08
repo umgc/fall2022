@@ -74,6 +74,7 @@ dependencies:
   sign_in_with_apple: ^3.0.0
   crypto: ^3.0.1
   github_sign_in: ^0.0.5-dev.4
+  uni_links: ^0.5.1
 
 dev_dependencies:
   flutter_test:
