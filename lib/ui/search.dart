@@ -12,7 +12,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../models/ApplicationFunction.dart';
 import '../models/SearchCriteria.dart';
 import '../services/mail_service.dart';
-import 'AssistantState.dart';
+import 'assistant_state.dart';
 import '../services/mail_storage.dart';
 
 class SearchWidget extends StatefulWidget {

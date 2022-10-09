@@ -8,7 +8,7 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
-import 'AssistantState.dart';
+import 'assistant_state.dart';
 
 
 class SettingsWidget extends StatefulWidget {
