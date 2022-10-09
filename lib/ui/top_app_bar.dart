@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import '../main.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
@@ -63,10 +65,8 @@ class TopBarState extends State<TopBar> {
             child:
             IconButton(
               icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30),
-              onPressed: () {
-                navKey.currentState!.pushNamed('/main');
-                },
-            )
+              onPressed: () =>Navigator.pop(context)
+            ),
           )
         ) : null,
         centerTitle: true,
