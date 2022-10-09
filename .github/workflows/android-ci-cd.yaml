@@ -47,7 +47,6 @@ jobs:
       - name: Build App Bundle
         run: flutter build appbundle --release
       - name: Upload App Bundle
-        if: github.repository == 'developer'
         uses: actions/upload-artifact@v3
         with:
           name: app-release.aab
@@ -55,6 +54,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
+        if: github.repository == 'developer'
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022
