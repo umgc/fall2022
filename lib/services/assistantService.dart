@@ -8,15 +8,18 @@ class AssistantService
       // Try to get our action from the intent
       if (intent.action == "actions.intent.action.GET_THING")
       {
-          if (intent.data == "Digest")
+          String query = intent.extra!["name"];
+
+          if (query == "Digest")
           {
             return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/digest_mail"]);
           }
-          else if (intent.data != null)
+          else if (query.isNotEmpty)
           {
-            return ApplicationFunction(methodName: "performSearch", parameters: <String>[intent.data as String]);
+            return ApplicationFunction(methodName: "performSearch", parameters: <String>[query]);
           }
       }
+
       return null;
   }
 }

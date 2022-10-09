@@ -2,12 +2,11 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <capability android:name="actions.intent.GET_THING">
         <intent
-            android:action="android.intent.action.VIEW"
             android:targetPackage="com.example.summer2022"
             android:targetClass="com.example.summer2022.MainActivity">
             <parameter
                 android:name="thing.name"
-                android:key="test"/>
+                android:key="name"/>
         </intent>
     </capability>
 </shortcuts>
