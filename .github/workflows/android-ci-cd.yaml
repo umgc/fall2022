@@ -37,7 +37,7 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
       # Useful for quick download and use on personal phone, but using the playstore should be more ideal
-      #- name: Build Apk file
+      - name: Build Apk file
         run: flutter build apk
       - name: Upload Apk
         uses: actions/upload-artifact@v3
