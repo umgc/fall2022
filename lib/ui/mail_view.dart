@@ -6,14 +6,20 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 
+import '../models/MailSearchParameters.dart';
+import '../services/mail_service.dart';
+
 class MailViewWidget extends StatelessWidget {
-  final List<MailPiece> mailPieces = List.generate(
-      10,
-          (index) =>
-          new MailPiece("", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ", "")
-  );
+
+  final MailSearchParameters query;
+
+  final MailService _mailService = MailService();
+
+  MailViewWidget({required this.query});
+
   @override
   Widget build(BuildContext context) {
+
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
       return Container(
         color: Colors.white10,
@@ -68,6 +74,24 @@ class MailViewWidget extends StatelessWidget {
       );
     }
 
+    var mailPieceListViewWidget = FutureBuilder<List<MailPiece>>(
+      future: _mailService.fetchMail(query),
+      builder: (context, AsyncSnapshot<List<MailPiece>> snapshot){
+        if(snapshot.hasData) {
+          return ListView.builder(
+              itemCount: snapshot.data!.length,
+              shrinkWrap: true,
+              itemBuilder: (context, int index) {
+                return _buildMailPiece(context, snapshot.data![index]);
+              }
+          );
+        }
+        else{
+          return CircularProgressIndicator();
+        }
+      }
+    );
+
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
@@ -106,17 +130,13 @@ class MailViewWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child:
-                      ListView.builder(
-                      itemCount: mailPieces.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, int index) {
-                        return _buildMailPiece(context, mailPieces[index]);
-                        }
-                      ),
+                    mailPieceListViewWidget,
                   ),
                 ]),
             ),
       ),
     );
+
+
   }
 }
