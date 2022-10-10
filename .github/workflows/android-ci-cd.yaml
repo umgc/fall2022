@@ -10,9 +10,6 @@ on:
     - "developer"
     - "master"
 
-env:
-  BRANCH_NAME: ${{ github.ref_name }}
-
 jobs:
   # CI
   build_android:
@@ -27,7 +24,7 @@ jobs:
           echo ${{ github.GITHUB_REF }}
           echo ${{ github.ref }}
           echo ${{ github.ref_name }}
-          echo ${{ BRANCH_NAME }}
+          echo ${{ github.head_ref }}
       # - name: Update version in YAML
       #   run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
       # - name: Update keystore password
