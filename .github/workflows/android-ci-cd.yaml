@@ -17,10 +17,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get run number
+      - name: Get run number and branch
         run: |
           echo ${{ github.run_number }}
-          echo ${{ github.ref }}
+          echo ${{ github.GITHUB_REF_NAME }}
       - name: Update version in YAML
         run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
       - name: Update keystore password
