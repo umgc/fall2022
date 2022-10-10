@@ -60,6 +60,7 @@ dependencies:
   loader_overlay: ^2.0.7
   permission_handler: ^10.0.0
   image_gallery_saver: ^1.7.1
+  receive_intent: ^0.2.2
   flutter_chat_ui: ^1.6.4
   uuid: ^3.0.6
   firebase_analytics: ^9.3.7

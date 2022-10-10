@@ -8,6 +8,8 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import 'assistant_state.dart';
+
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class SettingsWidget extends StatefulWidget {
 
 GlobalConfiguration cfg = GlobalConfiguration();
 
-class SettingWidgetState extends State<SettingsWidget> {
+class SettingWidgetState extends AssistantState<SettingsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
 
   @override
