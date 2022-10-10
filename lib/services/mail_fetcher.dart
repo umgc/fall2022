@@ -1,4 +1,5 @@
 import 'package:summer2022/models/MailResponse.dart';
+import '../exceptions/fetch_mail_exception.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
@@ -17,14 +18,18 @@ class MailFetcher {
   /// with the subject `Your Daily Digest`.
   Future<List<MailPiece>> fetchMail(DateTime lastTimestamp) async {
     List<MailPiece> mailPieces = <MailPiece>[];
-    List<MimeMessage> emails = await _getEmails(
-        lastTimestamp,
-        "uspsinformeddelivery@email.informeddelivery.usps.com",
-        "Your Daily Digest");
+    try {
+      List<MimeMessage> emails = await _getEmails(
+          lastTimestamp,
+          "uspsinformeddelivery@email.informeddelivery.usps.com",
+          "Your Daily Digest");
 
-    // Process each email
-    for (final email in emails) {
-      mailPieces.addAll(await _processEmail(email));
+      // Process each email
+      for (final email in emails) {
+        mailPieces.addAll(await _processEmail(email));
+      }
+    } catch(e) {
+      print("Unable to retrieve email.");
     }
 
     return mailPieces;
@@ -93,7 +98,10 @@ class MailFetcher {
         }
         return <MimeMessage>[];
       }
-    } finally {
+    } catch(e) {
+      throw new FetchMailException(e.toString());
+    }
+    finally {
       _logout(client);
     }
   }
