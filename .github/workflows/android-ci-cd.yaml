@@ -54,7 +54,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
-        if: $GITHUB_REF_NAME == 'feature/actions'
+        if: GITHUB_REF_NAME == 'feature/actions'
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022
