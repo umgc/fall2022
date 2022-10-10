@@ -13,7 +13,6 @@ on:
 jobs:
   # CI
   build_android:
-    if: ${{ github.ref }} == 'refs/heads/development
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,6 +20,7 @@ jobs:
       - name: Get run number
         run: |
           echo ${{ github.run_number }}
+          echo ${{ github.ref }}
       - name: Update version in YAML
         run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
       - name: Update keystore password
@@ -55,7 +55,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
-        if: ${{ github.ref }} == 'refs/heads/feature/actions'
+        if: ${{ github.ref }} == 'refs/heads/development'
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022
