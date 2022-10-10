@@ -55,7 +55,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
-        if: ${{ github.head_ref }} == 'developer'
+        if: github.head_ref == 'developer'
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022
