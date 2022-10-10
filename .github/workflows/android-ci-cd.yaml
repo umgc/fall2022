@@ -17,9 +17,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get run number
+      - name: Get run number and if merged
         run: |
-          echo ${{ github.run_number }}
+          echo run number: ${{ github.run_number }}
+          echo branch: ${{ github.ref_name }}
       - name: Update version in YAML
         run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
       - name: Update keystore password
@@ -37,13 +38,13 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
       # Useful for quick download and use on personal phone, but using the playstore should be more ideal
-      #- name: Build Apk file
-      #  run: flutter build apk
-      #- name: Upload Apk
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: app-release.apk
-      #    path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Build Apk file
+        run: flutter build apk
+      - name: Upload Apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
       - name: Build App Bundle
         run: flutter build appbundle --release
       - name: Upload App Bundle
@@ -54,6 +55,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
+        if: github.ref_name == 'developer'
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022

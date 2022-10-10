@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -8,17 +9,20 @@ import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'assistant_state.dart';
+
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
 
-  @override
+@override
   SignInWidgetState createState() => SignInWidgetState();
 }
 
-class SignInWidgetState extends State<SignInWidget> {
+class SignInWidgetState extends AssistantState<SignInWidget> {
   var url1 = Uri.parse("https://www.google.com/policies/privacy/");
   var url2 = Uri.parse("https://firebase.google.com/policies/analytics");
   var url3 = Uri.parse("https://www.apple.com/legal/privacy/data/en/app-store/");
+  var url4 = Uri.parse("https://informeddelivery.usps.com");
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   static const kPrimaryColor = Color(0xFF6F35A5);
@@ -29,6 +33,7 @@ class SignInWidgetState extends State<SignInWidget> {
   @override
   void initState() {
     super.initState();
+
     locator<AnalyticsService>().logScreens(name: "signIn");
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
     /*FirebaseAnalytics.instance.logEvent(
@@ -39,6 +44,12 @@ class SignInWidgetState extends State<SignInWidget> {
       },
     );*/
   }
+  @override
+  void processFunction(ApplicationFunction function)
+  {
+    //TODO put a dialog explaining why this won't work.
+  }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -251,6 +262,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                     text: '\n\n• Google Play Services\n\n',
                                     style: TextStyle(
                                         fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.blue,
                                         decoration: TextDecoration.underline),
                                     recognizer: TapGestureRecognizer()
@@ -262,6 +274,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                     text: '• Google Firebase Analytics\n\n',
                                     style: TextStyle(
                                         fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.blue,
                                         decoration: TextDecoration.underline),
                                     recognizer: TapGestureRecognizer()
@@ -273,6 +286,7 @@ class SignInWidgetState extends State<SignInWidget> {
                                     text: '• Apple App Store\n\n',
                                     style: TextStyle(
                                         fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.blue,
                                         decoration: TextDecoration.underline),
                                     recognizer: TapGestureRecognizer()
@@ -463,10 +477,32 @@ class SignInWidgetState extends State<SignInWidget> {
                       )
                     ),
                     Container(
-                      padding: const EdgeInsets.only(top: 15, bottom: 15),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Not registered, click here."),
+                      child:
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                          TextSpan(
+                          text: 'Not registered, ',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                            text: 'touch here.',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                launchUrl(url4);
+                              }
+                        ),
+                        ]
+                        )
+                      )
                     ),
                       ],
                     ),
@@ -476,7 +512,7 @@ class SignInWidgetState extends State<SignInWidget> {
             ),
           ),
         ),
-        ),
+      ),
     );
   }
 }
