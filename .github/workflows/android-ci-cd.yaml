@@ -20,7 +20,7 @@ jobs:
       - name: Get run number and branch
         run: |
           echo ${{ github.run_number }}
-          echo ${{ github.ref }}
+          echo ${{ github.event.pull_request.merged }}
       - name: Update version in YAML
         run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
       - name: Update keystore password
@@ -55,7 +55,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
-        if: github.ref == 'refs/heads/developer'
+        if: github.event.pull_request.merged == true
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022
