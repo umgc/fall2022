@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get run number and branch
+      - name: Get run number and if merged
         run: |
           echo ${{ github.run_number }}
           echo ${{ github.event.pull_request.merged }}
