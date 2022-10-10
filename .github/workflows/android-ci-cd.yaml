@@ -20,51 +20,47 @@ jobs:
       - name: Get run number and branch
         run: |
           echo ${{ github.run_number }}
-          echo ${{ github.GITHUB_REF_NAME }}
-          echo ${{ github.GITHUB_REF }}
-          echo ${{ github.ref }}
-          echo ${{ github.ref_name }}
           echo ${{ github.head_ref }}
-      # - name: Update version in YAML
-      #   run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
-      # - name: Update keystore password
-      #   run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' android/key.properties
-      # - name: Update keystore key password  
-      #   run: sed -i 's/#{KEYSTORE_KEY_PASS}#/${{ secrets.KEYSTORE_KEY_PASS }}/g' android/key.properties
-      # - name: Setup Java
-      #   uses: actions/setup-java@v1
-      #   with:
-      #     java-version: 12.x
-      # - name: Setup Flutter
-      #   uses: subosito/flutter-action@v1
-      #   with:
-      #     channel: "stable"
-      # - name: Install Flutter dependencies
-      #   run: flutter pub get
-      # # Useful for quick download and use on personal phone, but using the playstore should be more ideal
-      # - name: Build Apk file
-      #   run: flutter build apk
-      # - name: Upload Apk
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: app-release.apk
-      #     path: build/app/outputs/flutter-apk/app-release.apk
-      # - name: Build App Bundle
-      #   run: flutter build appbundle --release
-      # - name: Upload App Bundle
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: app-release.aab
-      #     path: build/app/outputs/bundle/release/app-release.aab
-      # - name: Run Unit Tests
-      #   run: flutter test
-      # - name: Release app to internal track
-      #   if: ${{ github.ref }} == 'refs/heads/development'
-      #   uses: r0adkll/upload-google-play@v1
-      #   with:
-      #     packageName: com.umgc.summer2022
-      #     releaseFile: build/app/outputs/bundle/release/app-release.aab
-      #     track: internal
-      #     status: draft
-      #     serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
-      #     whatsNewDirectory: distribution/whatsnew
+      - name: Update version in YAML
+        run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
+      - name: Update keystore password
+        run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.KEYSTORE_PASS }}/g' android/key.properties
+      - name: Update keystore key password  
+        run: sed -i 's/#{KEYSTORE_KEY_PASS}#/${{ secrets.KEYSTORE_KEY_PASS }}/g' android/key.properties
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 12.x
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      # Useful for quick download and use on personal phone, but using the playstore should be more ideal
+      - name: Build Apk file
+        run: flutter build apk
+      - name: Upload Apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+      - name: Upload App Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.aab
+          path: build/app/outputs/bundle/release/app-release.aab
+      - name: Run Unit Tests
+        run: flutter test
+      - name: Release app to internal track
+        if: ${{ github.head_ref }} == 'developer'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          packageName: com.umgc.summer2022
+          releaseFile: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: draft
+          serviceAccountJsonPlainText: ${{secrets.SERVICE_ACCOUNT_JSON}}
+          whatsNewDirectory: distribution/whatsnew
