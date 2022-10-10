@@ -21,6 +21,9 @@ jobs:
         run: |
           echo ${{ github.run_number }}
           echo ${{ github.GITHUB_REF_NAME }}
+          echo ${{ github.GITHUB_REF }}
+          echo ${{ github.ref }}
+          echo ${{ github.ref_name }}
       - name: Update version in YAML
         run: sed -i 's/99.99.99+99/1.0.0+${{ github.run_number }}/g' pubspec.yaml
       - name: Update keystore password
