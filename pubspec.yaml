@@ -1,5 +1,5 @@
 name: summer2022
-description: A new Flutter project.
+description: A mobile application to empower users of the USPS Informed Delivery services.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
