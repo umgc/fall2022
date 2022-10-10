@@ -13,6 +13,7 @@ on:
 jobs:
   # CI
   build_android:
+    if: ${{ github.ref }} == 'refs/heads/feature/actions'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -54,7 +55,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Release app to internal track
-        if: github.ref == 'refs/heads/feature/actions'
+        if: ${{ github.ref }} == 'refs/heads/feature/actions'
         uses: r0adkll/upload-google-play@v1
         with:
           packageName: com.umgc.summer2022
