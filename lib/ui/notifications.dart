@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/models/Notification.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
-import 'package:summer2022/models/Notification.dart';
 
 
 class NotificationsWidget extends StatefulWidget {
@@ -17,21 +17,37 @@ GlobalConfiguration cfg = GlobalConfiguration();
 
 class NotificationsWidgetState extends State<NotificationsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
-  late final NotificationSubscription notificationSubscription;
-  final List<NotificationSubscription> notificationSubscriptions = List.generate(
-      3,
-          (index) =>
-      new NotificationSubscription("Testing")
-  );
+  var notificationSubList = <NotificationSubscription>[];
+  var notificationSub = new NotificationSubscription('Test Keyword');
+  //var notificationsList = <Notification>[];
+  //var notification = new Notification(DateTime.now(), '', '', '');
+
+
   @override
   void initState() {
     super.initState();
   }
 
+  void addItemToList(){
+    setState(() {
+      notificationSubList.add(notificationSub);
+
+      //notificationsList.add(notification);
+    });
+  }
+
+  void removeItemFromList(String item) {
+    setState(() {
+      var itemindexSubList = notificationSubList.indexWhere((element) => element.keyword == item);
+      //var itemindexNList = notificationsList.indexWhere((element) => element.subscriptionKeyword == item);
+      notificationSubList.removeAt(itemindexSubList);
+      //notificationsList.removeAt(itemindexNList);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 1,
       length: 2,
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
@@ -61,8 +77,55 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
         ),
         body: TabBarView(
           children: <Widget>[
-            Center(
-              child: Text("It's cloudy here"),
+            Container(
+              child: Column(
+                children: [
+                  Row(
+                      children: [
+                        Container(
+                          child: Text('Date'), padding: EdgeInsets.only(left: 40, top: 20, bottom: 5)
+                        ),
+                        Container(
+                          child: Text('Keyword(s)'), padding: EdgeInsets.only(left: 40, top: 20, bottom: 5),
+                        ),
+                      ]
+                  ),
+                  Divider(
+                    height: 20,
+                    thickness: 2,
+                    color: Colors.black,
+                  ),
+                  /*Column(
+                    children: [
+                      for(var item in notificationsList)
+                        Row(
+                          children: [
+                            SizedBox(
+                              child: Text(item.timestamp.toString()),
+                              width: 270,
+                            ),
+                            SizedBox(
+                              child: Text(item.subscriptionKeyword),
+                              width: 270,
+                            ),
+                            SizedBox(
+                              child: OutlinedButton(
+                                child: Text('Delete', style: TextStyle(color: Colors.white),),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                                ),
+                                onPressed: () {
+                                  removeItemFromList(item.subscriptionKeyword);
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                    ],
+                  )*/
+                ],
+              ),
             ),
             Container(
               child: Column(
@@ -79,7 +142,9 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
                               backgroundColor: MaterialStateColor.resolveWith((states) => Colors.green),
                               shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              addItemToList();
+                            },
                           ),
                         padding: EdgeInsets.only(left: 190),
                       )
@@ -90,18 +155,31 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
                     thickness: 2,
                     color: Colors.black,
                   ),
-                  Container(
-                    child: ListView.builder(
-                          itemCount: 3,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Card(
-                              child: ListTile(
-                                title: Text("This is title"),
+                  Column(
+                    children: [
+                      for(var item in notificationSubList)
+                        Row(
+                          children: [
+                            SizedBox(
+                              child: Text(item.keyword),
+                              width: 270,
+                            ),
+                            SizedBox(
+                              child: OutlinedButton(
+                                child: Text('Delete', style: TextStyle(color: Colors.white),),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                                ),
+                                onPressed: () {
+                                  removeItemFromList(item.keyword);
+                                },
                               ),
-                            );
-                          }
-                      ),
-                    ),
+                            )
+                          ],
+                        ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -110,13 +188,11 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
       ),
     );
   }
-}
 
-/*Container(
-                      child: ListView.builder(
-                          itemCount: notificationSubscriptions.length,
-                          itemBuilder: (context, int index) {
-                            return Text(notificationSubscriptions[index].toString());
-                          }
-                      ),
-                    ),*/
+  Widget _buildList({required String key, required String string}) {
+    return ListView.builder(
+      key: PageStorageKey(key),
+      itemBuilder: (_, i) => ListTile(title: Text("${string} ${i}")),
+    );
+  }
+}
