@@ -28,7 +28,8 @@ class MailPieceViewWidget extends StatefulWidget{
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
   final mailPiece;
   late Digest digest;
-  late Image mailImage = Image.asset('assets/mail.test.02.png');
+  late Image? mailImage = null;
+  //Image.asset('assets/mail.test.02.png');
 
   MailPieceViewWidgetState(this.mailPiece);
 
@@ -81,7 +82,7 @@ class MailPieceViewWidget extends StatefulWidget{
                   fontWeight: FontWeight.bold,
                   color: Color.fromRGBO(51, 51, 102, 1.0)),
               ),
-              mailImage, //load link to photo
+              mailImage ?? Text("No Photo Loaded"), //load link to photo
               Container(
               padding: EdgeInsets.all(15),
               child:

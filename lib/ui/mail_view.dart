@@ -6,7 +6,13 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 
-class MailViewWidget extends StatelessWidget {
+class MailViewWidget extends StatefulWidget {
+
+  @override
+  MailViewWidgetState createState() => MailViewWidgetState();
+}
+
+class MailViewWidgetState extends State<MailViewWidget> {
 
   //this is temporary for list view display, need to eventually delete when search results are achieved
   List<MailPiece> mailPieces = _createMailPieces();

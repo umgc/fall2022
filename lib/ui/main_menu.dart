@@ -32,7 +32,7 @@ CloudVisionApi? vision = CloudVisionApi();
 bool? _completed;
 
 class MainWidgetState extends State<MainWidget> {
-  DateTime selectedDate = DateTime.now() /*.subtract(const Duration(days: 1)) */;
+  DateTime selectedDate = DateTime.now();
   String mailType = "Digest";
   File? _image;
   Uint8List? _imageBytes;
