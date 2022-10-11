@@ -26,6 +26,15 @@ class MailNotifier {
         where: "keyword = ?", whereArgs: [subscription.keyword]);
   }
 
+  /// Retrieve all notification subscriptions from the database.
+  Future<List<NotificationSubscription>> getSubscriptions() async {
+    final db = await database;
+    final result = await db.query(NOTIFICATION_SUBSCRIPTION_TABLE);
+    return result
+        .map((row) => NotificationSubscription(row["keyword"] as String))
+        .toList();
+  }
+
   /// Retrieve all notifications from the database.
   Future<List<Notification>> getNotifications() async {
     final db = await database;
