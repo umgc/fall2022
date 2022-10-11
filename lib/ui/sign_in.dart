@@ -7,17 +7,22 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/locator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'assistant_state.dart';
 
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
 
-  @override
+@override
   SignInWidgetState createState() => SignInWidgetState();
 }
 
 class SignInWidgetState extends AssistantState<SignInWidget> {
+  var url1 = Uri.parse("https://www.google.com/policies/privacy/");
+  var url2 = Uri.parse("https://firebase.google.com/policies/analytics");
+  var url3 = Uri.parse("https://www.apple.com/legal/privacy/data/en/app-store/");
+  var url4 = Uri.parse("https://informeddelivery.usps.com");
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   static const kPrimaryColor = Color(0xFF6F35A5);
@@ -243,14 +248,62 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                       SizedBox(
                         height: 20,
                       ),
-                      Text.rich(
-                        TextSpan(
-                            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                            style: TextStyle(
-                              fontSize: 14,
-                            )
-                        ),
-                      ),
+                      RichText(
+                          text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Privacy Policy\n\n[Our Name] has created a free app called MailSpeak. This Mobile Application is provided at no cost and is intended for use as is. \n\nThis page is used to inform app users of our policies regarding the collection, use, and disclosure of Personal Information should they decide to use our Service.\n\nIf you choose to use our Service, then you agree to the collection and use of information in relation to this policy. The Personal Information that we collect is used for providing and improving the Service. We will not use or share your information with anyone except as described in this Privacy Policy.\n\nInformation Collection and Use\n\nFor a better experience, while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to email, email password. The information that we request will be retained by us and used as described in this privacy policy. \n\nThe app does use third party services that may collect information used to identify you.\n\nLink to privacy policy of third-party service providers used by the app',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                    text: '\n\n• Google Play Services\n\n',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                    launchUrl(url1);
+                                    }
+                                ),
+                                TextSpan(
+                                    text: '• Google Firebase Analytics\n\n',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        launchUrl(url2);
+                                      }
+                                ),
+                                TextSpan(
+                                    text: '• Apple App Store\n\n',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        launchUrl(url3);
+                                      }
+                                ),
+                                TextSpan(
+                                  text: 'Affiliates and Business Partners\n\nWe share your information with our affiliates and business partners for internal business purposes, including for customer support, evaluation, marketing, and technical operations. \n\nLog Data\n\nWe want to inform you that whenever you use our Service, in a case of an error in the app we collect data and information (through third party products) on your phone called Log Data. This Log Data may include information such as your device Internet Protocol (“IP”) address, device name, operating system version, the configuration of the app when utilizing our Service, the time and date of your use of the Service, and other statistics. \n\nCookies\n\nCookies are files with a small amount of data that are commonly used as anonymous unique identifiers. These are sent to your browser from the websites that you visit and are stored on your devices internal memory. \n\nThis Service does not use these “cookies” explicitly. However, the app may use third party code and libraries that use “cookies” to collect information and improve their services. You have the option to either accept or refuse these cookies and know when a cookie is being sent to your device. If you choose to refuse our cookies, you may not be able to use some portions of this Service. \n\nService Providers\n\nWe may employ third-party companies and individuals due to the following reasons: \n\n•To facilitate our Service; \n\n•To provide the Service on our behalf; \n\n•To perform Service-related services; or\n\n•To assist us in analyzing how our Service is used. \n\nWe want to inform users of this Service that these third parties have access to your Personal Information. The reason is to perform the tasks assigned to them on our behalf. However, they are obligated not to disclose or use the information for any other purpose. \n\nSecurity\n\nWe value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it. But remember that no method of transmission over the internet, or method of electronic storage is 100% secure and reliable, and we cannot guarantee its absolute security. \n\nLinks to Other Sites\n\nThis Service may contain links to other sites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by us. Therefore, we strongly advise you to review the Privacy Policy of these websites. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services. \n\nChildren’s Privacy\n\nThese Services do not address anyone under the age of 13. We do not knowingly collect personally identifiable information from children under 13. In the case we discover that a child under 13 has provided us with personal information, we immediately delete this from our servers. If you are a parent or guardian and you are aware that your child has provided us with personal information, please contact us so that we will be able to do necessary actions.\n\nChanges to This Privacy Policy\n\nWe may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes. We will notify you of any changes by posting the new Privacy Policy on this page. These changes are effective immediately after they are posted on this page.\n\nContact Us\n\nIf you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us.\n\n',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ]
+                          )
+                      )
                     ],
                   ),
                 ),
@@ -424,10 +477,32 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                       )
                     ),
                     Container(
-                      padding: const EdgeInsets.only(top: 15, bottom: 15),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Not registered, click here."),
+                      child:
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                          TextSpan(
+                          text: 'Not registered, ',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                            text: 'touch here.',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                launchUrl(url4);
+                              }
+                        ),
+                        ]
+                        )
+                      )
                     ),
                       ],
                     ),
@@ -437,7 +512,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
             ),
           ),
         ),
-        ),
+      ),
     );
   }
 }
