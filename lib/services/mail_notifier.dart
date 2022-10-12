@@ -62,7 +62,13 @@ class MailNotifier {
     await db.delete(NOTIFICATION_TABLE);
   }
 
-  /// Checks all mail recieved after the provided timestamp against the list of
+  /// Clears all notification subscriptions
+  Future<void> clearAllSubscriptions() async {
+    final db = await database;
+    await db.delete(NOTIFICATION_SUBSCRIPTION_TABLE);
+  }
+
+  /// Checks all mail received after the provided timestamp against the list of
   /// notification subscriptions. If there are any matches, new notification
   /// objects are created and stored.
   Future<void> updateNotifications(DateTime lastTimestamp) async {
