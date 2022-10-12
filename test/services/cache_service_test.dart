@@ -13,14 +13,13 @@ import 'package:summer2022/services/mail_storage.dart';
   MockSpec<MailNotifier>(),
   MockSpec<MailStorage>()
 ])
-import 'mail_processor_test.mocks.dart';
+
+import 'cache_service_test.mocks.dart';
 
 void main() {
   final fetcher = MockMailFetcher();
   final notifier = MockMailNotifier();
   final storage = MockMailStorage();
-  final username = "test";
-  final password = "test";
 
   final subject = CacheService(fetcher, storage, notifier);
 
@@ -43,5 +42,19 @@ void main() {
     verify(storage.saveMailPiece(mailPieces[1]));
     verify(storage.saveMailPiece(mailPieces[2]));
     verify(notifier.updateNotifications(now));
+  });
+
+  test('deletes all cached data from notifier and storage', () async {
+    when(storage.deleteAllMailPieces()).thenAnswer((_) => Future.value(true));
+    when(notifier.clearAllNotifications())
+        .thenAnswer((_) => Future.value(null));
+    when(notifier.clearAllSubscriptions())
+        .thenAnswer((_) => Future.value(null));
+        
+    await subject.clearAllCachedData();
+
+    verify(storage.deleteAllMailPieces());
+    verify(notifier.clearAllNotifications());
+    verify(notifier.clearAllSubscriptions());
   });
 }

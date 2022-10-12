@@ -10,11 +10,21 @@ class CacheService {
   late MailStorage _storage;
   late MailNotifier _notifier;
 
+  static CacheService? _instance = null;
+
   CacheService(this._fetcher, this._storage, this._notifier);
+
+  static CacheService getInstance(String? username, String? password) {
+    if (_instance == null) {
+      _instance = CacheService(
+          MailFetcher(username, password), MailStorage(), MailNotifier());
+    }
+    return _instance!;
+  }
 
   /// Builds a default CacheService and uses it to fetch the latest mail.
   static Future<void> updateMail(String? username, String? password) async {
-    await CacheService(MailFetcher(username, password), MailStorage(), MailNotifier())
+    await CacheService.getInstance(username, password)
         .fetchAndProcessLatestMail();
   }
 
@@ -27,5 +37,15 @@ class CacheService {
       await _storage.saveMailPiece(piece);
     }
     await _notifier.updateNotifications(lastTimestamp);
+  }
+
+  static Future<void> clearEverything() async {
+    await CacheService.getInstance(null, null).clearAllCachedData();
+  }
+
+  Future<void> clearAllCachedData() async {
+    _storage.deleteAllMailPieces();
+    _notifier.clearAllNotifications();
+    _notifier.clearAllSubscriptions();
   }
 }
