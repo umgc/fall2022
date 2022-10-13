@@ -23,9 +23,9 @@ void main() {
     """);
   });
 
-  test("it defaults the last timestamp to 7 days ago", () async {
+  test("it defaults the last timestamp to 30 days ago", () async {
     await _expectMailPieceCount(0);
-    final expected = now.subtract(Duration(days: 7)).millisecondsSinceEpoch;
+    final expected = now.subtract(Duration(days: 30)).millisecondsSinceEpoch;
     final actual = await subject.lastTimestamp;
     // Within 1 second, which can happen due to async timing.
     expect(actual.millisecondsSinceEpoch, closeTo(expected, 1000));
