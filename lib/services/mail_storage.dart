@@ -12,7 +12,7 @@ class MailStorage {
     final result = await db.query(MAIL_PIECE_TABLE,
         orderBy: "timestamp DESC", limit: 1, columns: ["timestamp"]);
     if (result.isEmpty) {
-      return DateTime.now().subtract(Duration(days: 7));
+      return DateTime.now().subtract(Duration(days: 30));
     } else {
       final timestamp = result[0]["timestamp"] as int;
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
