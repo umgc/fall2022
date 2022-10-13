@@ -36,7 +36,14 @@ class MailPieceViewWidget extends StatefulWidget{
   @override
   void initState() {
     super.initState();
+    @override
+    Widget build(BuildContext context) {
+      return Center(
+          child: CircularProgressIndicator()
+      );
+    }
     _getMailPieceEmail();
+    Navigator.of(context).pop();
   }
 
   Future<void> _getMailPieceEmail() async {
@@ -72,7 +79,9 @@ class MailPieceViewWidget extends StatefulWidget{
         backgroundColor: _buttonColor,
         centerTitle: true,
       ),
-      body: Container(
+      body: SingleChildScrollView(
+      child:
+        Container(
         padding: EdgeInsets.all(15.0),
         child: Center(
           child: Column(
@@ -125,10 +134,12 @@ class MailPieceViewWidget extends StatefulWidget{
                            ),
                     ]),
               ),
-            ]),
+            ]
           ),
+        ),
       ),
-    );
+    ),
+  );
 
   }
 
