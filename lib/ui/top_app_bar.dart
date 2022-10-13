@@ -63,10 +63,8 @@ class TopBarState extends State<TopBar> {
             child:
             IconButton(
               icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30),
-              onPressed: () {
-                navKey.currentState!.pushNamed('/main');
-                },
-            )
+              onPressed: () =>Navigator.pop(context)
+            ),
           )
         ) : null,
         centerTitle: true,

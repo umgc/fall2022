@@ -2,11 +2,16 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/services/cache_service.dart';
+import 'package:summer2022/services/mail_notifier.dart';
 import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/locator.dart';
+
+import 'assistant_state.dart';
 
 
 class SettingsWidget extends StatefulWidget {
@@ -18,7 +23,7 @@ class SettingsWidget extends StatefulWidget {
 
 GlobalConfiguration cfg = GlobalConfiguration();
 
-class SettingWidgetState extends State<SettingsWidget> {
+class SettingWidgetState extends AssistantState<SettingsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
 
   @override
@@ -179,6 +184,38 @@ class SettingWidgetState extends State<SettingsWidget> {
         );
       },
     );
+  }
+
+  void askConfirmationDialog() {
+    Widget noButton =
+        TextButton(onPressed: () => Navigator.pop(context), child: Text("No"));
+    Widget yesButton =
+        TextButton(onPressed: () => _deleteEverything(), child: Text("Yes"));
+
+    //setup Alert Dialog
+    AlertDialog confirmation = AlertDialog(
+      title: Text("Delete Confirmation"),
+      content: Text(
+          "Are you sure you want to delete all cached data?  This will delete everything and log you out."),
+      actions: [yesButton, noButton],
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return confirmation;
+        });
+  }
+
+  void _deleteEverything() {
+    // Remove saved login
+    Keychain().deleteAll();
+    // reset to default app settings
+    cfg.loadFromAsset("app_settings");
+    // clear cache
+    CacheService.getInstance(null, null).clearAllCachedData();
+    // return to login screen
+    Navigator.pushNamed(context, '/sign_in');
   }
 
   @override
@@ -525,7 +562,26 @@ class SettingWidgetState extends State<SettingsWidget> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 60.0),
+                const SizedBox(height: 10.0),
+                Container(
+                    alignment: Alignment.center,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        askConfirmationDialog();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(231, 25, 33, 1),
+                        shadowColor: Colors.grey,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(5))),
+                      ),
+                      child: const Text(
+                        "Delete All Local Data",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                ),
             ],
           ),
         ),

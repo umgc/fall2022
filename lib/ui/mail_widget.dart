@@ -11,6 +11,8 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import 'assistant_state.dart';
+
 class MailWidget extends StatefulWidget {
   final Digest digest;
 
@@ -22,7 +24,7 @@ class MailWidget extends StatefulWidget {
   }
 }
 
-class MailWidgetState extends State<MailWidget> {
+class MailWidgetState extends AssistantState<MailWidget> {
   int attachmentIndex = 0;
   List<Link> links = <Link>[];
   FontWeight commonFontWt = FontWeight.w700;

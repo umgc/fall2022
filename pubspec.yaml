@@ -1,5 +1,5 @@
 name: summer2022
-description: A new Flutter project.
+description: A mobile application to empower users of the USPS Informed Delivery services.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -60,6 +60,7 @@ dependencies:
   loader_overlay: ^2.0.7
   permission_handler: ^10.0.0
   image_gallery_saver: ^1.7.1
+  receive_intent: ^0.2.2
   flutter_chat_ui: ^1.6.4
   uuid: ^3.0.6
   firebase_analytics: ^9.3.7

@@ -15,7 +15,7 @@ class MailPieceViewWidget extends StatefulWidget{
   const MailPieceViewWidget({Key? key, required this.mailPiece}) : super(key: key);
 
   @override
-  MailPieceViewWidgetState createState() => MailPieceViewWidgetState(mailPiece);
+  MailPieceViewWidgetState createState() => MailPieceViewWidgetState();
 }
 
   GlobalConfiguration cfg = GlobalConfiguration();
@@ -26,12 +26,11 @@ class MailPieceViewWidget extends StatefulWidget{
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _commonFontSize = 30;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
-  final mailPiece;
   late Digest digest;
   late Image? mailImage = null;
   //Image.asset('assets/mail.test.02.png');
 
-  MailPieceViewWidgetState(this.mailPiece);
+  MailPieceViewWidgetState();
 
   @override
   void initState() {
@@ -47,7 +46,7 @@ class MailPieceViewWidget extends StatefulWidget{
   }
 
   Future<void> _getMailPieceEmail() async {
-      MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(mailPiece);
+      MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(widget.mailPiece);
       digest = await mpef1.getMailPieceDigest();
       _getImgFromEmail();
   }
@@ -56,7 +55,7 @@ class MailPieceViewWidget extends StatefulWidget{
     MimeMessage m = digest.message;
     for (int x = 0; x < m.mimeData!.parts!.length; x++) {
       if (m.mimeData!.parts!.elementAt(x).contentType?.value.toString().contains("image")??false) {
-        if (m.mimeData!.parts!.elementAt(x).toString().contains(mailPiece.midId)) {
+        if (m.mimeData!.parts!.elementAt(x).toString().contains(widget.mailPiece.midId)) {
           var picture = m.mimeData!.parts!.elementAt(x).decodeMessageData().toString();
           //These are base64 encoded images with formatting
           picture = picture.replaceAll("\r\n", "");
@@ -73,7 +72,7 @@ class MailPieceViewWidget extends StatefulWidget{
     return Scaffold(
       bottomNavigationBar: const BottomBar(),
       appBar: AppBar(
-        title: Text('Search Result: ${mailPiece.id}',  style:
+        title: Text('Search Result: ${widget.mailPiece.id}',  style:
         TextStyle(fontWeight: _commonFontWeight, fontSize: _commonFontSize),
         ),
         backgroundColor: _buttonColor,
@@ -86,7 +85,7 @@ class MailPieceViewWidget extends StatefulWidget{
         child: Center(
           child: Column(
             children: [
-              Text('SENT BY: ${mailPiece.sender}\n',
+              Text('SENT BY: ${widget.mailPiece.sender}\n',
                   style: TextStyle(fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color.fromRGBO(51, 51, 102, 1.0)),
@@ -103,9 +102,9 @@ class MailPieceViewWidget extends StatefulWidget{
                     alignment: WrapAlignment.start,
                     spacing: 15,
                     children: [
-                      Text('RECEIVED: ' + DateFormat('yyyy/MM/dd').format(mailPiece.timestamp) + ' ' + DateFormat('EEE hh:mm a').format(mailPiece.timestamp),
+                      Text('RECEIVED: ' + DateFormat('yyyy/MM/dd').format(widget.mailPiece.timestamp) + ' ' + DateFormat('EEE hh:mm a').format(widget.mailPiece.timestamp),
                           style: TextStyle(fontSize: 15)),
-                      Text('RELEVANT TEXT: \n' + mailPiece.imageText,
+                      Text('RELEVANT TEXT: \n' + widget.mailPiece.imageText,
                           style: TextStyle(fontSize: 15,
                             color: Color.fromRGBO(51, 51, 102, 1.0) )),
                     ]

@@ -3,4 +3,7 @@
 class NotificationSubscription {
   final String keyword;
   NotificationSubscription(this.keyword);
+
+  bool operator ==(Object other) =>
+      other is NotificationSubscription && other.keyword == this.keyword;
 }

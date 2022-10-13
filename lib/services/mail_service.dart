@@ -1,74 +1,69 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:enough_mail/enough_mail.dart';
+import 'package:summer2022/services/sqlite_database.dart';
 import 'package:summer2022/exceptions/fetch_mail_exception.dart';
-import 'package:summer2022/models/Digest.dart';
-import 'package:summer2022/utility/ComparisonHelpers.dart';
 
 import '../models/MailPiece.dart';
+import '../models/MailSearchParameters.dart';
 
 class MailService {
-  /// Location of mail data file
-  /// todo: set file path in config and pull value from there
-  String mailData = "";
-
-  /// Mail data file
-  File localFile = new File("");
-
-  /// MailService constructor
-  MailService() {
-    localFile = File(mailData);
-  }
-
-  /// Retrieves all mail from local cache that matches [keyword] or is within [startDate] and [endDate]
-  /// [startDate] and [endDate] should either both have values or both be null
-  /// throws a [FetchMailException] error if file retrieval, parsing, or filtering fails
-  Future<List> fetchMail(
-      String? keyword, DateTime? startDate, DateTime? endDate) async {
+  /// Retrieves all mail from local cache that matches [searchArgs.keyword] and is within [searchArgs.startDate] and [searchArgs.endDate]
+  /// [searchArgs.startDate] and [searchArgs.endDate] should either both have values or both be null
+  /// throws a [FetchMailException] error if retrieval, parsing, or filtering fails
+  Future<List<MailPiece>> fetchMail(MailSearchParameters searchArgs) async {
     try {
-      final jsonMail = localFile;
+      _formatDateTimeForSearch(searchArgs);
 
-      final mailParsed = await jsonMail.readAsString();
-
-      var mailList = jsonDecode(mailParsed) as List;
-
-      return mailList
-          .map((x) => MailPiece.fromJson(x))
-          .where((x) => matchesKeyword(x, keyword))
-          .where((x) => isWithinDateRange(x, startDate, endDate))
-          .toList();
+      return await searchMailPieces(searchArgs);
     } catch (e) {
       throw new FetchMailException(e.toString());
     }
   }
 
-  /// returns true if [mail] mail has a sender or imageText value that matches [keyword]
-  bool matchesKeyword(MailPiece mail, String? keyword) {
-    return mail.sender.containsIgnoreCase(keyword ?? "") ||
-        mail.imageText.containsIgnoreCase(keyword ?? "");
-  }
-
-  /// returns true if [mail] has a timestamp within [startDate] and [endDate]
-  bool isWithinDateRange(
-      MailPiece mail, DateTime? startDate, DateTime? endDate) {
-    //if either value is null, both should be null and the filter should not be applied
-    if (startDate == null || endDate == null) {
-      return true;
+  /// Formats [searchArgs.startDate] and [searchArgs.endDate] for search
+  void _formatDateTimeForSearch(MailSearchParameters searchArgs) {
+    if (searchArgs.startDate != null) {
+      searchArgs.startDate = new DateTime(searchArgs.startDate!.year,
+              searchArgs.startDate!.month, searchArgs.startDate!.day)
+          .add(Duration(milliseconds: -1));
     }
 
-    //set to 1 millisecond before midnight of given day
-    DateTime convertedStartDate =
-        new DateTime(startDate.year, startDate.month, startDate.day)
-            .add(Duration(milliseconds: -1));
+    if (searchArgs.endDate != null) {
+      searchArgs.endDate = new DateTime(searchArgs.endDate!.year,
+              searchArgs.endDate!.month, searchArgs.endDate!.day)
+          .add(Duration(days: 1, milliseconds: -1));
+    }
+  }
 
-    //set to 1 millisecond before midnight of next day
-    DateTime convertedEndDate =
-        new DateTime(endDate.year, endDate.month, endDate.day)
-            .add(Duration(days: 1, milliseconds: -1));
+  /// Returns all mail pieces that match the provided query.
+  /// Any empty or null query returns all mail pieces.
+  Future<List<MailPiece>> searchMailPieces(searchArgs) async {
+    List<String> queryList = [];
+    if (searchArgs.keyword != null) {
+      queryList.add("(image_text LIKE '%${searchArgs.keyword}%' OR sender LIKE '%${searchArgs.keyword}%')");
+    }
+    if (searchArgs.startDate != null && searchArgs.endDate != null) {
+      DateTime start = searchArgs.startDate;
+      DateTime end = searchArgs.endDate;
+      queryList.add(
+          "timestamp >= '${start.millisecondsSinceEpoch}' AND timestamp <= '${end.millisecondsSinceEpoch}'");
+    }
 
-    return mail.timestamp.isAfter(convertedStartDate) &&
-        mail.timestamp.isBefore(convertedEndDate);
+    String query = queryList.join(" AND ");
+    try {
+      final db = await database;
+      final result = query.isEmpty
+          ? await db.query(MAIL_PIECE_TABLE)
+          : await db.query(MAIL_PIECE_TABLE, where: query);
+      return result
+          .map((row) => MailPiece(
+              row["id"] as String,
+              row["email_id"] as String,
+              DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
+              row["sender"] as String,
+              row["image_text"] as String,
+              row["midId"] as String))
+          .toList();
+    } catch (e) {
+      throw new FetchMailException(e.toString());
+    }
   }
 }

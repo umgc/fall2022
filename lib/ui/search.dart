@@ -3,12 +3,16 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
+import 'package:summer2022/models/MailSearchParameters.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
+import '../models/ApplicationFunction.dart';
 import '../models/SearchCriteria.dart';
+import '../services/mail_service.dart';
+import 'assistant_state.dart';
 import '../services/mail_storage.dart';
 
 class SearchWidget extends StatefulWidget {
@@ -18,7 +22,7 @@ class SearchWidget extends StatefulWidget {
   SearchWidgetState createState() => SearchWidgetState();
 }
 
-class SearchWidgetState extends State<SearchWidget> {
+class SearchWidgetState extends AssistantState<SearchWidget> {
   final DateTime _today = DateTime.now();
   final double _preferredButtonHeight = 50.0;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
@@ -34,6 +38,7 @@ class SearchWidgetState extends State<SearchWidget> {
   DateTime _end = DateTime.now();
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
+
   final _mailStorage = MailStorage();
 
   // Apply and passed in search parameters to the filters
@@ -45,6 +50,23 @@ class SearchWidgetState extends State<SearchWidget> {
     _start = filters.startDate ?? _start;
     _end = filters.endDate ?? _end;
     _keyword = filters.keyword;
+  }
+
+  @override
+  void processFunction(ApplicationFunction function)
+  {
+      if (function.methodName == "performSearch") {
+        if (function.parameters!.isNotEmpty)
+          {
+            final filters = SearchCriteria.withList(function.parameters!);
+            keywordInput.text = filters.keyword;
+            _start = filters.startDate ?? _start;
+            _end = filters.endDate ?? _end;
+          }
+      }
+      else {
+        super.processFunction(function);
+      }
   }
 
   @override
@@ -263,7 +285,8 @@ class SearchWidgetState extends State<SearchWidget> {
                                   backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
                                 ),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/mail_view');
+                                  MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, _start, _end);
+                                  Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
                                 },
                                 icon: const Icon(
                                     Icons.search,

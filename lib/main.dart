@@ -1,9 +1,13 @@
 // ignore_for_file: import_of_legacy_library_into_null_safe
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:summer2022/services/assistantService.dart';
 import 'package:summer2022/services/cache_service.dart';
+import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/ui/main_menu.dart';
@@ -15,6 +19,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'firebase_options.dart';
+import 'package:receive_intent/receive_intent.dart' as recieveIntent;
+import 'dart:io' show Platform;
+
+import 'models/ApplicationFunction.dart';
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 

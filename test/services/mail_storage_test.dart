@@ -41,6 +41,40 @@ void main() {
     await _expectMailPieceExists(piece);
   });
 
+  test("can delete a mail piece", () async {
+    final piece =
+        MailPiece("test", "test", now, "someone", "some text", "test");
+    await subject.saveMailPiece(piece);
+    expect(await subject.deleteMailPiece("test"), true);
+  });
+
+  test("can delete all mail pieces", () async {
+    final pieceOne =
+        MailPiece("test-one", "test", now, "someone", "some text", "test");
+    final pieceTwo = MailPiece(
+        "test-two", "test", now, "someone", "some other text", "test");
+    final pieceThree =
+        MailPiece("test-three", "test", now, "someone", "bananas", "fruit");
+
+    await subject.saveMailPiece(pieceOne);
+    await subject.saveMailPiece(pieceTwo);
+    await subject.saveMailPiece(pieceThree);
+    expect(await subject.deleteAllMailPieces(), true);
+    final results = await subject.searchMailsPieces(null);
+    expect(results.length, 0);
+  });
+
+  test("can update a mail piece", () async {
+    final piece =
+        MailPiece("test", "test", now, "someone", "some text", "test");
+    final updated = MailPiece(
+        "test", "test2", now.add(Duration(days: 7)),
+        "someone2", "some text2", "test2");
+
+    expect(await subject.saveMailPiece(piece), true);
+    expect(await subject.updateMailPiece("test", updated), true);
+  });
+
   test("it can fetch the latest timestamp", () async {
     final pieceOne =
         MailPiece("test-one", "test", now, "someone", "some text", "test");

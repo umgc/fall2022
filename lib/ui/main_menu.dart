@@ -18,6 +18,8 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import 'assistant_state.dart';
+
 
 
 class MainWidget extends StatefulWidget {
@@ -31,7 +33,7 @@ CloudVisionApi? vision = CloudVisionApi();
 
 bool? _completed;
 
-class MainWidgetState extends State<MainWidget> {
+class MainWidgetState extends AssistantState<MainWidget> {
   DateTime selectedDate = DateTime.now();
   String mailType = "Digest";
   File? _image;
@@ -63,6 +65,7 @@ class MainWidgetState extends State<MainWidget> {
       },
     );*/
   }
+
 
   void setMailType(String type) {
     mailType = type;
