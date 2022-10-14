@@ -35,9 +35,7 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
   void removeItemFromList(String item) {
     setState(() {
       var itemindexSubList = notificationSubList.indexWhere((element) => element.keyword == item);
-      //var itemindexNList = notificationsList.indexWhere((element) => element.subscriptionKeyword == item);
       notificationSubList.removeAt(itemindexSubList);
-      //notificationsList.removeAt(itemindexNList);
     });
   }
 
