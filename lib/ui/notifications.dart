@@ -19,8 +19,6 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
   var notificationSubList = <NotificationSubscription>[];
   var notificationSub = new NotificationSubscription('Test Keyword');
-  //var notificationsList = <Notification>[];
-  //var notification = new Notification(DateTime.now(), '', '', '');
 
 
   @override
