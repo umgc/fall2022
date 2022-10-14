@@ -89,35 +89,6 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
                     thickness: 2,
                     color: Colors.black,
                   ),
-                  /*Column(
-                    children: [
-                      for(var item in notificationsList)
-                        Row(
-                          children: [
-                            SizedBox(
-                              child: Text(item.timestamp.toString()),
-                              width: 270,
-                            ),
-                            SizedBox(
-                              child: Text(item.subscriptionKeyword),
-                              width: 270,
-                            ),
-                            SizedBox(
-                              child: OutlinedButton(
-                                child: Text('Delete', style: TextStyle(color: Colors.white),),
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
-                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))
-                                ),
-                                onPressed: () {
-                                  removeItemFromList(item.subscriptionKeyword);
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                    ],
-                  )*/
                 ],
               ),
             ),
