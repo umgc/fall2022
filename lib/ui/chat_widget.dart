@@ -60,6 +60,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       showUserNames: true,
       user: _user,
     ),
+    bottomNavigationBar: const BottomBar()
   );
 
   void _addMessage(types.Message message) {
