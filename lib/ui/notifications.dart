@@ -21,7 +21,6 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
   var notificationSub = new NotificationSubscription('Test Keyword');
 
 
-  @override
   void initState() {
     super.initState();
   }
