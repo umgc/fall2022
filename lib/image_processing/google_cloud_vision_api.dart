@@ -19,19 +19,18 @@ class Block {
 class CloudVisionApi {
   final _client = CredentialsProvider().client;
   Future<MailResponse> search(String image) async {
-    List<AddressObject> addresses = await searchImageForText(image);
+    List<TextAnnotation> textAnnotations = await convertImageToText(image);
+    List<AddressObject> addresses = await searchImageForText(textAnnotations);
     List<LogoObject> logos = await searchImageForLogo(image);
-    MailResponse response = MailResponse(addresses: addresses, logos: logos);
-    // print(response.toJson().toString());
+    MailResponse response = MailResponse(addresses: addresses, logos: logos, textAnnotations: textAnnotations);
     return response;
   }
 
-  //This function looks for text in image and returns a List of Addresses Found
-  Future<List<AddressObject>> searchImageForText(String image) async {
+  // Convert image to text using the fullTextAnnotation
+  // This should be cached and parsed later for relevant fields
+  Future<List<TextAnnotation>> convertImageToText(String image) async {
     var vision = VisionApi(await _client);
     var api = vision.images;
-    String s = '';
-    List<Block> blocks = [];
 
     var response = await api.annotate(BatchAnnotateImagesRequest.fromJson({
       "requests": [
@@ -43,78 +42,80 @@ class CloudVisionApi {
         }
       ]
     }));
-    // print("Image to Text Search");
-    if (response.responses != null) {
-      for (var data in response.responses!) {
-        //print(data.fullTextAnnotation!.text);
-        if (data.fullTextAnnotation != null) {
-          if (data.fullTextAnnotation!.pages != null) {
-            for (var page in data.fullTextAnnotation!.pages!) {
+
+    var textAnnotations = <TextAnnotation>[];
+    for (var data in response.responses!) {
+      textAnnotations.add(data.fullTextAnnotation!);
+    }
+    return textAnnotations;
+  }
+
+  //This function looks for text in image and returns a List of Addresses Found
+  Future<List<AddressObject>> searchImageForText(List<TextAnnotation> textAnnotations) async {
+    String s = '';
+    List<Block> blocks = [];
+    for (var data in textAnnotations) {
+        if (data.pages != null) {
+          for (var page in data.pages!) {
+            if (page.blocks != null) {
               if (page.blocks != null) {
-                if (page.blocks != null) {
-                  for (var block in page.blocks!) {
-                    if (block.paragraphs != null) {
-                      for (var paragraph in block.paragraphs!) {
-                        s += "-----------\n";
-                        String p = '';
-                        Block block = Block();
-                        if (paragraph.property?.detectedBreak?.type != null) {
-                          if (paragraph.property?.detectedBreak?.type ==
-                              "LINE_BREAK") {
-                            s += '\n';
-                            block.add(p);
-                            p = '';
-                          }
+                for (var block in page.blocks!) {
+                  if (block.paragraphs != null) {
+                    for (var paragraph in block.paragraphs!) {
+                      s += "-----------\n";
+                      String p = '';
+                      Block block = Block();
+                      if (paragraph.property?.detectedBreak?.type != null) {
+                        if (paragraph.property?.detectedBreak?.type ==
+                            "LINE_BREAK") {
+                          s += '\n';
+                          block.add(p);
+                          p = '';
                         }
-                        if (paragraph.words != null) {
-                          for (var word in paragraph.words!) {
-                            //s += ' ';
-                            if (word.symbols != null) {
-                              for (var symbol in word.symbols!) {
-                                if (symbol.property?.detectedBreak!.type !=
-                                    null) {
-                                  if (symbol.property!.detectedBreak!.type ==
-                                          "SURE_SPACE" ||
-                                      symbol.property!.detectedBreak!.type ==
-                                          "SPACE") {
-                                    s += "${symbol.text} ";
-                                    p += "${symbol.text} ";
-                                  }
-                                  if (symbol.property!.detectedBreak!.type ==
-                                          "LINE_BREAK" ||
-                                      symbol.property!.detectedBreak!.type ==
-                                          "EOL_SURE_SPACE" ||
-                                      symbol.property!.detectedBreak!.type ==
-                                          "UNKNOWN") {
-                                    s += "${symbol.text}\n";
-                                    p += symbol.text.toString();
-                                    block.add(p);
-                                    p = '';
-                                  }
-                                } else {
-                                  s += symbol.text.toString();
-                                  p += symbol.text.toString();
+                      }
+                      if (paragraph.words != null) {
+                        for (var word in paragraph.words!) {
+                          //s += ' ';
+                          if (word.symbols != null) {
+                            for (var symbol in word.symbols!) {
+                              if (symbol.property?.detectedBreak!.type !=
+                                  null) {
+                                if (symbol.property!.detectedBreak!.type ==
+                                        "SURE_SPACE" ||
+                                    symbol.property!.detectedBreak!.type ==
+                                        "SPACE") {
+                                  s += "${symbol.text} ";
+                                  p += "${symbol.text} ";
                                 }
+                                if (symbol.property!.detectedBreak!.type ==
+                                        "LINE_BREAK" ||
+                                    symbol.property!.detectedBreak!.type ==
+                                        "EOL_SURE_SPACE" ||
+                                    symbol.property!.detectedBreak!.type ==
+                                        "UNKNOWN") {
+                                  s += "${symbol.text}\n";
+                                  p += symbol.text.toString();
+                                  block.add(p);
+                                  p = '';
+                                }
+                              } else {
+                                s += symbol.text.toString();
+                                p += symbol.text.toString();
                               }
-                            }
                           }
                         }
-                        blocks.add(block);
                       }
                     }
+                    blocks.add(block);
                   }
-                } else {}
-              } else {}
-            }
-          } else {
-            // print("No Pages were found");
-          }
-        } else {
-          // print("No Full Text Annotation Object Found");
+                }
+              }
+            } else {}
+          } else {}
         }
+      } else {
+        // print("No Pages were found");
       }
-    } else {
-      // print("Image Text Search failed.");
     }
     List<int> sB = _findBlocksWithAddresses(blocks);
     for (int sb = 0; sb < sB.length; sb++) {
@@ -127,7 +128,7 @@ class CloudVisionApi {
     try {
       pB = _parseBlocksForAddresses2(blocks, sB);
     } catch (e) {
-      print("Empty List; no mailpiece that successfully parsed");
+      print("Address could not be parsed");
     }
     return pB;
   }
@@ -722,27 +723,32 @@ class CloudVisionApi {
   // This function searches for Logos.
   Future<List<LogoObject>> searchImageForLogo(String image) async {
     List<LogoObject> logos = [];
-    var vision = VisionApi(await _client);
-    var api = vision.images;
+    try {
+      var vision = VisionApi(await _client);
+      var api = vision.images;
 
-    var response = await api.annotate(BatchAnnotateImagesRequest.fromJson({
-      "requests": [
-        {
-          "image": {"content": image},
-          "features": [
-            {"type": "LOGO_DETECTION"},
-          ]
-        }
-      ]
-    }));
+      var response = await api.annotate(BatchAnnotateImagesRequest.fromJson({
+        "requests": [
+          {
+            "image": {"content": image},
+            "features": [
+              {"type": "LOGO_DETECTION"},
+            ]
+          }
+        ]
+      }));
 
-    for (var data in response.responses!) {
-      if (data.logoAnnotations != null) {
-        for (var element in data.logoAnnotations!) {
-          //print(element.description);
-          logos.add(LogoObject(name: element.description as String));
+      for (var data in response.responses!) {
+        if (data.logoAnnotations != null) {
+          for (var element in data.logoAnnotations!) {
+            //print(element.description);
+            logos.add(LogoObject(name: element.description as String));
+          }
         }
       }
+    }
+    catch (e) {
+      print("Logo could not be parsed");
     }
     return logos;
   }

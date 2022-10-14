@@ -23,17 +23,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'USPS Informed Delivery App - Backend Features Testing',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          // application has a blue toolbar. Then, without quitting the app, try
+          // changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or simply save your changes to "hot reload" in a Flutter IDE).
+          // Notice that the counter didn't reset back to zero; the application
+          // is not restarted.
+          primarySwatch: Colors.blue,
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            },
+          )),
       home: const BackendPage(
           title: 'USPS Informed Delivery App - Backend Features'),
     );
@@ -70,9 +75,11 @@ class _BackendPageState extends State<BackendPage> {
     'mail.test.01.jpg',
     'mail.test.03.png'
   ];
+
   //var fileName = 'assets/QRCode.PASSED.tdbank_id.jpeg';
   var fileName = 'mail.test.03.png';
   final picker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
@@ -116,7 +123,8 @@ class _BackendPageState extends State<BackendPage> {
     var a = base64.encode(Uint8List.view(buffer));
     //print("Image: $image\nBuffer: $buffer\na: $a\n");
     //await vision!.searchImageForText(a);
-    var objAddressList = await vision!.searchImageForText(a);
+    var textAnnotations = await vision!.convertImageToText(a);
+    var objAddressList = await vision!.searchImageForText(textAnnotations);
     var output = '';
     for (var address in objAddressList) {
       address.validated =
@@ -365,7 +373,8 @@ class _BackendPageState extends State<BackendPage> {
                             showCursor: false,
                             readOnly: true,
                             cursorColor: Colors.black,
-                            style: const TextStyle(color: Colors.black, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 12),
                             decoration: const InputDecoration(
                               filled: true,
                               fillColor: Colors.grey,

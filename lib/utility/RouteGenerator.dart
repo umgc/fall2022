@@ -1,3 +1,5 @@
+import 'package:enough_mail/enough_mail.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/chat_widget.dart';
@@ -13,6 +15,7 @@ import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/ui/mail_view.dart';
 
+import '../models/MailSearchParameters.dart';
 import '../services/mail_service.dart';
 import '../ui/mail_view_indv.dart';
 
@@ -26,43 +29,44 @@ class RouteGenerator {
     _updatePreviousRoute(settings.name!);
     switch (settings.name) {
       case '/main':
-        return MaterialPageRoute(builder: (_) => const MainWidget());
+        return CupertinoPageRoute(builder: (_) => const MainWidget());
       case '/settings':
-        return MaterialPageRoute(builder: (_) => const SettingsWidget());
+        return CupertinoPageRoute(builder: (_) => const SettingsWidget());
       case '/digest_mail':
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => MailWidget(
                 digest: (settings.arguments as MailWidgetArguments).digest));
       case '/sign_in':
-        return MaterialPageRoute(builder: (_) => const SignInWidget());
+        return CupertinoPageRoute(builder: (_) => const SignInWidget());
       case '/other_mail':
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => OtherMailWidget(
                 emails: (settings.arguments as EmailWidgetArguments).emails));
       case '/backend_testing':
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => const BackendPage(title: "Backend Testing"));
       case '/chat':
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => ChatWidget(
               currentPage: previousRoute
         ));
       case '/search':
         var parameters = settings.arguments != null ? settings.arguments as List<String> : <String>[];
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => SearchWidget(parameters: parameters));
       case '/mail_view':
-        return MaterialPageRoute(
-            builder: (_) => MailViewWidget());
+        var parameters = settings.arguments as MailSearchParameters;
+        return CupertinoPageRoute(
+            builder: (_) => MailViewWidget(query: parameters));
       case '/mail_piece_view':
         var parameters =  settings.arguments as MailPiece;
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => MailPieceViewWidget(mailPiece: parameters));
       case '/notifications':
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
             builder: (_) => NotificationsWidget());
       default:
-        return MaterialPageRoute(builder: (_) {
+        return CupertinoPageRoute(builder: (_) {
           return Scaffold(
               body: Center(
             child: Text("No route for ${settings.name}"),

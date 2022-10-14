@@ -19,22 +19,34 @@ class TopBarState extends State<TopBar> {
         actions:
         <Widget>[
           if(this.widget.title != "Sign In")...[
-            Semantics(
+            /*Semantics(
               excludeSemantics: true,
               button: true,
               label: "Settings",
+              onTap: () {
+                  Navigator.pushNamed(context, '/settings');
+                }
               child:
               IconButton(
-                  icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');}
+                  icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/settings');
+                  }
               ),
-            ),
+            ),*/
             Semantics(
               excludeSemantics: true,
               button: true,
               label: "Log Out",
+              onTap: () {
+                Navigator.pushNamed(context, '/sign_in');
+              },
               child:
               IconButton(
-                  icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/sign_in');}
+                  icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/sign_in');
+                  }
               ),
             ),
           ],
@@ -45,11 +57,14 @@ class TopBarState extends State<TopBar> {
             excludeSemantics: true,
             button: true,
             label: "Back",
+            onTap: () {
+              navKey.currentState!.pushNamed('/main');
+              },
             child:
             IconButton(
-              tooltip: "Back",
-              icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30), onPressed: () { navKey.currentState!.pushNamed('/main');},
-            )
+              icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30),
+              onPressed: () =>Navigator.pop(context)
+            ),
           )
         ) : null,
         centerTitle: true,

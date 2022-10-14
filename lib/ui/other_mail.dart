@@ -2,6 +2,7 @@ import 'package:enough_mail/enough_mail.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/main.dart';
@@ -21,7 +22,7 @@ class OtherMailWidget extends StatefulWidget {
   }
 }
 
-class OtherMailWidgetState extends State<OtherMailWidget> {
+class OtherMailWidgetState extends AssistantState<OtherMailWidget> {
   // ReadMail? reader;
   late int index;
   FontWeight commonFontWt = FontWeight.w500;

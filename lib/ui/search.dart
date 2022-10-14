@@ -3,13 +3,17 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
-import 'package:summer2022/utility/ComparisonHelpers.dart';
+import 'package:summer2022/models/MailSearchParameters.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
+import '../models/ApplicationFunction.dart';
 import '../models/SearchCriteria.dart';
+import '../services/mail_service.dart';
+import 'assistant_state.dart';
+import '../services/mail_storage.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -18,7 +22,7 @@ class SearchWidget extends StatefulWidget {
   SearchWidgetState createState() => SearchWidgetState();
 }
 
-class SearchWidgetState extends State<SearchWidget> {
+class SearchWidgetState extends AssistantState<SearchWidget> {
   final DateTime _today = DateTime.now();
   final double _preferredButtonHeight = 50.0;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
@@ -35,6 +39,8 @@ class SearchWidgetState extends State<SearchWidget> {
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
 
+  final _mailStorage = MailStorage();
+
   // Apply and passed in search parameters to the filters
   void applyFilters() {
     if (this.widget.parameters.isEmpty) return;
@@ -44,6 +50,23 @@ class SearchWidgetState extends State<SearchWidget> {
     _start = filters.startDate ?? _start;
     _end = filters.endDate ?? _end;
     _keyword = filters.keyword;
+  }
+
+  @override
+  void processFunction(ApplicationFunction function)
+  {
+      if (function.methodName == "performSearch") {
+        if (function.parameters!.isNotEmpty)
+          {
+            final filters = SearchCriteria.withList(function.parameters!);
+            keywordInput.text = filters.keyword;
+            _start = filters.startDate ?? _start;
+            _end = filters.endDate ?? _end;
+          }
+      }
+      else {
+        super.processFunction(function);
+      }
   }
 
   @override
@@ -96,10 +119,10 @@ class SearchWidgetState extends State<SearchWidget> {
                         Padding(padding: EdgeInsets.only(right:5.0),
                           child:
                           Semantics(
-                            excludeSemantics: true,
-                            button: true,
                             label: "Start Date",
-                            hint: " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                            onTap: (){
+                              //TODO: add function that types in date and displays it in the calendar view
+                            },
                             child:
                             MergeSemantics(
                               child:
@@ -108,6 +131,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   children:[
                                     Text(
                                       "Start Date:",
+                                      semanticsLabel: "",
                                       style: TextStyle(
                                           fontSize: _buttonLabelTextSize,
                                           fontWeight: _commonFontWeight,
@@ -126,6 +150,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                             color: Colors.white
                                         ),
                                         label: Text('${_dateFormat.format(_start)}',
+                                            semanticsLabel: " ${DateFormat('MMM,d,yyyy').format(_start)}",
                                             style: TextStyle(
                                                 fontWeight: _buttonFontWeight,
                                                 fontSize: _buttonTextSize,
@@ -140,7 +165,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   ]
                               ),
                             ),
-                          ),
+                         ),
                         ),
                       ),
                       Expanded(
@@ -148,10 +173,10 @@ class SearchWidgetState extends State<SearchWidget> {
                         Padding(padding: EdgeInsets.only(left:5.0),
                           child:
                           Semantics(
-                            excludeSemantics: true,
-                            button: true,
                             label: "End Date",
-                            hint: "${DateFormat('MMM,d,yyyy').format(_end)}",
+                            onTap: (){
+                              //TODO: add function that types in date and displays it in the calendar view
+                            },
                             child:
                             MergeSemantics(
                               child:
@@ -160,6 +185,7 @@ class SearchWidgetState extends State<SearchWidget> {
                                   children:[
                                     Text(
                                       "End Date:",
+                                      semanticsLabel: "",
                                       style: TextStyle(
                                           fontWeight: _commonFontWeight,
                                           fontSize: _buttonLabelTextSize,
@@ -177,7 +203,9 @@ class SearchWidgetState extends State<SearchWidget> {
                                             size: 35,
                                             color: Colors.white
                                         ),
-                                        label: Text('${_dateFormat.format(_end)}',
+                                        label: Text(
+                                            '${_dateFormat.format(_end)}',
+                                            semanticsLabel: "${DateFormat('MMM,d,yyyy').format(_end)}",
                                             style: TextStyle(
                                                 fontWeight: _buttonFontWeight,
                                                 fontSize: _buttonTextSize,
@@ -225,17 +253,12 @@ class SearchWidgetState extends State<SearchWidget> {
                           controller: keywordInput
                         ),
                         onSuggestionSelected: (suggestion) {
-                          // TODO: Go directly to mail item if the user clicks a suggestion
-                          // This is how GMail does this feature
+                          // Go directly to mail item if the user clicks a suggestion
+                          Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
                         },
                         suggestionsCallback: (pattern) {
-                          // TODO: Populate items from cache
-                          var mailItems  = <MailPiece>[
-                            MailPiece("1", "1", DateTime.now(), "Sender 1", "Image 1", "1"),
-                            MailPiece("2", "2", DateTime.now(), "Sender 2", "Image 2", "2"),
-                          ];
-                          // Filter items based on pattern
-                          return _filterMailItems(pattern, mailItems);
+                          // Populate items from cache
+                          return _mailStorage.searchMailsPieces(pattern);
                         },
                         itemBuilder: (context, itemData) {
                           return ListTile(
@@ -262,7 +285,8 @@ class SearchWidgetState extends State<SearchWidget> {
                                   backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
                                 ),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/mail_view');
+                                  MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, _start, _end);
+                                  Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
                                 },
                                 icon: const Icon(
                                     Icons.search,
@@ -286,14 +310,6 @@ class SearchWidgetState extends State<SearchWidget> {
           ),
         ),
       ),
-    );
-  }
-
-  // Filter mail items based on keyword search
-  Iterable<MailPiece> _filterMailItems(String keyword, List<MailPiece> mailItems) {
-    return Iterable.castFrom(
-        mailItems.where((mailItem) => mailItem.imageText.containsIgnoreCase(keyword)
-          || mailItem.sender.containsIgnoreCase(keyword))
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/models/Notification.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
+import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
@@ -15,7 +16,7 @@ class NotificationsWidget extends StatefulWidget {
 
 GlobalConfiguration cfg = GlobalConfiguration();
 
-class NotificationsWidgetState extends State<NotificationsWidget> {
+class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
   var notificationSubList = <NotificationSubscription>[];
   var notificationSub = new NotificationSubscription('Test Keyword');
@@ -41,6 +42,7 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: 1,
       length: 2,
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
@@ -59,6 +61,13 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
           title: Text("Notifications",
             style:
             TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+          ),
+          automaticallyImplyLeading: false,
+          backgroundColor: Color.fromRGBO(51, 51, 102, 1),
+          bottom: const TabBar(
+              tabs: <Widget>[
+                Tab(text: "Notifications",), Tab(text: "Manage",)
+              ]
           ),
           automaticallyImplyLeading: false,
           backgroundColor: Color.fromRGBO(51, 51, 102, 1),
@@ -146,6 +155,16 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
                   )
                 ],
               ),
+            ),
+          ],
+        ),
+        body: const TabBarView(
+          children: <Widget>[
+            Center(
+              child: Text("It's cloudy here"),
+            ),
+            Center(
+              child: Text("It's rainy here"),
             ),
           ],
         ),
