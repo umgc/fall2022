@@ -3,6 +3,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/models/Notification.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
+import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
@@ -15,10 +16,11 @@ class NotificationsWidget extends StatefulWidget {
 
 GlobalConfiguration cfg = GlobalConfiguration();
 
-class NotificationsWidgetState extends State<NotificationsWidget> {
+class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   GlobalConfiguration cfg = GlobalConfiguration();
   var notificationSubList = <NotificationSubscription>[];
-  var notificationSub = new NotificationSubscription('Test Keyword');
+
+  var notificationSub = new NotificationSubscription('Test Keyword');  //TODO: create fetching new notification subscription
 
 
   void initState() {
@@ -27,33 +29,33 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
 
   void addItemToList(){
     setState(() {
-      notificationSubList.add(notificationSub);
+      notificationSubList.add(notificationSub);  //TODO: Add item to notification subscription list
     });
   }
 
   void removeItemFromList(String item) {
     setState(() {
-      var itemindexSubList = notificationSubList.indexWhere((element) => element.keyword == item);
-      notificationSubList.removeAt(itemindexSubList);
+      //var itemindexSubList = notificationSubList.indexWhere((element) => element.keyword == item);
+      //notificationSubList.removeAt(itemindexSubList);
+      notificationSubList.removeWhere((element) => element.keyword == item);  //TODO: remove item from notification subscription list
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: 1,
       length: 2,
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: AppBar(
           actions: <Widget>[
             IconButton(
-                icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/settings');} ),
-            IconButton(
                 icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30), onPressed: () {Navigator.pushNamed(context, '/sign_in');} ),
           ],
           leading:
           IconButton(
-            icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30), onPressed: () { navKey.currentState!.pushNamed('/main');}, ),
+            icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30), onPressed: () =>Navigator.pop(context), ),
           centerTitle: true,
 
           title: Text("Notifications",
@@ -74,6 +76,7 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
               child: Column(
                 children: [
                   Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Container(
                           child: Text('Date'), padding: EdgeInsets.only(left: 40, top: 20, bottom: 5)
@@ -123,7 +126,9 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
                     children: [
                       for(var item in notificationSubList)
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
+
                             SizedBox(
                               child: Text(item.keyword),
                               width: 270,
@@ -152,7 +157,6 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
       ),
     );
   }
-
   Widget _buildList({required String key, required String string}) {
     return ListView.builder(
       key: PageStorageKey(key),

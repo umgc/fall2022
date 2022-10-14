@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:googleapis/vision/v1.dart';
 import './Address.dart';
 import './Logo.dart';
 import './Code.dart';
@@ -9,9 +10,10 @@ class MailResponse {
   List<AddressObject> addresses = [];
   List<LogoObject> logos = [];
   List<CodeObject> codes = [];
+  List<TextAnnotation> textAnnotations = [];
 
   //MailResponse({required addresses, required logos, required codes});
-  MailResponse({required this.addresses, required this.logos});
+  MailResponse({required this.addresses, required this.logos, required this.textAnnotations});
 
   // static fromJson(Map<String, dynamic> parsedJson) {
   //   return MailResponse(

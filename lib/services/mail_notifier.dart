@@ -26,22 +26,49 @@ class MailNotifier {
         where: "keyword = ?", whereArgs: [subscription.keyword]);
   }
 
+  /// Retrieve all notification subscriptions from the database.
+  Future<List<NotificationSubscription>> getSubscriptions() async {
+    final db = await database;
+    final result = await db.query(NOTIFICATION_SUBSCRIPTION_TABLE);
+    return result
+        .map((row) => NotificationSubscription(row["keyword"] as String))
+        .toList();
+  }
+
+  /// Retrieve all notifications from the database.
   Future<List<Notification>> getNotifications() async {
-    // TODO: Implement this.
-    return [];
+    final db = await database;
+    final result = await db.query(NOTIFICATION_TABLE);
+    return result
+        .map((row) => Notification(row["mail_piece_id"] as String,
+            row["subscription_keyword"] as String))
+        .toList();
   }
 
   /// Clears the notification from the list.
   Future<void> clearNotification(Notification notification) async {
-    // TODO: Implement this.
+    final db = await database;
+    await db.delete(NOTIFICATION_TABLE,
+        where: "mail_piece_id = ? AND subscription_keyword = ?",
+        whereArgs: [
+          notification.mailPieceId,
+          notification.subscriptionKeyword
+        ]);
   }
 
   /// Clears all notifications.
   Future<void> clearAllNotifications() async {
-    // TODO: Implement this.
+    final db = await database;
+    await db.delete(NOTIFICATION_TABLE);
   }
 
-  /// Checks all mail recieved after the provided timestamp against the list of
+  /// Clears all notification subscriptions
+  Future<void> clearAllSubscriptions() async {
+    final db = await database;
+    await db.delete(NOTIFICATION_SUBSCRIPTION_TABLE);
+  }
+
+  /// Checks all mail received after the provided timestamp against the list of
   /// notification subscriptions. If there are any matches, new notification
   /// objects are created and stored.
   Future<void> updateNotifications(DateTime lastTimestamp) async {
