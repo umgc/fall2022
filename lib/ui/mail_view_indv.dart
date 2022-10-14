@@ -46,7 +46,7 @@ class MailPieceViewWidget extends StatefulWidget{
   }
 
   Future<void> _getMailPieceEmail() async {
-      MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(widget.mailPiece);
+      MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(widget.mailPiece.timestamp);
       digest = await mpef1.getMailPieceDigest();
       _getImgFromEmail();
   }

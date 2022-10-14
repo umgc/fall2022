@@ -10,7 +10,6 @@ class Client {
       // print('Unable to discover settings for $email');
       return false;
     } else {
-      // print('Settings for $email:');
       var imapServerConfig = config.preferredIncomingImapServer;
       try {
         await client.connectToServer(
