@@ -29,8 +29,6 @@ class NotificationsWidgetState extends State<NotificationsWidget> {
   void addItemToList(){
     setState(() {
       notificationSubList.add(notificationSub);
-
-      //notificationsList.add(notification);
     });
   }
 
