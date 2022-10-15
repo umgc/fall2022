@@ -44,7 +44,10 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+<<<<<<<<< Temporary merge branch 1
       initialIndex: 1,
+=========
+>>>>>>>>> Temporary merge branch 2
       length: 2,
       child: Scaffold(
         bottomNavigationBar: const BottomBar(),
