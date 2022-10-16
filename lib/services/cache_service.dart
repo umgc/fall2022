@@ -1,3 +1,6 @@
+import 'package:summer2022/models/MailPiece.dart';
+import 'package:summer2022/models/MailResponse.dart';
+
 import 'mail_fetcher.dart';
 import 'mail_notifier.dart';
 import 'mail_storage.dart';
@@ -37,6 +40,19 @@ class CacheService {
       await _storage.saveMailPiece(piece);
     }
     await _notifier.updateNotifications(lastTimestamp);
+  }
+
+  static Future<void> processUploadedMailPiece(MailResponse mail) async {
+    final timestamp = DateTime.now();
+    final sender = mail.addresses.isNotEmpty
+        ? mail.addresses.first.name
+        : "Unknown Sender";
+    final id = "$sender-$timestamp";
+    final text = mail.textAnnotations.isNotEmpty
+        ? mail.textAnnotations.first.text ?? ""
+        : "";
+    final piece = MailPiece(id, "", timestamp, sender, text, "");
+    await MailStorage().saveMailPiece(piece);
   }
 
   static Future<void> clearEverything() async {
