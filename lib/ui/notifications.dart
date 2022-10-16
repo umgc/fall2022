@@ -14,14 +14,21 @@ class NotificationsWidget extends StatefulWidget {
 GlobalConfiguration cfg = GlobalConfiguration();
 
 class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
-  GlobalConfiguration cfg = GlobalConfiguration();
   final _notifier = MailNotifier();
+  final _keywordController = TextEditingController();
+
   var _subscriptions = <NotificationSubscription>[];
 
   @override
   void initState() {
     super.initState();
     updateSubscriptionList();
+  }
+
+  @override
+  void dispose() {
+    _keywordController.dispose();
+    super.dispose();
   }
 
   Future<void> updateSubscriptionList() async {
@@ -31,13 +38,17 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
     });
   }
 
-  void addItemToList(String keyword) async {
-    final subscription = NotificationSubscription(keyword);
-    await _notifier.createSubscription(subscription);
+  void addSubscription(String keywords) async {
+    for (final text in keywords.split(',')) {
+      final keyword = text.trim();
+      if (keyword.isEmpty) continue;
+      final subscription = NotificationSubscription(keyword);
+      await _notifier.createSubscription(subscription);
+    }
     await updateSubscriptionList();
   }
 
-  void removeItemFromList(String keyword) async {
+  void removeSubscription(String keyword) async {
     final subscription = NotificationSubscription(keyword);
     await _notifier.removeSubscription(subscription);
     await updateSubscriptionList();
@@ -110,8 +121,21 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                 children: [
                   Row(children: [
                     Container(
-                      child: Text('Keyword(s)'),
-                      padding: EdgeInsets.only(left: 40),
+                      child: SizedBox(
+                        child: TextField(
+                          controller: _keywordController,
+                          onSubmitted: (keywords) {
+                            addSubscription(keywords);
+                            _keywordController.clear();
+                          },
+                          decoration: const InputDecoration(
+                              labelText: 'Keyword(s)',
+                              isDense: true,
+                              border: InputBorder.none),
+                        ),
+                        width: 300,
+                      ),
+                      padding: EdgeInsets.only(left: 5),
                     ),
                     Container(
                       child: OutlinedButton(
@@ -126,11 +150,11 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30)))),
                         onPressed: () {
-                          // TODO: Add an input field and pipe that through.
-                          addItemToList('test');
+                          addSubscription(_keywordController.text);
+                          _keywordController.clear();
                         },
                       ),
-                      padding: EdgeInsets.only(left: 190),
+                      padding: EdgeInsets.only(left: 5),
                     )
                   ]),
                   Divider(
@@ -163,7 +187,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                             borderRadius:
                                                 BorderRadius.circular(30)))),
                                 onPressed: () {
-                                  removeItemFromList(item.keyword);
+                                  removeSubscription(item.keyword);
                                 },
                               ),
                             )
