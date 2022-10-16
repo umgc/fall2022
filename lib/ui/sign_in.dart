@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:summer2022/firebase_options.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
@@ -9,22 +11,43 @@ import 'package:summer2022/utility/Client.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/services/cache_service.dart';
+import 'package:summer2022/utility/auth_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'assistant_state.dart';
 
+
+/// Helper class to show a snackbar using the passed context.
+class ScaffoldSnackbar {
+  // ignore: public_member_api_docs
+  ScaffoldSnackbar(this._context);
+
+  /// The scaffold of current context.
+  factory ScaffoldSnackbar.of(BuildContext context) {
+    return ScaffoldSnackbar(context);
+  }
+
+  final BuildContext _context;
+
+  /// Helper method to show a SnackBar.
+  void show(String message) {
+    ScaffoldMessenger.of(_context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+  }
+}
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
 
   @override
   SignInWidgetState createState() => SignInWidgetState();
 }
-
-final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
-  'email',
-  // '872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com',
-]);
 
 class SignInWidgetState extends AssistantState<SignInWidget> {
   var url1 = Uri.parse("https://www.google.com/policies/privacy/");
@@ -38,18 +61,9 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   static const kPrimaryLightColor = Color(0xFFF1E6FF);
   static const double defaultPadding = 16.0;
   bool checked = false;
-  GoogleSignInAccount? _currentUser;
 
   @override
   void initState() {
-    GoogleSignIn(clientId: DefaultFirebaseOptions.currentPlatform.iosClientId)
-        .signIn();
-    _googleSignIn.onCurrentUserChanged.listen((account) {
-      setState(() {
-        _currentUser = account;
-      });
-    });
-    _googleSignIn.signInSilently();
     super.initState();
 
     locator<AnalyticsService>().logScreens(name: "signIn");
@@ -319,39 +333,6 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     );
   }
 
-  Widget _buildWidget() {
-    final GoogleSignInAccount? user = _currentUser;
-    if (user != null) {
-      return Container(
-        child: Text('Sign in error'),
-      );
-    } else {
-      return Container(
-        padding: const EdgeInsets.all(12.0),
-        alignment: Alignment.center,
-        child: ElevatedButton(
-          onPressed: signIn,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(51, 51, 102, 1),
-            shadowColor: Colors.grey,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5))),
-          ),
-          child: const Text('SIGN IN WITH GOOGLE',
-              style: TextStyle(color: Colors.white)),
-        ),
-      );
-    }
-  }
-
-  Future<void> signIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (e) {
-      print('Error signing in $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -539,10 +520,67 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                               }),
                       ]))),
                       Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        alignment: Alignment.center,
-                        child: _buildWidget(),
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: Container(
+                                padding:
+                                    const EdgeInsets.only(left: 35, right: 35),
+                                child: SignInButton(
+                                  Buttons.Google,
+                                  onPressed: () {
+                                    Navigator.pushNamed(context,
+                                        AuthService().signInWithGoogle());
+                                  },
+                                  text: 'Sign In with Google',
+                                ),
+                              ))
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 10),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: Container(
+                                padding:
+                                    const EdgeInsets.only(left: 35, right: 35),
+                                child: SignInButton(
+                                  Buttons.AppleDark,
+                                  onPressed: () {
+                                    Navigator.pushNamed(context,
+                                        AuthService().signInWithApple());
+                                  },
+                                  text: 'Sign In with Apple',
+                                ),
+                              )),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 10),
+                          ),
+                          
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: Container(
+                                padding:
+                                    const EdgeInsets.only(left: 35, right: 35),
+                                child: SignInButton(Buttons.Microsoft,
+                                    onPressed: () {
+                                  Navigator.pushNamed(context,
+                                      AuthService().signInWithMicrosoft());
+                                }, text: 'Sign In with Microsoft'),
+                              )),
+                            ],
+                          ),
+                        ],
                       ),
+                    ),
                     ],
                   ),
                 ),

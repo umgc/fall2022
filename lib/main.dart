@@ -17,6 +17,7 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:summer2022/utility/auth_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'firebase_options.dart';
 import 'package:receive_intent/receive_intent.dart' as recieveIntent;
@@ -62,7 +63,7 @@ void main() async {
         title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
         initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
         onGenerateRoute: RouteGenerator.generateRoute,
-        home: buildScreen(emailAuthenticated),
+        home: AuthService().handleAuthState(), //buildScreen(emailAuthenticated),
         navigatorKey: navKey,
       )
   )
