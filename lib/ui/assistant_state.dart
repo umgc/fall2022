@@ -25,9 +25,12 @@ abstract class AssistantState<T extends StatefulWidget> extends State<T>
     intentSubscription = receiveIntent.ReceiveIntent.receivedIntentStream.listen((receiveIntent.Intent? intent)
     {
         if (intent != null) {
-          ApplicationFunction? appFunction = AssistantService.ParseIntent(intent);
-          if (appFunction != null) {
-            processFunction(appFunction);
+          if (ModalRoute.of(context)?.isCurrent ?? false) {
+            ApplicationFunction? appFunction = AssistantService.ParseIntent(
+                intent);
+            if (appFunction != null) {
+              processFunction(appFunction);
+            }
           }
         }
     });

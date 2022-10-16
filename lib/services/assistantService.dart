@@ -9,7 +9,6 @@ class AssistantService
       if (intent.action == "actions.intent.action.GET_THING")
       {
           String query = intent.extra!["name"];
-
           if (query == "Digest")
           {
             return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/digest_mail"]);

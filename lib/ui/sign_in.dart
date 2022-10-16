@@ -12,7 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'assistant_state.dart';
 
 class SignInWidget extends StatefulWidget {
-  const SignInWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const SignInWidget({Key? key, this.function}) : super(key: key);
 
 @override
   SignInWidgetState createState() => SignInWidgetState();
@@ -33,8 +34,9 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
     locator<AnalyticsService>().logScreens(name: "signIn");
+
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
     /*FirebaseAnalytics.instance.logEvent(
       name: 'screen_view',
@@ -44,10 +46,37 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
       },
     );*/
   }
+
+  void checkPassedInFunction()
+  {
+    if (this.widget.function != null) {
+      processFunction(this.widget.function!);
+    }
+  }
+
   @override
   void processFunction(ApplicationFunction function)
   {
-    //TODO put a dialog explaining why this won't work.
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          title: Center(
+            child: Text("Please Login"),
+          ),
+          content: SizedBox(
+            height: 50.0, // Change as per your requirement
+            width: 75.0, // Change as per your requirement
+            child: Center(
+              child: Text(
+                "You must be logged in to do this.",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -456,7 +485,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                             if (loggedIn) {
                               Keychain().addCredentials(email, password);
                               await CacheService.updateMail(email, password);
-                              Navigator.pushNamed(context, '/main');
+                              Navigator.pushNamed(context, '/main', arguments: widget.function);
                             } else {
                               showLoginErrorDialog();
                               context.loaderOverlay.hide();

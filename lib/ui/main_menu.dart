@@ -18,12 +18,14 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import '../models/ApplicationFunction.dart';
 import 'assistant_state.dart';
 
 
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const MainWidget({Key? key, this.function}) : super(key: key);
 
   @override
   MainWidgetState createState() => MainWidgetState();
@@ -56,6 +58,7 @@ class MainWidgetState extends AssistantState<MainWidget> {
   void initState() {
     super.initState();
     locator<AnalyticsService>().logScreens(name: "Main Menu");
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Main Menu");
     /*FirebaseAnalytics.instance.logEvent(
       name: 'screen_view',
@@ -66,6 +69,12 @@ class MainWidgetState extends AssistantState<MainWidget> {
     );*/
   }
 
+  void checkPassedInFunction()
+  {
+    if (this.widget.function != null) {
+      processFunction(this.widget.function!);
+    }
+  }
 
   void setMailType(String type) {
     mailType = type;
@@ -172,6 +181,7 @@ class MainWidgetState extends AssistantState<MainWidget> {
     );
     var aspectRatio = (width / columnCount) / (height / minRowCountOnScreen);
     double commonFontSize = (this.commonFontSize * aspectRatio);
+
     return Scaffold(
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),

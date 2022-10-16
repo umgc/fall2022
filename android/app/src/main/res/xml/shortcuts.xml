@@ -9,13 +9,4 @@
                 android:key="name"/>
         </intent>
     </capability>
-    <capability android:name="actions.intent.CREATE_THING">
-        <intent
-            android:targetPackage="com.example.summer2022"
-            android:targetClass="com.example.summer2022.MainActivity">
-            <parameter
-                android:name="thing.name"
-                android:key="name"/>
-        </intent>
-    </capability>
 </shortcuts>
