@@ -42,6 +42,9 @@ abstract class AssistantState<T extends StatefulWidget> extends State<T>
       case 'performSearch':
         Navigator.pushNamed(context, '/search', arguments: function.parameters);
         break;
+      case 'addKeyword':
+        Navigator.pushNamed(context, '/notifications', arguments: function.parameters);
+        break;
     }
   }
 

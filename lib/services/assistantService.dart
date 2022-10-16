@@ -19,6 +19,14 @@ class AssistantService
             return ApplicationFunction(methodName: "performSearch", parameters: <String>[query]);
           }
       }
+      else if (intent.action == "actions.intent.action.CREATE_THING")
+      {
+          String query = intent.extra!["name"];
+          if (query.isNotEmpty)
+          {
+            return ApplicationFunction(methodName: "addKeyword", parameters: <String>[query]);
+          }
+      }
 
       return null;
   }

@@ -19,7 +19,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'firebase_options.dart';
-import 'package:receive_intent/receive_intent.dart' as recieveIntent;
 import 'dart:io' show Platform;
 
 import 'models/ApplicationFunction.dart';
