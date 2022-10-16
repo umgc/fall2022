@@ -70,7 +70,7 @@ class BottomBarState extends State<BottomBar> {
             IconButton(
               icon: new Image.asset("assets/icon/notification_icon_lg.png"),
               onPressed: () {
-                Navigator.pushNamed(context, "/chat");
+                Navigator.pushNamed(context, "/notifications");
               },
             ),
           ),
