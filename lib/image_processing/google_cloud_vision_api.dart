@@ -128,7 +128,7 @@ class CloudVisionApi {
     try {
       pB = _parseBlocksForAddresses2(blocks, sB);
     } catch (e) {
-      print("Empty List; no mailpiece that successfully parsed");
+      print("Address could not be parsed");
     }
     return pB;
   }
@@ -723,27 +723,32 @@ class CloudVisionApi {
   // This function searches for Logos.
   Future<List<LogoObject>> searchImageForLogo(String image) async {
     List<LogoObject> logos = [];
-    var vision = VisionApi(await _client);
-    var api = vision.images;
+    try {
+      var vision = VisionApi(await _client);
+      var api = vision.images;
 
-    var response = await api.annotate(BatchAnnotateImagesRequest.fromJson({
-      "requests": [
-        {
-          "image": {"content": image},
-          "features": [
-            {"type": "LOGO_DETECTION"},
-          ]
-        }
-      ]
-    }));
+      var response = await api.annotate(BatchAnnotateImagesRequest.fromJson({
+        "requests": [
+          {
+            "image": {"content": image},
+            "features": [
+              {"type": "LOGO_DETECTION"},
+            ]
+          }
+        ]
+      }));
 
-    for (var data in response.responses!) {
-      if (data.logoAnnotations != null) {
-        for (var element in data.logoAnnotations!) {
-          //print(element.description);
-          logos.add(LogoObject(name: element.description as String));
+      for (var data in response.responses!) {
+        if (data.logoAnnotations != null) {
+          for (var element in data.logoAnnotations!) {
+            //print(element.description);
+            logos.add(LogoObject(name: element.description as String));
+          }
         }
       }
+    }
+    catch (e) {
+      print("Logo could not be parsed");
     }
     return logos;
   }

@@ -25,4 +25,6 @@ Map<String, dynamic> _$MailResponseToJson(MailResponse instance) =>
       'addresses': instance.addresses.map((e) => e.toJson()).toList(),
       'logos': instance.logos.map((e) => e.toJson()).toList(),
       'codes': instance.codes.map((e) => e.toJson()).toList(),
+      'textAnnotations':
+          instance.textAnnotations.map((e) => e.toJson()).toList(),
     };

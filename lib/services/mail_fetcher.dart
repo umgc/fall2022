@@ -1,4 +1,5 @@
 import 'package:summer2022/models/MailResponse.dart';
+import '../exceptions/fetch_mail_exception.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
@@ -17,14 +18,22 @@ class MailFetcher {
   /// with the subject `Your Daily Digest`.
   Future<List<MailPiece>> fetchMail(DateTime lastTimestamp) async {
     List<MailPiece> mailPieces = <MailPiece>[];
-    List<MimeMessage> emails = await _getEmails(
-        lastTimestamp,
-        "uspsinformeddelivery@email.informeddelivery.usps.com",
-        "Your Daily Digest");
+    try {
+      List<MimeMessage> emails = await _getEmails(
+          lastTimestamp,
+          "uspsinformeddelivery@email.informeddelivery.usps.com",
+          "Your Daily Digest");
 
-    // Process each email
-    for (final email in emails) {
-      mailPieces.addAll(await _processEmail(email));
+      // Process each email
+      for (final email in emails) {
+        try {
+          mailPieces.addAll(await _processEmail(email));
+        } catch(e) {
+          print("Unable to process individual email.");
+        }
+      }
+    } catch(e) {
+      print("Unable to retrieve email.");
     }
 
     return mailPieces;
@@ -46,21 +55,28 @@ class MailFetcher {
 
   /// Retrieve a list of the mail image "attachments" with accompanying metadata
   Future<List<Attachment>> _getAttachments(MimeMessage email) async {
-    var emailBodyHtml = email.mimeData!.parts!.first.toString(); //todo: this is the full email HTML for stripping out the possible sender and "do more with your mail" sections
+    var mimeParts = email.mimeData!.parts!.first;
     List<Attachment> attachments = [];
 
-    for (final part in email.mimeData!.parts!) {
-      if (_isContentType(part, "image")) {
-        var attachment = Attachment();
+    if (mimeParts.parts != null) {
+      var emailHtml = mimeParts.parts!.first.toString(); //todo: this is the full email HTML for stripping out the possible sender and "do more with your mail" sections
 
-        attachment.contentID = _getHeader(part, "Content-ID")
-            .replaceAll('<', '').replaceAll('>', '');
-        attachment.sender = "Test Sender"; //todo: pull from emailBodyHtml by parsing the HTML
-        attachment.attachment = part.decodeMessageData().toString(); //These are base64 encoded images with formatting
-        attachment.attachmentNoFormatting = attachment.attachment.toString()
-            .replaceAll("\r\n", ""); //These are base64 encoded images with formatting
+      for (final part in mimeParts.parts!) {
+        if (_isContentType(part, "image")) {
+          var attachment = Attachment();
 
-        attachments.add(attachment);
+          attachment.contentID = _getHeader(part, "Content-ID")
+              .replaceAll('<', '').replaceAll('>', '');
+          attachment.sender =
+          "Test Sender"; //todo: pull from emailBodyHtml by parsing the HTML
+          attachment.attachment = part.decodeMessageData()
+              .toString(); //These are base64 encoded images with formatting
+          attachment.attachmentNoFormatting = attachment.attachment.toString()
+              .replaceAll(
+              "\r\n", ""); //These are base64 encoded images with formatting
+
+          attachments.add(attachment);
+        }
       }
     }
     return attachments;
@@ -93,7 +109,10 @@ class MailFetcher {
         }
         return <MimeMessage>[];
       }
-    } finally {
+    } catch(e) {
+      throw new FetchMailException(e.toString());
+    }
+    finally {
       _logout(client);
     }
   }

@@ -83,6 +83,19 @@ void main() {
       await subject.removeSubscription(subscription);
     });
 
+    test('it can retrieve all notifications', () async {
+      final subscriptionOne = NotificationSubscription("test-one");
+      final subscriptionTwo = NotificationSubscription("test-two");
+
+      expect(await subject.createSubscription(subscriptionOne), true);
+      expect(await subject.createSubscription(subscriptionTwo), true);
+
+      final subscriptions = await subject.getSubscriptions();
+
+      expect(subscriptions.length, 2);
+      expect(subscriptions, containsAll([subscriptionOne, subscriptionTwo]));
+    });
+
     group("and deleting a subscrition", () {
       test('it deletes associated notifications', () async {
         await _createMailPiece(
