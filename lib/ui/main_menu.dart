@@ -19,6 +19,7 @@ import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
 import 'assistant_state.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 
 
 
@@ -173,6 +174,8 @@ class MainWidgetState extends AssistantState<MainWidget> {
     var aspectRatio = (width / columnCount) / (height / minRowCountOnScreen);
     double commonFontSize = (this.commonFontSize * aspectRatio);
     return Scaffold(
+        floatingActionButton: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Main Menu"),
         body: GridView.count(
@@ -309,6 +312,7 @@ class MainWidgetState extends AssistantState<MainWidget> {
               label: "Notifications",
               onTap: (){
                 Navigator.pushNamed(context, '/notifications');
+
                 },
               child:
                   ElevatedButton(
@@ -437,6 +441,25 @@ class MainWidgetState extends AssistantState<MainWidget> {
             title: const Center(
               child: Text("No Digest Available"),
             ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text(
+                  'Close'
+              ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
             content: SizedBox(
               height: 100.0, // Change as per your requirement
               width: 100.0, // Change as per your requirement
@@ -457,9 +480,28 @@ class MainWidgetState extends AssistantState<MainWidget> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Center(
+            title: Center(
               child: Text("No Emails Available"),
             ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text(
+                  'Close'
+              ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
             content: SizedBox(
               height: 100.0, // Change as per your requirement
               width: 100.0, // Change as per your requirement
@@ -479,10 +521,29 @@ class MainWidgetState extends AssistantState<MainWidget> {
       showDialog(
         context: context,
         builder: (context) {
-          return const AlertDialog(
+          return AlertDialog(
             title: Center(
               child: Text("Error Dialog"),
             ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text(
+                  'Close'
+              ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
             content: SizedBox(
               height: 100.0,
               width: 100.0,

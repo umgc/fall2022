@@ -8,7 +8,7 @@ PODS:
     - FirebaseAnalytics (~> 9.6.0)
   - Firebase/CoreOnly (9.6.0):
     - FirebaseCore (= 9.6.0)
-  - firebase_analytics (9.3.7):
+  - firebase_analytics (9.3.8):
     - Firebase/Analytics (= 9.6.0)
     - firebase_core
     - Flutter
@@ -274,7 +274,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
   Firebase: 5ae8b7cf8efce559a653aef0ad95bab3f427c351
-  firebase_analytics: 80b63bd6ff50095e908feba5070aa8dd75ccdfbc
+  firebase_analytics: 9937a91df25cce5b0ee19eaf65277ff8bf0f88e5
   firebase_core: 7c28ecc1e5dd74e03829ac3e9ff5ba3314e737a9
   FirebaseAnalytics: 89ad762c6c3852a685794174757e2c60a36b6a82
   FirebaseCore: 2082fffcd855f95f883c0a1641133eb9bbe76d40
