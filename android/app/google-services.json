@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "872576625259-9tvmkki1cm62g55ec4ch29d9r949bftt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.umgc.summer2022",
+            "certificate_hash": "ad5d5f74403d7ffe8ea81cf4441ad0dd162cf5d5"
+          }
+        },
+        {
           "client_id": "872576625259-ubminu2an58mntu8l7ains085ch6tdfq.apps.googleusercontent.com",
           "client_type": 3
         }
