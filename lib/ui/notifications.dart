@@ -121,10 +121,49 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                       color: Color.fromRGBO(51, 51, 102, 1),
                     ),
                   ),
+                  Container(  //the following code is used for notification subscriptions on the manage tab, but placed here for testing purposes and layout
+                    height: 400,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (var item in _subscriptions)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center, //displaying notifications subscriptions for testing purposes only
+                              children: [
+                                SizedBox(
+                                  child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                      fontSize: 18),) ,
+                                  width: 270,
+                                ),
+                                SizedBox(
+                                  child: OutlinedButton(
+                                    child: Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.white,fontSize: 18),
+                                    ),
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                        MaterialStateColor.resolveWith(
+                                                (states) => Colors.red),
+                                        shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(30)))),
+                                    onPressed: () {
+                                      removeSubscription(item.keyword);
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Container(  //Manager1
+            Container(
               child: Column(
                 children: [
                   SizedBox(height: 10,),
