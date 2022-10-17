@@ -258,11 +258,13 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                           ],
                         ),
                     ],
+
                   ),
                   ),
                   )
                   ],
                   ),
+
             ),
             // This is the end of manager tab one
         ]
