@@ -7,6 +7,10 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import '../models/Digest.dart';
 import '../services/mail_retrieveByMailPiece.dart';
+import 'package:html/parser.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget{
 
@@ -28,6 +32,8 @@ class MailPieceViewWidget extends StatefulWidget{
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
   late Digest digest;
   late Image? mailImage = null;
+  late String linkHTML = '<a href="https://informeddelivery.usps.com/box/pages/reminder/confirm?campId=1200041798&amp;deliveryDate=10/11/2022&amp;physicalAddressId=13671311&amp;mailpieceId=20152977694596">Some link text</a>';
+  String link = 'https://informeddelivery.usps.com/box/pages/reminder/confirm?campId=1200041798;deliveryDate=10/11/2022;physicalAddressId=13671311;mailpieceId=20152977694596';
   //Image.asset('assets/mail.test.02.png');
 
   MailPieceViewWidgetState();
@@ -35,33 +41,60 @@ class MailPieceViewWidget extends StatefulWidget{
   @override
   void initState() {
     super.initState();
-    @override
-    Widget build(BuildContext context) {
-      return Center(
-          child: CircularProgressIndicator()
-      );
-    }
     _getMailPieceEmail();
-    Navigator.of(context).pop();
   }
 
   Future<void> _getMailPieceEmail() async {
-      MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(widget.mailPiece.timestamp);
+    MailPieceEmailFetcher mpef1 = await MailPieceEmailFetcher(widget.mailPiece.timestamp);
+      debugPrint("ID: " + widget.mailPiece.id + "\nEmail ID: " + widget.mailPiece.emailId + "\nmid: " + widget.mailPiece.midId);
       digest = await mpef1.getMailPieceDigest();
-      _getImgFromEmail();
+      MimeMessage m1 = digest.message;
+      _getImgFromEmail(m1);
+      _getLinkHtmlFromEmail(m1);
   }
 
-  void _getImgFromEmail() async {
-    MimeMessage m = digest.message;
+  void _getImgFromEmail(MimeMessage m) async {
+    m = digest.message;
     for (int x = 0; x < m.mimeData!.parts!.length; x++) {
-      if (m.mimeData!.parts!.elementAt(x).contentType?.value.toString().contains("image")??false) {
-        if (m.mimeData!.parts!.elementAt(x).toString().contains(widget.mailPiece.midId)) {
-          var picture = m.mimeData!.parts!.elementAt(x).decodeMessageData().toString();
-          //These are base64 encoded images with formatting
-          picture = picture.replaceAll("\r\n", "");
-          //These are base64 encoded images with formatting
+      for (int y = 0; y < m.mimeData!.parts!.elementAt(x).parts!.length; y++) {
+        if (m.mimeData!.parts!.elementAt(x).parts!.elementAt(y).contentType?.value.toString()
+            .contains("image") ?? false) {
+          if (m.mimeData!.parts!.elementAt(x).parts!.elementAt(y)
+              .toString()
+              .contains(widget.mailPiece.midId)) {
+            var picture = m.mimeData!.parts!.elementAt(x).parts!
+                .elementAt(y)
+                .decodeMessageData()
+                .toString();
+            //These are base64 encoded images with formatting
+            picture = picture.replaceAll("\r\n", "");
+            //These are base64 encoded images with formatting
 
-          setState((){ mailImage = Image.memory(base64Decode(picture)); });
+            setState(() {
+              mailImage = Image.memory(base64Decode(picture));
+            });
+          }
+        }
+      }
+    }
+  }
+
+  void _getLinkHtmlFromEmail(MimeMessage m) async {
+    m = digest.message;
+    for (int x = 0; x < m.mimeData!.parts!.length; x++) {
+      for (int y = 0; y < m.mimeData!.parts!.elementAt(x).parts!.length; y++) {
+        if (m.mimeData!.parts!.elementAt(x).parts!.elementAt(y).contentType
+            ?.value.toString()
+            .contains("text/html") ?? false) {
+          var doc = parse(m.mimeData!.parts!.elementAt(x).parts!.elementAt(y).toString());
+          debugPrint(doc.getElementsByTagName("table").toString());
+
+          /*
+          setState(() {
+            linkHTML = doc.getElementsByTagName("table").toString();
+          });
+
+           */
         }
       }
     }
@@ -131,6 +164,31 @@ class MailPieceViewWidget extends StatefulWidget{
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
                            ),
+                        TextButton.icon(
+                          onPressed: () async {
+
+                            if(await canLaunch(link)){
+                              await launch(link);
+                            }else {
+                              throw 'Could not launch $link';
+                            }
+                          },
+                            icon: Icon(Icons.language),
+                            label: Text('Open the link'),
+                          ),
+                       /*
+                       Html(data: linkHTML,
+                         onLinkTap: (linkHTML) async {
+                           if (await canLaunch(linkHTML?))
+                           {
+                             await launch(linkHTML?);
+                           } else {
+                             debugPrint('Could not launch $linkHTML');
+                           }
+                         }
+                       ),
+                        */
+
                     ]),
               ),
             ]
