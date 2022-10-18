@@ -38,15 +38,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late Uri learnMoreLinkUrl = Uri.parse("http://www.google.com");
   late Uri reminderLinkUrl = Uri.parse("http://www.google.com");
 
-  //not using these, they were tests to see if the link could open if fixed
-  late String linkHTML =
-      '<a href="https://informeddelivery.usps.com/box/pages/reminder/confirm?campId=1200041798&amp;deliveryDate=10/11/2022&amp;physicalAddressId=13671311&amp;mailpieceId=20152977694596">Some link text</a>';
-  String link =
-      'https://informeddelivery.usps.com/box/pages/reminder/confirm?campId=1200041798;deliveryDate=10/11/2022;physicalAddressId=13671311;mailpieceId=20152977694596';
-
-  //not using this, it's a test image
-  //Image.asset('assets/mail.test.02.png');
-
   MailPieceViewWidgetState();
 
   @override
@@ -181,8 +172,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                   .toString()
                   .contains(widget.mailPiece.midId)) {
                 matchingIndex = i;
-                //debugPrint("matching index: " + matchingIndex.toString());
-                //debugPrint("MailPieceId: " + widget.mailPiece.midId + "Attributes(image) for Item " + i.toString() + ": " + scannedMailPieceItems[i].attributes.toString());
                 break;
               }
             }
@@ -196,12 +185,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
             for (int i = 0; i < reminderItems.length; i++) {
               if (reminderItems[i].innerHtml.toString().contains("img")) {
-                //debugPrint("OuterHTML for Item " + i.toString() + ": " + reminderItems[i].outerHtml.toString());
-                //debugPrint("Attribute for Item " + i.toString() + ": " + reminderItems[i].attributes.toString());
-                //debugPrint("InnerHTML for Item " + i.toString() + ": " + reminderItems[i].innerHtml.toString());
 
                 //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
-
                 if (reminderCount == matchingIndex) {
                   var regex = RegExp(
                       r'mailpieceId=\d*\"'); //finds the string mailpieceId=digits to "
@@ -214,9 +199,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
                   debugPrint(list.toString());
 
-
-                  //debugPrint("Test1 of regex: " + mpID1![0]!);
-
                   //finally, set the state of the links to the matched element
                   debugPrint(reminderLinkUrl.toString());
 
@@ -226,7 +208,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                         .firstMatch(mpID1![0]!.toString())![0]!
                         .toString();
                     reminderLinkHtml = reminderItems[i].outerHtml.toString();
-                    linkHTML = reminderItems[i].innerHtml.toString();
                     reminderLinkUrl = Uri.parse(list[0]);
 
                   });
@@ -246,31 +227,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
             //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
             for (int i = 0; i < trackingItems.length; i++) {
-              /*
-            debugPrint("tracking items length: " + trackingItems.length.toString());
-
-            debugPrint("OuterHTML for Item " +
-                i.toString() +
-                ": " +
-                trackingItems[i].outerHtml.toString());
-            debugPrint("Attribute for Item " +
-                i.toString() +
-                ": " +
-                trackingItems[i].attributes.toString());
-            debugPrint("InnerHTML for Item " +
-                i.toString() +
-                ": " +
-                trackingItems[i].innerHtml.toString());
-             */
 
               String htmlString1 = trackingItems[i].innerHtml.toString();
               String htmlString2 = trackingItems[i].outerHtml.toString();
-
-              /*
-            debugPrint(htmlString1.contains("alt=\"Learn More\"").toString());
-            debugPrint(mailPieceId.toString());
-            debugPrint(htmlString2.contains(mailPieceId).toString());
-             */
 
               if (htmlString1.contains("alt=\"Learn More\"") &&
                   htmlString2.contains(mailPieceId)) {
@@ -387,33 +346,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                     borderRadius: new BorderRadius.circular(16.0),
                     color: _buttonColor),
                 child: Column(children: [
-
-                  /*
-                  Text(
-                    'area for more actions\n\n',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  Text(
-                    'area for do more with your mail\n\n',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-
-                  Text(
-                    learnMoreLinkUrl.toString() + "\n" + reminderLinkUrl.toString() + '\n\n',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-
-                   */
-
                   Visibility(
                     visible: hasLearnMore,
                     child:
@@ -460,16 +392,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                   //ScottH could never get it to to display and be able to launch links
                   Html(
                     data: reminderLinkHtml,
-                    /*
-                         onLinkTap: (linkHTML) async {
-                           if (await canLaunch(linkHTML?))
-                           {
-                             await launch(linkHTML?);
-                           } else {
-                             debugPrint('Could not launch $linkHTML');
-                           }
-                         }
-                          */
                   ),
                 ]),
               ),
