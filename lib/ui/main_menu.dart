@@ -237,10 +237,6 @@ class MainWidgetState extends AssistantState<MainWidget> {
             onTap: () {
               Navigator.pushNamed(context, '/notifications');
             },
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/notifications');
-                },
               child:
                   ElevatedButton(
                     onPressed: () {

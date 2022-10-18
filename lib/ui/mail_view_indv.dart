@@ -301,14 +301,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
-        title: Text(
+        title:
           'Search Result: ${widget.mailPiece.id}',
-          style: TextStyle(
-              fontWeight: _commonFontWeight, fontSize: _commonFontSize),
         ),
-        backgroundColor: _buttonColor,
-        centerTitle: true,
-      ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(15.0),
