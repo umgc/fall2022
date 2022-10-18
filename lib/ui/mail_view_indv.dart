@@ -34,13 +34,17 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late String mailPieceId = '';
   late String learnMoreLinkHtml = '';
   late String reminderLinkHtml = '';
+  late bool hasLearnMore = false;
   late Uri learnMoreLinkUrl = Uri.parse("http://www.google.com");
   late Uri reminderLinkUrl = Uri.parse("http://www.google.com");
+
+  //not using these, they were tests to see if the link could open if fixed
   late String linkHTML =
       '<a href="https://informeddelivery.usps.com/box/pages/reminder/confirm?campId=1200041798&amp;deliveryDate=10/11/2022&amp;physicalAddressId=13671311&amp;mailpieceId=20152977694596">Some link text</a>';
   String link =
       'https://informeddelivery.usps.com/box/pages/reminder/confirm?campId=1200041798;deliveryDate=10/11/2022;physicalAddressId=13671311;mailpieceId=20152977694596';
 
+  //not using this, it's a test image
   //Image.asset('assets/mail.test.02.png');
 
   MailPieceViewWidgetState();
@@ -169,7 +173,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 'img[alt*=\'Scanned image of your mail piece\']');
 
             //scan through the mailpiece images to figure out which index matches the mailPiece Id.
-            //this will be used to find the corresponding learn more and reminder links.
+            //this will be used to find the corresponding reminder link.
             int matchingIndex = -1;
             for (int i = 0; i < scannedMailPieceItems.length; i++) {
               if (scannedMailPieceItems[i]
@@ -214,6 +218,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                   //debugPrint("Test1 of regex: " + mpID1![0]!);
 
                   //finally, set the state of the links to the matched element
+                  debugPrint(reminderLinkUrl.toString());
 
                   setState(() {
                     //get the number out of the matched text
@@ -223,7 +228,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                     reminderLinkHtml = reminderItems[i].outerHtml.toString();
                     linkHTML = reminderItems[i].innerHtml.toString();
                     reminderLinkUrl = Uri.parse(list[0]);
-                    debugPrint(reminderLinkUrl.toString());
+
                   });
                   //break out of for after finding correct mailPiece
                   break;
@@ -232,7 +237,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
               }
             }
 
-            //next, get a list of items that have the reminder link.  They all have the reminder link.
+            //next, get a list of items that have the tracking link.  All learn more has the tracking link.
             var trackingItems = doc.querySelectorAll(
                 'a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
 
@@ -278,6 +283,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 setState(() {
                   learnMoreLinkHtml = trackingItems[i].outerHtml.toString();
                   learnMoreLinkUrl = Uri.parse(list2[0]);
+                  hasLearnMore = true;
                 });
                 //break out of for after finding correct mailPiece
                 break;
@@ -295,7 +301,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       List<String> list = [];
       RegExp linkExp = RegExp(
           //r"(http|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])");
-          r'"(https:\/\/nam11\.safelinks(.*?))"');
+          r'"(https:\/\/informeddelivery(.*?))"');
+          //r'"(https:\/\/nam11\.safelinks(.*?))"');
       String text = x ?? ""; //get body text of email
       debugPrint(text);
       //remove encoding to make text easier to interpret
@@ -308,7 +315,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       while (linkExp.hasMatch(text)) {
         var match = linkExp.firstMatch(text)?.group(0);
         String link = match.toString();
-        link = link.replaceAll('"', "");
+        link = link.replaceAll('"', ""); //get rid of "
+        link = link.replaceAll('&amp','&'); //replace &amp with &
+        link = link.replaceAll(";",""); //get rid of ;
         list.add(link);
         text = text.substring(text.indexOf(match.toString()) +
             match
@@ -405,25 +414,28 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
                    */
 
-                  TextButton.icon(
-                    onPressed: () async {
-                      if (await canLaunchUrl(learnMoreLinkUrl)) {
-                        await launchUrl(learnMoreLinkUrl!);
-                      } else {
-                        throw 'Could not launch $learnMoreLinkUrl';
-                      }
-                    },
-                    icon: Icon(Icons.language, size: 50.0),
-                    label: Text('LEARN MORE'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      textStyle : const TextStyle(
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.bold,
+                  Visibility(
+                    visible: hasLearnMore,
+                    child:
+                    TextButton.icon(
+                      onPressed: () async {
+                        if (await canLaunchUrl(learnMoreLinkUrl)) {
+                          await launchUrl(learnMoreLinkUrl!);
+                        } else {
+                          throw 'Could not launch $learnMoreLinkUrl';
+                        }
+                      },
+                      icon: Icon(Icons.language, size: 50.0),
+                      label: Text('LEARN MORE'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        textStyle : const TextStyle(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-
 
                   TextButton.icon(
                     onPressed: () async {
