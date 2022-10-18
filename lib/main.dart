@@ -20,6 +20,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:receive_intent/receive_intent.dart' as receiveIntent;
 import 'firebase_options.dart';
+import 'package:receive_intent/receive_intent.dart' as recieveIntent;
 import 'dart:io' show Platform;
 import 'models/ApplicationFunction.dart';
 
