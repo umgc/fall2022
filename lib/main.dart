@@ -30,6 +30,9 @@ final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // needed to access Keychain prior to main finishing
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   GlobalConfiguration cfg = GlobalConfiguration();
   await setupLocator();
   await cfg.loadFromAsset("app_settings");
@@ -47,14 +50,6 @@ void main() async {
   // Cache emails
   if (emailAuthenticated) {
     await CacheService.updateMail(username, password);
-  }
-
-  if (Firebase.apps.length == 0) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FirebaseAnalytics.instance
-        .setUserProperty(name: 'email_domain', value: emailDomain);
   }
 
   runApp(GlobalLoaderOverlay(

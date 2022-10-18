@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:summer2022/firebase_options.dart';
 import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/ui/sign_in.dart';
 
@@ -23,7 +24,7 @@ class AuthService {
   signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser =
-        await GoogleSignIn(scopes: <String>["email"]).signIn();
+        await GoogleSignIn(clientId:  DefaultFirebaseOptions.currentPlatform.iosClientId).signIn();
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
