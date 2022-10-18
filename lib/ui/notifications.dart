@@ -168,7 +168,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                 children: [
                   SizedBox(height: 10,),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                     Container(
                       child: SizedBox(
@@ -188,7 +188,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                               fontSize: 18),
                               isDense: true),
                         ),
-                        width: 300,
+                        width: MediaQuery.of(context).size.width/2,
                       ),
                       padding: EdgeInsets.only(left: 5),
                     ),
@@ -234,7 +234,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                             SizedBox(
                               child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                   fontSize: 18),) ,
-                              width: 270,
+                              width: MediaQuery.of(context).size.width/2,
                             ),
                             SizedBox(
                               child: OutlinedButton(
