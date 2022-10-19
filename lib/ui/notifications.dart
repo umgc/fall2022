@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/services/mail_notifier.dart';
-import 'assistant_state.dart';
-import 'bottom_app_bar.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/assistant_state.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
@@ -56,39 +58,21 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        floatingActionButton: Visibility(
+          visible: showHomeButton,
+          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const BottomBar(),
-        appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-                icon: new Image.asset("assets/icon/exit-icon.png",
-                    width: 30, height: 30),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/sign_in');
-                }),
-          ],
-          leading: IconButton(
-            icon: new Image.asset("assets/icon/back-icon.png",
-                width: 30, height: 30),
-            onPressed: () => Navigator.pop(context),
-          ),
-          centerTitle: true,
-          title: Text(
-            "Notifications",
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
-          ),
-          automaticallyImplyLeading: false,
-          backgroundColor: Color.fromRGBO(51, 51, 102, 1),
-          bottom: const TabBar(tabs: <Widget>[
-            Tab(
-              text: "Notifications",
-            ),
-            Tab(
-              text: "Manage",
-            )
-          ]),
+        appBar:
+        PreferredSize(
+          preferredSize: const Size.fromHeight(100),
+          child:
+          TopBar(title: "Notifications"),
         ),
         body: TabBarView(
           children: <Widget>[

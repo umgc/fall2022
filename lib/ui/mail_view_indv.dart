@@ -5,6 +5,8 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
 import '../models/Digest.dart';
 import '../services/mail_retrieveByMailPiece.dart';
 import 'package:html/parser.dart';
@@ -289,17 +291,19 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
-      bottomNavigationBar: const BottomBar(),
-      appBar: AppBar(
-        title: Text(
-          'Search Result: ${widget.mailPiece.id}',
-          style: TextStyle(
-              fontWeight: _commonFontWeight, fontSize: _commonFontSize),
-        ),
-        backgroundColor: _buttonColor,
-        centerTitle: true,
+
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: const BottomBar(),
+      appBar: TopBar(
+        title:
+          'Search Result: ${widget.mailPiece.id}',
+        ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(15.0),
