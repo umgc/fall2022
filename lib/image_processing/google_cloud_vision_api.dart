@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:googleapis/vision/v1.dart';
 import '../models/MailResponse.dart';
 import '../models/Address.dart';
@@ -18,6 +19,7 @@ class Block {
 
 class CloudVisionApi {
   final _client = CredentialsProvider().client;
+
   Future<MailResponse> search(String image) async {
     List<TextAnnotation> textAnnotations = await convertImageToText(image);
     List<AddressObject> addresses = await searchImageForText(textAnnotations);

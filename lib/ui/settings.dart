@@ -4,6 +4,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/services/mail_notifier.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
@@ -220,7 +221,13 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(title: 'Settings'),
       body: Stack(

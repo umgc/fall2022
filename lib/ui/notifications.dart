@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/services/mail_notifier.dart';
-import 'assistant_state.dart';
-import 'bottom_app_bar.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/assistant_state.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
@@ -56,6 +58,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -90,6 +93,17 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
               text: "Manage",
             ),
           ]),
+        floatingActionButton: Visibility(
+          visible: showHomeButton,
+          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: const BottomBar(),
+        appBar:
+        PreferredSize(
+          preferredSize: const Size.fromHeight(100),
+          child:
+          TopBar(title: "Notifications"),
         ),
         body: TabBarView(
           children: <Widget>[
