@@ -34,7 +34,6 @@ class MailPieceEmailFetcher{
         return MimeMessage();
       } else {
         String searchCriteria = 'FROM ${senderFilter} ON ${_formatTargetDateForSearch(_timeStamp!)} SUBJECT "${subjectFilter}"';
-        debugPrint(searchCriteria);
 
         List<ReturnOption> returnOptions = [];
         ReturnOption option = ReturnOption("all");
