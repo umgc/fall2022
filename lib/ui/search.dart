@@ -37,7 +37,12 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   DateTime _start = DateTime.now();
   DateTime _end = DateTime.now();
   String _keyword = "";
+  String _advancedText = "Advanced Search";
+  bool _isAdvanced = false;
   TextEditingController keywordInput = TextEditingController();
+  TextEditingController senderInput = TextEditingController();
+  TextEditingController mailBodyInput = TextEditingController();
+
 
   final _mailStorage = MailStorage();
 
@@ -73,6 +78,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   Widget build(BuildContext context) {
     applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
+
     keywordInput.text = _keyword;
 
     return Scaffold(
@@ -237,40 +243,130 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                     ),
                   ),
                 ),
-                Container(
+                Visibility(
+                  visible: !_isAdvanced,
+                  child:Container(
                     child: Semantics(
-                      excludeSemantics: true,
-                      textField: true,
-                      label: "Keyword",
-                      hint: "Enter keyword to search",
-                      child: TypeAheadField(
-                        textFieldConfiguration: TextFieldConfiguration(
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                labelText: 'Enter keyword to search',
-                                border: OutlineInputBorder()
-                            ),
-                          controller: keywordInput
-                        ),
-                        onSuggestionSelected: (suggestion) {
-                          // Go directly to mail item if the user clicks a suggestion
-                          Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
-                        },
-                        suggestionsCallback: (pattern) {
-                          // Populate items from cache
-                          return _mailStorage.searchMailsPieces(pattern);
-                        },
-                        itemBuilder: (context, itemData) {
-                          return ListTile(
-                            title:  Text("From: ${(itemData as MailPiece).sender}, "
-                                "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
-                            subtitle: Text("Contents: "
-                                "${itemData.imageText}"),
-                          );
-                        },
-                      )
-                  ),
+                        excludeSemantics: true,
+                        textField: true,
+                        label: "Keyword",
+                        hint: "Enter keyword to search",
+                        child: TypeAheadField(
+                          textFieldConfiguration: TextFieldConfiguration(
+                              style: TextStyle(fontSize: 20),
+                              decoration: InputDecoration(
+                                  labelText: 'Enter keyword to search',
+                                  border: OutlineInputBorder()
+                              ),
+                              controller: keywordInput
+                          ),
+                          onSuggestionSelected: (suggestion) {
+                            // Go directly to mail item if the user clicks a suggestion
+                            Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
+                          },
+                          suggestionsCallback: (pattern) {
+                            // Populate items from cache
+                            return _mailStorage.searchMailsPieces(pattern);
+                          },
+                          itemBuilder: (context, itemData) {
+                            return ListTile(
+                              title:  Text("From: ${(itemData as MailPiece).sender}, "
+                                  "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                              subtitle: Text("Contents: "
+                                  "${itemData.imageText}"),
+                            );
+                          },
+                        )
+                    ),
+                  )
                 ),
+                Visibility(
+                    visible: _isAdvanced,
+                    child:Container(
+                      child: Semantics(
+                          excludeSemantics: true,
+                          textField: true,
+                          label: "Keyword",
+                          hint: "Enter sender to search",
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter mail sender to search',
+                                    border: OutlineInputBorder()
+                                ),
+                                controller: senderInput
+                            ),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              return _mailStorage.searchMailsPieces(pattern);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title:  Text("From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text("Contents: "
+                                    "${itemData.imageText}"),
+                              );
+                            },
+                          )
+                      ),
+                    )
+                ),
+                Visibility(
+                    visible: _isAdvanced,
+                    child:Container(
+                      child: Semantics(
+                          excludeSemantics: true,
+                          textField: true,
+                          label: "Keyword",
+                          hint: "Enter text to search",
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter mail body text to search',
+                                    border: OutlineInputBorder()
+                                ),
+                                controller: mailBodyInput
+                            ),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              return _mailStorage.searchMailsPieces(pattern);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title:  Text("From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text("Contents: "
+                                    "${itemData.imageText}"),
+                              );
+                            },
+                          )
+                      ),
+                    )
+                ),
+                new InkWell(
+                    child:
+                     Align(
+                      alignment: Alignment.centerRight,
+                      child: new Text(_advancedText,
+                        style: TextStyle(
+                            fontWeight: _commonFontWeight,
+                            decoration: TextDecoration.underline
+                        ),
+                      ),
+                    ),
+                    onTap: () {setState((){_isAdvanced = !_isAdvanced; _advancedText = _isAdvanced ? "Standard Search" : "Advanced Search";}); print("isAdvanced: " + _isAdvanced.toString());}
+                    ),
                 Row(
                     children: [
                       Expanded(
