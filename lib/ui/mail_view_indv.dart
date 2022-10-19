@@ -41,6 +41,10 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late String learnMoreLinkHtml = '';
   late String reminderLinkHtml = '';
 
+  late bool hasLearnMore = false;
+  late Uri learnMoreLinkUrl = Uri.parse("https://www.usps.com");
+  late Uri reminderLinkUrl = Uri.parse("https://www.usps.com");
+
   MailPieceViewWidgetState();
 
   @override
@@ -203,6 +207,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 //we want to get the mailPieceID of the matching mailPiece.
                 // Will help with getting the tracking item with learn more
                 //the matchingIndex of the main mailPiece is used to get the associated reminder link
+
                 if (reminderCount == matchingIndex) {
                   var regex = RegExp(
                       r'mailpieceId=\d*\"'); //finds the string mailpieceId=digits -to"
@@ -248,6 +253,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             for (int i = 0; i < trackingItems.length; i++) {
 
               //need both because alt=Learn More is in innerHtml and link is in outerHtml
+
               String htmlString1 = trackingItems[i].innerHtml.toString();
               String htmlString2 = trackingItems[i].outerHtml.toString();
 
@@ -375,6 +381,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                     borderRadius: new BorderRadius.circular(16.0),
                     color: _buttonColor),
                 child: Column(children: [
+
                   Text(
                     'Do more with your mail\n',
                     style: TextStyle(
