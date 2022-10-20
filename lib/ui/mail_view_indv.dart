@@ -41,10 +41,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late String learnMoreLinkHtml = '';
   late String reminderLinkHtml = '';
 
-  late bool hasLearnMore = false;
-  late Uri learnMoreLinkUrl = Uri.parse("https://www.usps.com");
-  late Uri reminderLinkUrl = Uri.parse("https://www.usps.com");
-
   MailPieceViewWidgetState();
 
   @override
@@ -293,7 +289,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
           r'"(https:\/\/informeddelivery(.*?))"');
 
-      String text = x ?? "";
+      String text = x;
 
       //debugPrint(text);
 
