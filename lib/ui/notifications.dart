@@ -93,17 +93,6 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
               text: "Manage",
             ),
           ]),
-        floatingActionButton: Visibility(
-          visible: showHomeButton,
-          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: const BottomBar(),
-        appBar:
-        PreferredSize(
-          preferredSize: const Size.fromHeight(100),
-          child:
-          TopBar(title: "Notifications"),
         ),
         body: TabBarView(
           children: <Widget>[
