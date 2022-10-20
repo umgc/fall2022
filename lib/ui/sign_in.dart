@@ -90,10 +90,29 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           title: Center(
             child: Text("Login Error"),
           ),
+          actions: [
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                textStyle: MaterialStateProperty.all(TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                ),
+              ),
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, child: Text(
+                'Close'
+            ),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.center,
           content: SizedBox(
             height: 50.0, // Change as per your requirement
             width: 75.0, // Change as per your requirement
@@ -113,7 +132,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           title: Center(
             child: Text.rich(
               TextSpan(
@@ -127,6 +146,26 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
               ),
             ),
           ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Close'
+              ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
           content: SizedBox(
             height: 75.0,
             width: 75.0,
@@ -476,17 +515,25 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                             showTermsAndPrivacyAgreementErrorDialog();
                             //If check box is not ticked off, show error dialog
                           } else {
-                            String email = emailController.text.toString();
-                            String password = passwordController.text.toString();
+                            // .trim() removes any leading and trailing white spaces
+                            String email = emailController.text.toString().trim();
+                            String password = passwordController.text.toString().trim();
                             //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
-                            var loggedIn = await Client()
-                                .getImapClient(email, password);
-                            //Store the credentials into the the secure storage only if validated
-                            if (loggedIn) {
-                              Keychain().addCredentials(email, password);
-                              await CacheService.updateMail(email, password);
-                              Navigator.pushNamed(context, '/main', arguments: widget.function);
-                            } else {
+                            if(email.isNotEmpty && password.isNotEmpty) {
+                              var loggedIn = await Client()
+                                  .getImapClient(email, password);
+                              //Store the credentials into the the secure storage only if validated
+                              if (loggedIn) {
+                                Keychain().addCredentials(email, password);
+                                await CacheService.updateMail(email, password);
+                                //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture
+                                Navigator.pushNamedAndRemoveUntil(context, '/main', (Route<dynamic> route) => false);
+                              }
+                              else {
+                                showLoginErrorDialog();
+                                context.loaderOverlay.hide();
+                              }
+                            }else {
                               showLoginErrorDialog();
                               context.loaderOverlay.hide();
                             }

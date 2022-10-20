@@ -14,6 +14,7 @@ import '../models/SearchCriteria.dart';
 import '../services/mail_service.dart';
 import 'assistant_state.dart';
 import '../services/mail_storage.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -30,7 +31,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   final Color _buttonTextColor = Colors.white;
   final FontWeight _buttonFontWeight = FontWeight.w600;
   final double _buttonIconSize = 35;
-  final double _buttonTextSize = 20.0;
+  final double _buttonTextSize = 18.0;
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _buttonLabelTextSize = 26;
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
@@ -76,8 +77,13 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
     keywordInput.text = _keyword;
-
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+        floatingActionButton: Visibility(
+          visible: showHomeButton,
+          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(title: 'Mail Search'),
       body:
