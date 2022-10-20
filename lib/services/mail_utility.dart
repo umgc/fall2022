@@ -124,7 +124,7 @@ class MailUtility {
         await client.connectToServer(
             imapServerConfig!.hostname as String, imapServerConfig.port as int,
             isSecure: imapServerConfig.isSecureSocket);
-        await client.login(_username!, _password!);
+        await client.login(_username, _password);
         await client.selectInbox();
         return client;
       }

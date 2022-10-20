@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/services/mail_utility.dart';
 import '../models/MailPiece.dart';
@@ -67,21 +68,29 @@ class MailFetcher {
     if (mimeParts.parts != null) {
       var emailHtml = mimeParts.parts!.first.toString(); //todo: this is the full email HTML for stripping out the possible sender and "do more with your mail" sections
 
+      //for each part in the email html, look for parts with image. this becomes an attachment.
       for (final part in mimeParts.parts!) {
         if (_isContentType(part, "image")) {
-          var attachment = Attachment();
 
-          attachment.contentID = _getHeader(part, "Content-ID")
-              .replaceAll('<', '').replaceAll('>', '');
-          attachment.sender =
-          "Test Sender"; //todo: pull from emailBodyHtml by parsing the HTML
-          attachment.attachment = part.decodeMessageData()
-              .toString(); //These are base64 encoded images with formatting
-          attachment.attachmentNoFormatting = attachment.attachment.toString()
-              .replaceAll(
-              "\r\n", ""); //These are base64 encoded images with formatting
+          if ( !_getHeader(part, "Content-ID").contains("ra_") ) {
+              var attachment = Attachment();
 
-          attachments.add(attachment);
+              attachment.contentID = _getHeader(part, "Content-ID")
+                  .replaceAll('<', '').replaceAll('>', '');
+              attachment.sender =
+              "Test Sender"; //todo: pull from emailBodyHtml by parsing the HTML
+
+              attachment.attachment = part.decodeMessageData()
+                  .toString(); //These are base64 encoded images with formatting
+
+              //The daily digest emails have base64 encoded images with formatting
+              //that needs to be removed for google vision to interpret
+              attachment.attachmentNoFormatting = attachment.attachment.toString()
+                  .replaceAll(
+              "\r\n", "");
+
+              attachments.add(attachment);
+          }
         }
       }
     }
