@@ -1,27 +1,30 @@
-import 'package:flutter/cupertino.dart';
+import 'package:summer2022/services/mail_utility.dart';
 import '../models/Digest.dart';
-import 'package:enough_mail/enough_mail.dart';
-import 'package:intl/intl.dart';
 
-import '../utility/Keychain.dart';
 
 /// The mail_retrieveByMailPiece class searches for a specific digest email matching a specific date from a mailPiece
 class MailPieceEmailFetcher{
 
-  DateTime ? _timeStamp;
+  DateTime _timeStamp;
 
   /// Fetch the email using the mailPiece provided date
   /// from `uspsinformeddelivery@email.informeddelivery.usps.com`
   /// with the subject `Your Daily Digest`.
 
+  //Scott H is trying to add this to mail_fetcher.  No need for separate file.
+
   MailPieceEmailFetcher(this._timeStamp);
 
+  /// Retrieve emails based on a sender filter, and subject filter. _timeStamp created with constructor
   Future<Digest> getMailPieceDigest() async {
-        Digest digest = Digest(await _getMailPieceEmail("USPSInformeddelivery@email.informeddelivery.usps.com",
+        MailUtility mail = new MailUtility();
+        Digest digest = Digest(await mail.getEmailOn(_timeStamp,"USPSInformeddelivery@email.informeddelivery.usps.com",
           "Your Daily Digest"));
         return digest;
   }
 
+}
+/*
   /// Retrieve emails based on a sender filter, and subject filter.  _timeStamp created with constructor
   Future<MimeMessage> _getMailPieceEmail(String senderFilter, String subjectFilter) async {
 
@@ -98,4 +101,4 @@ class MailPieceEmailFetcher{
     return format.format(date);
   }
 
-}
+   */

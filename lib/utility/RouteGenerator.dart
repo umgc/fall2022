@@ -16,7 +16,7 @@ import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/ui/mail_view.dart';
 
 import '../models/MailSearchParameters.dart';
-import '../services/mail_service.dart';
+import '../services/mailPiece_service.dart';
 import '../ui/mail_view_indv.dart';
 
 // Enum defining all areas of the application

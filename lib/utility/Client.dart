@@ -3,6 +3,7 @@ import 'package:enough_mail/enough_mail.dart';
 class Client {
   Client();
 
+  /* ScottH removed any use for this class...should be deleted.  Place all email login functions within MailUtility service
   Future<bool> getImapClient(String username, String password) async {
     final client = ImapClient(isLogEnabled: false);
     var config = await Discover.discover(username, isLogEnabled: false);
@@ -40,4 +41,5 @@ class Client {
       }
     }
   }
+  */
 }

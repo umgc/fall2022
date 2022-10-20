@@ -11,9 +11,9 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../models/ApplicationFunction.dart';
 import '../models/SearchCriteria.dart';
-import '../services/mail_service.dart';
+import '../services/mailPiece_service.dart';
 import 'assistant_state.dart';
-import '../services/mail_storage.dart';
+import '../services/mailPiece_storage.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
 class SearchWidget extends StatefulWidget {
@@ -40,7 +40,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   String _keyword = "";
   TextEditingController keywordInput = TextEditingController();
 
-  final _mailStorage = MailStorage();
+  final _mailStorage = MailPieceStorage();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {

@@ -1,25 +1,23 @@
 import 'package:summer2022/models/MailResponse.dart';
-import '../exceptions/fetch_mail_exception.dart';
+import 'package:summer2022/services/mail_utility.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
 import '../models/Digest.dart';
-import 'package:intl/intl.dart';
 
 /// The `MailFetcher` class requests new mail from a mail server.
 class MailFetcher {
-  late String? _username;
-  late String? _password;
 
-  MailFetcher(this._username, this._password);
+  MailFetcher();
 
   /// Fetch all pieces of mail since the provided timestamp
   /// from `uspsinformeddelivery@email.informeddelivery.usps.com`
   /// with the subject `Your Daily Digest`.
   Future<List<MailPiece>> fetchMail(DateTime lastTimestamp) async {
     List<MailPiece> mailPieces = <MailPiece>[];
+    MailUtility mail = new MailUtility();
     try {
-      List<MimeMessage> emails = await _getEmails(
+      List<MimeMessage> emails = await mail.getEmailsSince(
           lastTimestamp,
           "uspsinformeddelivery@email.informeddelivery.usps.com",
           "Your Daily Digest");
@@ -37,6 +35,14 @@ class MailFetcher {
     }
 
     return mailPieces;
+  }
+
+  /// Retrieve emails based on a sender filter, and subject filter when passed in a timeStamp
+  Future<Digest> getMailPieceDigest(DateTime timeStamp) async {
+    MailUtility mail = new MailUtility();
+    Digest digest = Digest(await mail.getEmailOn(timeStamp,"USPSInformeddelivery@email.informeddelivery.usps.com",
+        "Your Daily Digest"));
+    return digest;
   }
 
   /// Process an individual email, converting it into a list of MailPieces
@@ -92,6 +98,41 @@ class MailFetcher {
     return part.contentType?.value.toString().contains(contentType) ?? false;
   }
 
+  /// Process an individual mail image, converting it into a MailPiece
+  Future<MailPiece> _processMailImage(
+      Attachment attachment, DateTime timestamp, int index) async {
+    MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
+
+    // Sender text is actually sometimes included in the Email body as text for "partners".
+    // We prefer to use this rather than try and deduce it using the image itself.
+    if (attachment.sender.isEmpty) {
+      attachment.sender = ocrScanResult.addresses.first.name;
+    }
+
+    final id = "${attachment.sender}-$timestamp-$index";
+    var text = ocrScanResult.textAnnotations.first.text;
+    var mid = attachment.contentID; //todo: couldn't determine where MID might be at a first glance, this seemed fitting for now
+    //todo: save list of URLs found on the ocrScanResult (including text URLs, barcodes, and QR codes)
+    //todo: save list of Emails found on the ocrScanResult
+    //todo: save list of Phone Numbers found on the ocrScanResult
+
+    //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
+    //todo: otherwise the date is probably fine since there is only one USPS ID email per day
+    final emailId = timestamp.toString();
+
+    return new MailPiece(
+        id, emailId, timestamp, attachment.sender, text!, mid);
+  }
+
+  /// Perform OCR scan once on the mail image to get the results for further processing
+  Future<MailResponse> _getOcrScan(String mailImage) async {
+    CloudVisionApi vision = CloudVisionApi();
+    return await vision.search(mailImage);
+  }
+}
+
+
+/*
   /// Retrieve emails based on a start date, sender filter, and subject filter
   Future<List<MimeMessage>> _getEmails(DateTime startDate, String senderFilter, String subjectFilter) async {
     final client = await _login();
@@ -151,35 +192,4 @@ class MailFetcher {
     return format.format(date);
   }
 
-  /// Process an individual mail image, converting it into a MailPiece
-  Future<MailPiece> _processMailImage(
-      Attachment attachment, DateTime timestamp, int index) async {
-    MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
-
-    // Sender text is actually sometimes included in the Email body as text for "partners".
-    // We prefer to use this rather than try and deduce it using the image itself.
-    if (attachment.sender.isEmpty) {
-      attachment.sender = ocrScanResult.addresses.first.name;
-    }
-
-    final id = "${attachment.sender}-$timestamp-$index";
-    var text = ocrScanResult.textAnnotations.first.text;
-    var mid = attachment.contentID; //todo: couldn't determine where MID might be at a first glance, this seemed fitting for now
-    //todo: save list of URLs found on the ocrScanResult (including text URLs, barcodes, and QR codes)
-    //todo: save list of Emails found on the ocrScanResult
-    //todo: save list of Phone Numbers found on the ocrScanResult
-
-    //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
-    //todo: otherwise the date is probably fine since there is only one USPS ID email per day
-    final emailId = timestamp.toString();
-
-    return new MailPiece(
-        id, emailId, timestamp, attachment.sender, text!, mid);
-  }
-
-  /// Perform OCR scan once on the mail image to get the results for further processing
-  Future<MailResponse> _getOcrScan(String mailImage) async {
-    CloudVisionApi vision = CloudVisionApi();
-    return await vision.search(mailImage);
-  }
-}
+   */

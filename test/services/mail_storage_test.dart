@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:summer2022/models/MailPiece.dart';
-import 'package:summer2022/services/mail_storage.dart';
+import 'package:summer2022/services/mailPiece_storage.dart';
 import 'package:summer2022/services/sqlite_database.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MailStorage subject = MailStorage();
+  MailPieceStorage subject = MailPieceStorage();
 
   DateTime now = DateTime.now();
   DateTime future = DateTime.now().add(Duration(days: 1));

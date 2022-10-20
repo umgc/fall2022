@@ -8,7 +8,7 @@ class MailUtility {
   MailUtility();
 
   /// Retrieve emails based on a start date, sender filter, and subject filter
-  Future<List<MimeMessage>> _getEmailsSince(
+  Future<List<MimeMessage>> getEmailsSince(
       DateTime date, String senderFilter, String subjectFilter) async {
     //call the username/password out of keychain only when needed, no need to pass in
     String _username = await Keychain().getUsername();
@@ -46,7 +46,7 @@ class MailUtility {
   }
 
   /// Retrieve email based on a specific date, sender filter, and subject filter
-  Future<MimeMessage> _getEmailOn(
+  Future<MimeMessage> getEmailOn(
       DateTime date, String senderFilter, String subjectFilter) async {
     //get the client logged in
 
