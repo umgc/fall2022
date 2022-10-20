@@ -1,4 +1,5 @@
 import 'package:enough_mail/enough_mail.dart';
+import 'package:summer2022/utility/user_auth_service.dart';
 
 class Client {
   Client();

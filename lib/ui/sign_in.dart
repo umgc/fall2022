@@ -1,22 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:summer2022/firebase_options.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
-import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/Client.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/services/cache_service.dart';
-import 'package:summer2022/utility/auth_service.dart';
+import 'package:summer2022/utility/user_auth_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'assistant_state.dart';
-
 
 /// Helper class to show a snackbar using the passed context.
 class ScaffoldSnackbar {
@@ -42,6 +37,7 @@ class ScaffoldSnackbar {
       );
   }
 }
+
 class SignInWidget extends StatefulWidget {
   const SignInWidget({Key? key}) : super(key: key);
 
@@ -520,67 +516,77 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                               }),
                       ]))),
                       Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Container(
-                                padding:
-                                    const EdgeInsets.only(left: 35, right: 35),
-                                child: SignInButton(
-                                  Buttons.Google,
-                                  onPressed: () {
-                                    Navigator.pushNamed(context,
-                                        AuthService().signInWithGoogle());
-                                  },
-                                  text: 'Sign In with Google',
-                                ),
-                              ))
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(top: 10),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Container(
-                                padding:
-                                    const EdgeInsets.only(left: 35, right: 35),
-                                child: SignInButton(
-                                  Buttons.AppleDark,
-                                  onPressed: () {
-                                    Navigator.pushNamed(context,
-                                        AuthService().signInWithApple());
-                                  },
-                                  text: 'Sign In with Apple',
-                                ),
-                              )),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(top: 10),
-                          ),
-                          
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Container(
-                                padding:
-                                    const EdgeInsets.only(left: 35, right: 35),
-                                child: SignInButton(Buttons.Microsoft,
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 35, right: 35),
+                                  child: SignInButton(
+                                    Buttons.Google,
+                                    onPressed: () async {
+                                      // To get oauth token
+                                      bool success = await UserAuthService()
+                                          .signInGoogleEmail();
+
+                                      if (success) {
+                                        await CacheService.updateMail("", "");
+                                        Navigator.pushNamed(context, '/main');
+                                      } else {
+                                        showLoginErrorDialog();
+                                        context.loaderOverlay.hide();
+                                      }
+                                    },
+                                    text: 'Sign In with Google',
+                                  ),
+                                ))
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 10),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 35, right: 35),
+                                  child: SignInButton(
+                                    Buttons.AppleDark,
                                     onPressed: () {
-                                  Navigator.pushNamed(context,
-                                      AuthService().signInWithMicrosoft());
-                                }, text: 'Sign In with Microsoft'),
-                              )),
-                            ],
-                          ),
-                        ],
+                                      Navigator.pushNamed(context,
+                                          UserAuthService().signInWithApple());
+                                    },
+                                    text: 'Sign In with Apple',
+                                  ),
+                                )),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 10),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 35, right: 35),
+                                  child: SignInButton(Buttons.Microsoft,
+                                      onPressed: () {
+                                    Navigator.pushNamed(
+                                        context,
+                                        UserAuthService()
+                                            .signInWithMicrosoft());
+                                  }, text: 'Sign In with Microsoft'),
+                                )),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                     ],
                   ),
                 ),
