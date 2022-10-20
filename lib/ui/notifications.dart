@@ -63,6 +63,11 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
       length: 2,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        floatingActionButton: Visibility(
+          visible: showHomeButton,
+          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const BottomBar(),
         appBar: AppBar(
           actions: <Widget>[
