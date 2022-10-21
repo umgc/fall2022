@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
@@ -50,18 +51,27 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: TopBar(title: 'Chat Support'),
-    body: Chat(
-      messages: _messages,
-      onMessageTap: _handleMessageTap,
-      onSendPressed: _handleSendPressed,
-      showUserAvatars: true,
-      showUserNames: true,
-      user: _user,
-    ),
-    bottomNavigationBar: const BottomBar()
-  );
+  Widget build(BuildContext context) {
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
+    return Scaffold(
+        appBar: TopBar(title: 'Chat Support'),
+        floatingActionButton: Visibility(
+          visible: showHomeButton,
+          child: FloatingHomeButton(
+              parentWidgetName: context.widget.toString()),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        body: Chat(
+          messages: _messages,
+          onMessageTap: _handleMessageTap,
+          onSendPressed: _handleSendPressed,
+          showUserAvatars: true,
+          showUserNames: true,
+          user: _user,
+        ),
+        bottomNavigationBar: const BottomBar()
+    );
+  }
 
   void _addMessage(types.Message message) {
     setState(() {

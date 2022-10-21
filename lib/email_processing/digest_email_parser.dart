@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
@@ -28,7 +29,8 @@ class DigestEmailParser {
       _password = password;
       _targetDate = targetDate;
       Digest digest = Digest(await _getDigestEmail());
-      if (!digest.isNull()) {
+
+        if (!digest.isNull()) {
         digest.attachments = await _getAttachments(digest.message);
         digest.links = _getLinks(digest.message);
       }
@@ -41,7 +43,7 @@ class DigestEmailParser {
   Future<List<Attachment>> _getAttachments(MimeMessage m) async {
     try {
       List<Attachment> list = [];
-      await deleteImageFiles();
+      await deleteImageFiles(); //this method deletes the current list of user images in the app local directory
       for (int x = 0; x < m.mimeData!.parts!.length; x++) {
         if (m.mimeData!.parts!
                 .elementAt(x)
@@ -49,20 +51,22 @@ class DigestEmailParser {
                 ?.value
                 .toString()
                 .contains("image") ??
-            false) {
-          var attachment = Attachment();
-          attachment.attachment = m.mimeData!.parts!
+            false)
+          {
+            var attachment = Attachment();
+            attachment.attachment = m.mimeData!.parts!
               .elementAt(x)
               .decodeMessageData()
               .toString(); //These are base64 encoded images with formatting
-          attachment.attachmentNoFormatting = attachment.attachment
+            attachment.attachmentNoFormatting = attachment.attachment
               .toString()
               .replaceAll(
                   "\r\n", ""); //These are base64 encoded images with formatting
+            /* get the position of element with value "image" and save to attachment.  delete all returns */
           await saveImageFile(base64Decode(attachment.attachmentNoFormatting),
               "mailpiece$x.jpg");
-          attachment.detailedInformation = await processImage(filePath);
-          list.add(attachment);
+          attachment.detailedInformation = await processImage(filePath); //process image defined below
+          list.add(attachment); //add attachment to list of attachments
         }
       }
       return list;
@@ -133,8 +137,7 @@ class DigestEmailParser {
         List<ReturnOption> returnOptions = [];
         ReturnOption option = ReturnOption("all");
         returnOptions.add(option);
-        final searchResult = await client.searchMessages(
-            searchCriteria: searchCriteria);
+        final searchResult = await client.searchMessages(searchCriteria: searchCriteria);
         //extract sequence id
         int? seqID;
         final matchingSequence = searchResult.matchingSequence;
@@ -235,7 +238,7 @@ class DigestEmailParser {
         return true;
       }
     } catch (e) {
-      print("Something happened in saveImageFile method");
+      debugPrint("Something happened in saveImageFile method");
     }
     return false;
   }

@@ -6,6 +6,10 @@ import '../models/MailPiece.dart';
 import '../services/mail_storage.dart';
 import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
+import 'package:summer2022/ui/top_app_bar.dart';
+import 'package:summer2022/ui/assistant_state.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
@@ -109,10 +113,16 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        floatingActionButton: Visibility(
+          visible: showHomeButton,
+          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const BottomBar(),
         appBar: AppBar(
           actions: <Widget>[
@@ -242,15 +252,54 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                         ),
                     ],
                   )
+                  Container(  //the following code is used for notification subscriptions on the manage tab, but placed here for testing purposes and layout
+                    height: 400,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (var item in _subscriptions)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center, //displaying notifications subscriptions for testing purposes only
+                              children: [
+                                SizedBox(
+                                  child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                      fontSize: 18),) ,
+                                  width: 270,
+                                ),
+                                SizedBox(
+                                  child: OutlinedButton(
+                                    child: Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.white,fontSize: 18),
+                                    ),
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                        MaterialStateColor.resolveWith(
+                                                (states) => Colors.red),
+                                        shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(30)))),
+                                    onPressed: () {
+                                      removeSubscription(item.keyword);
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Container(  //Manager1
+            Container(
               child: Column(
                 children: [
                   SizedBox(height: 10,),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                     Container(
                       child: SizedBox(
@@ -270,7 +319,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                               fontSize: 18),
                               isDense: true),
                         ),
-                        width: 300,
+                        width: MediaQuery.of(context).size.width/2,
                       ),
                       padding: EdgeInsets.only(left: 5),
                     ),
@@ -316,7 +365,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                             SizedBox(
                               child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                   fontSize: 18),) ,
-                              width: 270,
+                              width: MediaQuery.of(context).size.width/2,
                             ),
                             SizedBox(
                               child: OutlinedButton(
@@ -340,11 +389,13 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                           ],
                         ),
                     ],
+
                   ),
                   ),
                   )
                   ],
                   ),
+
             ),
             // This is the end of manager tab one
         ]
