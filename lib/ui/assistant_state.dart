@@ -25,9 +25,12 @@ abstract class AssistantState<T extends StatefulWidget> extends State<T>
     intentSubscription = receiveIntent.ReceiveIntent.receivedIntentStream.listen((receiveIntent.Intent? intent)
     {
         if (intent != null) {
-          ApplicationFunction? appFunction = AssistantService.ParseIntent(intent);
-          if (appFunction != null) {
-            processFunction(appFunction);
+          if (ModalRoute.of(context)?.isCurrent ?? false) {
+            ApplicationFunction? appFunction = AssistantService.ParseIntent(
+                intent);
+            if (appFunction != null) {
+              processFunction(appFunction);
+            }
           }
         }
     });
@@ -41,6 +44,9 @@ abstract class AssistantState<T extends StatefulWidget> extends State<T>
         break;
       case 'performSearch':
         Navigator.pushNamed(context, '/search', arguments: function.parameters);
+        break;
+      case 'addKeyword':
+        Navigator.pushNamed(context, '/notifications', arguments: function.parameters);
         break;
     }
   }
