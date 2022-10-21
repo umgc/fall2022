@@ -7,9 +7,6 @@ import '../services/mail_storage.dart';
 import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
-import 'package:summer2022/ui/top_app_bar.dart';
-import 'package:summer2022/ui/assistant_state.dart';
-import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
@@ -251,7 +248,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                           ],
                         ),
                     ],
-                  )
+                  ),
                   Container(  //the following code is used for notification subscriptions on the manage tab, but placed here for testing purposes and layout
                     height: 400,
                     child: SingleChildScrollView(
