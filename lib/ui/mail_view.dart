@@ -4,18 +4,45 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
-
 import '../models/MailSearchParameters.dart';
 import '../services/mail_service.dart';
 
-class MailViewWidget extends StatelessWidget {
+class MailViewWidget extends StatefulWidget {
 
   final MailSearchParameters query;
 
   final MailService _mailService = MailService();
 
   MailViewWidget({required this.query});
+
+  @override
+  MailViewWidgetState createState() => MailViewWidgetState();
+}
+
+class MailViewWidgetState extends State<MailViewWidget> {
+
+  //this is temporary for list view display, need to eventually delete when search results are achieved
+  List<MailPiece> mailPieces = _createMailPieces();
+
+  static List<MailPiece> _createMailPieces() {
+    List<MailPiece> _mailPieces = List.generate(
+        10,
+            (index) => new MailPiece(
+            "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
+            ""),
+        growable: true
+    );
+
+    MailPiece m = new MailPiece(
+        "id", "emailId", DateTime(2022, 10, 3), "sender",
+        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'");
+
+    _mailPieces.add(m);
+
+    return _mailPieces;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +55,7 @@ class MailViewWidget extends StatelessWidget {
           child:
           Semantics(
             excludeSemantics: true,
-            button: true,
+            link: true,
             label: "Letter from ${mailPiece.sender} received on ${DateFormat('EEE MMM,d,yyyy').format(mailPiece.timestamp)}",
             hint: "Double tap to select.",
             child:
@@ -75,7 +102,7 @@ class MailViewWidget extends StatelessWidget {
     }
 
     var mailPieceListViewWidget = FutureBuilder<List<MailPiece>>(
-      future: _mailService.fetchMail(query),
+      future: widget._mailService.fetchMail(widget.query),
       builder: (context, AsyncSnapshot<List<MailPiece>> snapshot){
         if(snapshot.hasData) {
           return ListView.builder(
@@ -92,7 +119,13 @@ class MailViewWidget extends StatelessWidget {
       }
     );
 
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
           title: "Search Results"

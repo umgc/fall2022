@@ -89,10 +89,29 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           title: Center(
             child: Text("Login Error"),
           ),
+          actions: [
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                textStyle: MaterialStateProperty.all(TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                ),
+              ),
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, child: Text(
+                'Close'
+            ),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.center,
           content: SizedBox(
             height: 50.0, // Change as per your requirement
             width: 75.0, // Change as per your requirement
@@ -112,35 +131,58 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
-            title: Center(
-              child: Text.rich(
-                TextSpan(
-                  text: 'Error',
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
+        return AlertDialog(
+          title: Center(
+            child: Text.rich(
+              TextSpan(
+                text: 'Error',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
                 ),
               ),
             ),
-            content: SizedBox(
-              height: 75.0,
-              width: 75.0,
-              child: Center(
-                  child: Text.rich(
-                      textAlign: TextAlign.left,
-                      TextSpan(
-                          text:
-                              'Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          )))),
-            ));
+          ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Close'
+              ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
+          content: SizedBox(
+            height: 75.0,
+            width: 75.0,
+            child: Center(
+                child: Text.rich(
+                  textAlign: TextAlign.left,
+                  TextSpan(
+                      text: 'Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      )
+                  )
+                )
+            ),
+          )
+        );
       },
     );
   }
@@ -370,133 +412,141 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         alignment: Alignment.center,
                         child: Text("USPS Informed Delivery Registered Email"),
                       ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 15),
-                        alignment: Alignment.center,
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'E-Mail Address',
-                          ),
-                          controller: emailController,
+                        Container(
+                      padding: const EdgeInsets.only(top: 15),
+                      alignment: Alignment.center,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'E-Mail Address',
+                        ),
+                        controller: emailController,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(top: 15),
+                      alignment: Alignment.center,
+                      child: TextField(
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        controller: passwordController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 15),
-                        alignment: Alignment.center,
-                        child: TextField(
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          controller: passwordController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Password',
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      alignment: Alignment.center,
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: checked,
+                            onChanged: (value) {
+                              setState(() {
+                                checked = value ?? false;
+                              });
+                            },
                           ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        alignment: Alignment.center,
-                        child: Row(
-                          children: [
-                            Checkbox(
-                              value: checked,
-                              onChanged: (value) {
-                                setState(() {
-                                  checked = value ?? false;
-                                });
-                              },
-                            ),
-                            Expanded(
-                              child: Text.rich(
-                                TextSpan(
-                                    text: 'I have read and agree to the ',
+                          Expanded(
+                            child: Text.rich(
+                              TextSpan(
+                                text: 'I have read and agree to the ',
+                                style: TextStyle(
+                                  fontSize: 14, color: Colors.black
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Terms and Conditions',
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.black),
+                                      fontSize: 14, color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      showTermsAndConditionsDialog();
+                                    }
+                                  ),
+                                  TextSpan(
+                                    text: ' and ',
+                                    style: TextStyle(
+                                      fontSize: 14, color: Colors.black
+                                    ),
                                     children: <TextSpan>[
                                       TextSpan(
-                                          text: 'Terms and Conditions',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.blue,
-                                            fontWeight: FontWeight.bold,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
+                                          text: 'Privacy Policy', style: TextStyle(
+                                          fontSize: 14, color: Colors.blue,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline
+                                      ),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () {
-                                              showTermsAndConditionsDialog();
-                                            }),
-                                      TextSpan(
-                                          text: ' and ',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.black),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text: 'Privacy Policy',
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.blue,
-                                                    fontWeight: FontWeight.bold,
-                                                    decoration: TextDecoration
-                                                        .underline),
-                                                recognizer:
-                                                    TapGestureRecognizer()
-                                                      ..onTap = () {
-                                                        showPrivacyPolicyDialog();
-                                                      })
-                                          ])
-                                    ]),
+                                              showPrivacyPolicyDialog();
+                                            }
+                                      )
+                                    ]
+                                  )
+                                ]
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Container(
-                          alignment: Alignment.center,
-                          child: OutlinedButton(
-                            onPressed: () async {
-                              if (checked != true) {
-                                showTermsAndPrivacyAgreementErrorDialog();
-                                //If check box is not ticked off, show error dialog
-                              } else {
-                                String email = emailController.text.toString();
-                                String password =
-                                    passwordController.text.toString();
-                                //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
-                                var loggedIn = await Client()
-                                    .getImapClient(email, password);
-                                //Store the credentials into the the secure storage only if validated
-                                if (loggedIn) {
-                                  Keychain().addCredentials(email, password);
-                                  await CacheService.updateMail(
-                                      email, password);
-                                  Navigator.pushNamed(context, '/main');
-                                } else {
-                                  showLoginErrorDialog();
-                                  context.loaderOverlay.hide();
-                                }
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          if (checked != true) {
+                            showTermsAndPrivacyAgreementErrorDialog();
+                            //If check box is not ticked off, show error dialog
+                          } else {
+                            // .trim() removes any leading and trailing white spaces
+                            String email = emailController.text.toString().trim();
+                            String password = passwordController.text.toString().trim();
+                            //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
+                            if(email.isNotEmpty && password.isNotEmpty) {
+                              var loggedIn = await Client()
+                                  .getImapClient(email, password);
+                              //Store the credentials into the the secure storage only if validated
+                              if (loggedIn) {
+                                Keychain().addCredentials(email, password);
+                                await CacheService.updateMail(email, password);
+                                //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture
+                                Navigator.pushNamedAndRemoveUntil(context, '/main', (Route<dynamic> route) => false);
                               }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromRGBO(51, 51, 102, 1),
-                              shadowColor: Colors.grey,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                            ),
-                            child: const Text(
-                              "RETRIEVE MAIL",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          )),
-                      Container(
-                          child: RichText(
-                              text: TextSpan(children: [
-                        TextSpan(
+                              else {
+                                showLoginErrorDialog();
+                                context.loaderOverlay.hide();
+                              }
+                            }else {
+                              showLoginErrorDialog();
+                              context.loaderOverlay.hide();
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(51, 51, 102, 1),
+                          shadowColor: Colors.grey,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(5))),
+                        ),
+                        child: const Text(
+                          "RETRIEVE MAIL",
+                          style: TextStyle(color: Colors.white)                          ,
+                        ),
+                      )
+                    ),
+                    Container(
+                      child:
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                          TextSpan(
                           text: 'Not registered, ',
                           style: TextStyle(
                             fontSize: 14,
