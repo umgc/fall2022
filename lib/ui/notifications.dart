@@ -62,40 +62,111 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         floatingActionButton: Visibility(
           visible: showHomeButton,
           child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const BottomBar(),
-        appBar:
-        PreferredSize(
-          preferredSize: const Size.fromHeight(100),
-          child:
-          TopBar(title: "Notifications"),
+        appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+                icon: new Image.asset("assets/icon/exit-icon.png",
+                    width: 30, height: 30),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/sign_in');
+                }),
+          ],
+          leading: IconButton(
+            icon: new Image.asset("assets/icon/back-icon.png",
+                width: 30, height: 30),
+            onPressed: () => Navigator.pop(context),
+          ),
+          centerTitle: true,
+          title: Text(
+            "Notifications",
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+          ),
+          automaticallyImplyLeading: false,
+          backgroundColor: Color.fromRGBO(51, 51, 102, 1),
+          bottom: const TabBar(tabs: <Widget>[
+            Tab(
+              text: "Notifications",
+            ),
+            Tab(
+              text: "Manage",
+            ),
+          ]),
         ),
         body: TabBarView(
           children: <Widget>[
-            Container(
+            Container( //Notifications
               child: Column(
                 children: [
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Container(
-                            child: Text('Date'),
+                            child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                fontSize: 18),),
                             padding:
                                 EdgeInsets.only(left: 40, top: 20, bottom: 5)),
                         Container(
-                          child: Text('Keyword(s)'),
+                          child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                              fontSize: 18),),
                           padding:
                               EdgeInsets.only(left: 40, top: 20, bottom: 5),
                         ),
                       ]),
-                  Divider(
-                    height: 20,
-                    thickness: 2,
-                    color: Colors.black,
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Divider(
+                      height: 1,
+                      indent: 10,
+                      endIndent: 10,
+                      thickness: 1,
+                      color: Color.fromRGBO(51, 51, 102, 1),
+                    ),
+                  ),
+                  Container(  //the following code is used for notification subscriptions on the manage tab, but placed here for testing purposes and layout
+                    height: 400,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (var item in _subscriptions)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center, //displaying notifications subscriptions for testing purposes only
+                              children: [
+                                SizedBox(
+                                  child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                      fontSize: 18),) ,
+                                  width: 270,
+                                ),
+                                SizedBox(
+                                  child: OutlinedButton(
+                                    child: Text(
+                                      'Delete',
+                                      style: TextStyle(color: Colors.white,fontSize: 18),
+                                    ),
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                        MaterialStateColor.resolveWith(
+                                                (states) => Colors.red),
+                                        shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(30)))),
+                                    onPressed: () {
+                                      removeSubscription(item.keyword);
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -103,7 +174,10 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
             Container(
               child: Column(
                 children: [
-                  Row(children: [
+                  SizedBox(height: 10,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                     Container(
                       child: SizedBox(
                         child: TextField(
@@ -113,11 +187,16 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                             _keywordController.clear();
                           },
                           decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white54,
+                              border: OutlineInputBorder(),
+                              //contentPadding: EdgeInsets.all(8),
                               labelText: 'Keyword(s)',
-                              isDense: true,
-                              border: InputBorder.none),
+                              labelStyle: TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                              fontSize: 18),
+                              isDense: true),
                         ),
-                        width: 300,
+                        width: MediaQuery.of(context).size.width/2,
                       ),
                       padding: EdgeInsets.only(left: 5),
                     ),
@@ -125,7 +204,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                       child: OutlinedButton(
                         child: Text(
                           'Add',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                         style: ButtonStyle(
                             backgroundColor: MaterialStateColor.resolveWith(
@@ -141,26 +220,35 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                       padding: EdgeInsets.only(left: 5),
                     )
                   ]),
-                  Divider(
-                    height: 20,
-                    thickness: 2,
-                    color: Colors.black,
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Divider(
+                      height: 1,
+                      indent: 10,
+                      endIndent: 10,
+                      thickness: 1,
+                      color: Color.fromRGBO(51, 51, 102, 1),
+                    ),
                   ),
-                  Column(
+                  Container(
+                  height: 400,
+                  child: SingleChildScrollView(
+                  child: Column(
                     children: [
                       for (var item in _subscriptions)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             SizedBox(
-                              child: Text(item.keyword),
-                              width: 270,
+                              child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                  fontSize: 18),) ,
+                              width: MediaQuery.of(context).size.width/2,
                             ),
                             SizedBox(
                               child: OutlinedButton(
                                 child: Text(
                                   'Delete',
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: Colors.white,fontSize: 18),
                                 ),
                                 style: ButtonStyle(
                                     backgroundColor:
@@ -178,13 +266,18 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                           ],
                         ),
                     ],
+
+                  ),
+                  ),
                   )
-                ],
-              ),
+                  ],
+                  ),
+
             ),
-          ],
+            // This is the end of manager tab one
+        ]
         ),
-      ),
+        ),
     );
   }
 }

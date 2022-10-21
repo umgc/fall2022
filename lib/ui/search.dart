@@ -61,24 +61,28 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function) {
-    if (function.methodName == "performSearch") {
-      if (function.parameters!.isNotEmpty) {
-        final filters = SearchCriteria.withList(function.parameters!);
-        keywordInput.text = filters.keyword;
-        _start = filters.startDate ?? _start;
-        _end = filters.endDate ?? _end;
+  void processFunction(ApplicationFunction function)
+  {
+      if (function.methodName == "performSearch") {
+        if (function.parameters!.isNotEmpty)
+          {
+            final filters = SearchCriteria.withList(function.parameters!);
+            keywordInput.text = filters.keyword;
+            _start = filters.startDate ?? _start;
+            _end = filters.endDate ?? _end;
+            MailSearchParameters searchParams = new MailSearchParameters(keyword: keywordInput.text, startDate: _start, endDate: _end);
+            Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
+          }
       }
-    } else {
-      super.processFunction(function);
-    }
+      else {
+        super.processFunction(function);
+      }
   }
 
   @override
   Widget build(BuildContext context) {
     applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
-
     keywordInput.text = _keyword;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
