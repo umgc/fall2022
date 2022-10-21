@@ -65,7 +65,7 @@ class ChatBotService implements ChatBot {
       case "digest":
         // Perform navigate to digest function
         // TODO: May need to be action that gets digest and navigates
-        result = ApplicationFunction(methodName: "navigateTo", parameters: <String>["/digest_mail"]);
+        result = ApplicationFunction(messages: <String>["Digest is currently unsupported from the chatbot."]);
         usage.add("'digest': Navigates to Daily Digest Page");
         break;
       case "help":
@@ -121,7 +121,7 @@ class ChatBotService implements ChatBot {
           result =  ApplicationFunction(methodName: "navigateTo", parameters: <String>["/search"]);
         }
         usage.add("'search': Navigates to the search page");
-        usage.add("'search <date> <date> <keyword>': Performs search using entered dates/keywords (optional). Note: First date "
+        usage.add("'search <date> <date> <keyword>': Loads advanced search page using entered dates/keywords (optional). Note: First date "
             "is always treated as the start date. Date format is mm/dd/yyyy");
         break;
       case "settings":
