@@ -1,8 +1,8 @@
 class ApplicationFunction {
   final String methodName;
-  final String message;
+  final List<String>? messages;
   final List<String>? parameters;
 
   // Constructor
-  ApplicationFunction({ this.methodName = '', this.message = '', this.parameters = null });
+  ApplicationFunction({ this.methodName = '', this.messages = null, this.parameters = null });
 }
