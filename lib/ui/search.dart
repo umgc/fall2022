@@ -273,7 +273,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                             title:  Text("From: ${(itemData as MailPiece).sender}, "
                                 "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
                             subtitle: Text("Contents: "
-                                "${itemData.imageText}"),
+                                "${itemData.imageText}",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           );
                         },
                       )
