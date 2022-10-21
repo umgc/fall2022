@@ -41,61 +41,61 @@ void main() async {
   });
 
   test("Search mail by keyword", () async{
-    var mailSearch = new MailSearchParameters("test", null, today);
+    var mailSearch = new MailSearchParameters(keyword: "test", endDate: today);
     var test = await search.fetchMail(mailSearch);
     expect(1, test.length);
   });
 
   test("Search mail by keyword no match", () async{
-    var mailSearch = new MailSearchParameters("testtest", null, today);
+    var mailSearch = new MailSearchParameters(keyword: "testtest", endDate: today);
     var test = await search.fetchMail(mailSearch);
     expect(0, test.length);
   });
 
   test("Search mail by keyword null", () async{
-    var mailSearch = new MailSearchParameters(null, null, null);
+    var mailSearch = new MailSearchParameters();
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
 
   test("Search mail by date range", () async{
-    var mailSearch = new MailSearchParameters(null, today.add(Duration(days: -1)), today);
+    var mailSearch = new MailSearchParameters(startDate: today.add(Duration(days: -1)), endDate: today);
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
 
   test("Search mail by single date", () async{
-    var mailSearch = new MailSearchParameters(null, today, today);
+    var mailSearch = new MailSearchParameters(startDate: today, endDate: today);
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
 
   test("Search mail by date range start today", () async{
-    var mailSearch = new MailSearchParameters(null, today, today.add(Duration(days: 1)));
+    var mailSearch = new MailSearchParameters(startDate: today, endDate: today.add(Duration(days: 1)));
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
 
   test("Search mail by date range none", () async{
-    var mailSearch = new MailSearchParameters(null, today.add(Duration(days: -3)), today.add(Duration(days: -2)));
+    var mailSearch = new MailSearchParameters(startDate: today.add(Duration(days: -3)), endDate: today.add(Duration(days: -2)));
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 0);
   });
 
   test("Search mail by date null start", () async {
-    var mailSearch = new MailSearchParameters(null, null, today);
+    var mailSearch = new MailSearchParameters(endDate: today);
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
 
   test("Search mail by date null end", () async {
-    var mailSearch = new MailSearchParameters(null, today, null);
+    var mailSearch = new MailSearchParameters(startDate: today);
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
 
   test("Search mail exception",  () async {
-    var mailSearch = new MailSearchParameters(null, null, null);
+    var mailSearch = new MailSearchParameters();
     var test = await search.fetchMail(mailSearch);
     expect(test.length, 1);
   });
