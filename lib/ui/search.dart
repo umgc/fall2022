@@ -63,6 +63,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
             keywordInput.text = filters.keyword;
             _start = filters.startDate ?? _start;
             _end = filters.endDate ?? _end;
+            MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, _start, _end);
+            Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
           }
       }
       else {

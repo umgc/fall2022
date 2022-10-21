@@ -14,11 +14,13 @@ import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
 import '../services/mail_loader.dart';
+import '../models/ApplicationFunction.dart';
 import 'assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const MainWidget({Key? key, this.function}) : super(key: key);
 
   @override
   MainWidgetState createState() => MainWidgetState();
@@ -46,6 +48,14 @@ class MainWidgetState extends AssistantState<MainWidget> {
   void initState() {
     super.initState();
     locator<AnalyticsService>().logScreens(name: "Main Menu");
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
+  }
+
+  void checkPassedInFunction()
+  {
+    if (this.widget.function != null) {
+      processFunction(this.widget.function!);
+    }
   }
 
   void setMailType(String type) {
