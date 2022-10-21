@@ -23,11 +23,12 @@ class BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
+      shape: CircularNotchedRectangle(), //shape of notch
+      notchMargin: 5,
       color: Color.fromRGBO(51, 51, 102, 1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Spacer(),
           Semantics(
             excludeSemantics: true,
             button: true,
@@ -37,6 +38,7 @@ class BottomBarState extends State<BottomBar> {
             },
             child:
             IconButton(
+              padding: EdgeInsets.only(left: 15),
               icon: new Image.asset("assets/icon/search-icon.png"),
               onPressed: () {
                 Navigator.pushNamed(context, "/search");
@@ -56,6 +58,23 @@ class BottomBarState extends State<BottomBar> {
             ),
           ),
           Spacer(),
+          Spacer(),
+          Semantics(
+            excludeSemantics: true,
+            button: true,
+            label: "Notifications",
+            onTap: () {
+              Navigator.pushNamed(context, "/notifications");
+            },
+            child:
+            IconButton(
+              icon: new Image.asset("assets/icon/notification_icon_lg.png"),
+              onPressed: () {
+                Navigator.pushNamed(context, "/notifications");
+              },
+            ),
+          ),
+          Spacer(),
           Semantics(
             excludeSemantics: true,
             button: true,
@@ -65,13 +84,13 @@ class BottomBarState extends State<BottomBar> {
             },
             child:
             IconButton(
+              padding: EdgeInsets.only(right: 15),
               icon: new Image.asset("assets/icon/chatbot-icon.png"),
               onPressed: () {
                 Navigator.pushNamed(context, "/chat");
                 },
             ),
           ),
-          Spacer(),
         ],
       ),
     );

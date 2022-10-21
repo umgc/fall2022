@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import '../models/MailSearchParameters.dart';
 import '../services/mail_service.dart';
@@ -54,7 +55,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
           child:
           Semantics(
             excludeSemantics: true,
-            button: true,
+            link: true,
             label: "Letter from ${mailPiece.sender} received on ${DateFormat('EEE MMM,d,yyyy').format(mailPiece.timestamp)}",
             hint: "Double tap to select.",
             child:
@@ -118,7 +119,13 @@ class MailViewWidgetState extends State<MailViewWidget> {
       }
     );
 
+    bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
           title: "Search Results"

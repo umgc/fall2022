@@ -17,10 +17,13 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import '../models/ApplicationFunction.dart';
 import 'assistant_state.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const MainWidget({Key? key, this.function}) : super(key: key);
 
   @override
   MainWidgetState createState() => MainWidgetState();
@@ -48,6 +51,14 @@ class MainWidgetState extends AssistantState<MainWidget> {
   void initState() {
     super.initState();
     locator<AnalyticsService>().logScreens(name: "Main Menu");
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
+  }
+
+  void checkPassedInFunction()
+  {
+    if (this.widget.function != null) {
+      processFunction(this.widget.function!);
+    }
   }
 
   void setMailType(String type) {
@@ -93,27 +104,30 @@ class MainWidgetState extends AssistantState<MainWidget> {
 
     var aspectRatio = (width / columnCount) / (height / minRowCountOnScreen);
     return Scaffold(
-      bottomNavigationBar: const BottomBar(),
-      appBar: TopBar(title: "Main Menu"),
-      body: GridView.count(
-        primary: false,
-        padding: const EdgeInsets.all(4),
-        crossAxisSpacing: columnCount.toDouble(),
-        childAspectRatio: aspectRatio + .05,
-        mainAxisSpacing: 6,
-        crossAxisCount: 2,
-        controller: new ScrollController(keepScrollOffset: false),
-        shrinkWrap: true,
-        children: <Widget>[
-          Semantics(
-            excludeSemantics: true,
-            button: true,
-            label: "Search Mail",
+        floatingActionButton: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: const BottomBar(),
+        appBar: TopBar(title: "Main Menu"),
+        body: GridView.count(
+          primary: false,
+          padding: const EdgeInsets.all(4),
+          crossAxisSpacing: columnCount.toDouble(),
+          childAspectRatio: aspectRatio + .05,
+          mainAxisSpacing: 6,
+          crossAxisCount: 2,
+          controller: new ScrollController(keepScrollOffset: false),
+          shrinkWrap: true,
+          children: <Widget>[
+            Semantics(
+              excludeSemantics: true,
+              button: true,
+              label: "Search Mail",
             onTap: () async {
               Navigator.pushNamed(context, '/search');
             },
             child: ElevatedButton(
               onPressed: () async {
+
                 Navigator.pushNamed(context, '/search');
               },
               child: Column(
@@ -233,21 +247,22 @@ class MainWidgetState extends AssistantState<MainWidget> {
             onTap: () {
               Navigator.pushNamed(context, '/notifications');
             },
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/notifications');
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Notifications'),
-                  Image.asset(
-                    "assets/icon/notification_icon_lg.png",
-                    width: aspectRatio * 125,
-                    height: aspectRatio * 125,
-                  ),
-                ],
-              ),
+              child:
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/notifications');
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Notifications'),
+                        Image.asset(
+                          "assets/icon/notification_icon_lg.png",
+                          width: aspectRatio * 125,
+                          height: aspectRatio * 125,
+                        ),
+                      ],
+                    ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
           ),
@@ -325,69 +340,123 @@ class MainWidgetState extends AssistantState<MainWidget> {
       });
     }
   }
-
-  void showNoDigestDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Center(
-            child: Text("No Digest Available"),
-          ),
-          content: SizedBox(
-            height: 100.0, // Change as per your requirement
-            width: 100.0, // Change as per your requirement
-            child: Center(
-              child: Text(
-                "There is no Digest available for the selected date: ${selectedDate.month}/${selectedDate.day}/${selectedDate.year}",
-                style: const TextStyle(color: Colors.black),
+    void showNoDigestDialog() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Center(
+              child: Text("No Digest Available"),
+            ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text(
+                  'Close'
               ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
+            content: SizedBox(
+              height: 100.0, // Change as per your requirement
+              width: 100.0, // Change as per your requirement
+              child: Center(
+                child: Text(
+                  "There is no Digest available for the selected date: ${selectedDate.month}/${selectedDate.day}/${selectedDate.year}",
+                  style: const TextStyle(color: Colors.black),
+                ),
             ),
           ),
         );
       },
     );
   }
-
-  void showNoEmailsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Center(
-            child: Text("No Emails Available"),
-          ),
-          content: SizedBox(
-            height: 100.0, // Change as per your requirement
-            width: 100.0, // Change as per your requirement
-            child: Center(
-              child: Text(
-                "There are no emails available for the selected date: ${selectedDate.month}/${selectedDate.day}/${selectedDate.year}",
-                style: const TextStyle(color: Colors.black),
+    void showNoEmailsDialog() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Center(
+              child: Text("No Emails Available"),
+            ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text(
+                  'Close'
               ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
+            content: SizedBox(
+              height: 100.0, // Change as per your requirement
+              width: 100.0, // Change as per your requirement
+              child: Center(
+                child: Text(
+                  "There are no emails available for the selected date: ${selectedDate.month}/${selectedDate.day}/${selectedDate.year}",
+                  style: const TextStyle(color: Colors.black),
+                ),
             ),
           ),
         );
       },
     );
   }
-
-  void showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          title: Center(
-            child: Text("Error Dialog"),
-          ),
-          content: SizedBox(
-            height: 100.0,
-            width: 100.0,
-            child: Center(
-              child: Text(
-                "An Unexpected Error has occurred, please try again later.",
-                style: TextStyle(color: Colors.black),
+    void showErrorDialog() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Center(
+              child: Text("Error Dialog"),
+            ),
+            actions: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  ),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                }, child: Text(
+                  'Close'
               ),
+              ),
+            ],
+            actionsAlignment: MainAxisAlignment.center,
+            content: SizedBox(
+              height: 100.0,
+              width: 100.0,
+              child: Center(
+                child: Text(
+                  "An Unexpected Error has occurred, please try again later.",
+                  style: TextStyle(color: Colors.black),
+                ),
             ),
           ),
         );
