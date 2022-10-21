@@ -16,40 +16,51 @@ class TopBarState extends State<TopBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        actions:
-        <Widget>[
-          if(this.widget.title != "Sign In")...[
-            /*Semantics(
-              excludeSemantics: true,
+
+        actions:[
+          Semantics(
+              label: "Show Menu",
               button: true,
-              label: "Settings",
-              onTap: () {
-                  Navigator.pushNamed(context, '/settings');
-                }
-              child:
-              IconButton(
-                  icon: new Image.asset("assets/icon/settings-icon.png", width: 30, height: 30),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/settings');
-                  }
-              ),
-            ),*/
-            Semantics(
               excludeSemantics: true,
-              button: true,
-              label: "Log Out",
-              onTap: () {
-                Navigator.pushNamed(context, '/sign_in');
-              },
               child:
-              IconButton(
-                  icon: new Image.asset("assets/icon/exit-icon.png", width: 30, height: 30),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/sign_in');
+              PopupMenuButton(
+                  position: PopupMenuPosition.under,
+                  icon: Icon(Icons.menu_outlined),
+                  itemBuilder: (context){
+                    return [
+                      PopupMenuItem<int>(
+                        value: 0,
+                        child:
+                        Row(
+                            children:[
+                              Text("Settings"),
+                              Spacer(),
+                              Image.asset("assets/icon/settings-icon.png", width: 30, height: 30),
+                            ]),
+                      ),
+                      PopupMenuItem<int>(
+                        value: 1,
+                        child:
+                        Row(children: [
+                          Text("Logout"),
+                          Spacer(),
+                          Image.asset("assets/icon/exit-icon.png", width: 30, height: 30),
+                        ]),
+                      ),
+                    ];
+                  },
+                  onSelected:
+                      (value){
+                    if(value == 0){
+                      Navigator.pushNamed(context, '/settings');
+                    }else if(value == 1){
+                      /**
+                       * Clears navigation stack, which will prevent redirecting to previous page with back gesture
+                       * **/
+                      Navigator.pushNamedAndRemoveUntil(context,'/sign_in', (Route<dynamic> route) => false);
+                    }
                   }
-              ),
-            ),
-          ],
+              ))
         ],
         leading:
         (this.widget.title != "Main Menu" && this.widget.title != "Sign In") ?
@@ -58,12 +69,12 @@ class TopBarState extends State<TopBar> {
             button: true,
             label: "Back",
             onTap: () {
-              navKey.currentState!.pushNamed('/main');
+              Navigator.pop(context);
               },
             child:
             IconButton(
               icon: new Image.asset("assets/icon/back-icon.png", width: 30, height: 30),
-              onPressed: () =>Navigator.pop(context)
+              onPressed: () => Navigator.pop(context)
             ),
           )
         ) : null,
@@ -72,7 +83,15 @@ class TopBarState extends State<TopBar> {
         TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
         ),
         automaticallyImplyLeading: false,
-        backgroundColor: Color.fromRGBO(51, 51, 102, 1)
+        backgroundColor: Color.fromRGBO(51, 51, 102, 1),
+        bottom:
+        (this.widget.title == "Notifications") ?
+        (const TabBar(
+            tabs: <Widget>[
+              Tab(text: "Notifications"), Tab(text: "Manage")
+            ]
+        )
+        ) : null,
     );
   }
 }
