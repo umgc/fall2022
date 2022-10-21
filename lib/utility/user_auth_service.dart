@@ -66,15 +66,6 @@ class UserAuthService {
     }
   }
 
-  // Future<AuthClient> getGoogleAuthenticatedClient() async {
-  //   return (await _googleSignIn.authenticatedClient())!;
-  // }
-
-  // Future<AccessToken> getGoogleAccessToken() async {
-  //   AuthClient httpClient = await getGoogleAuthenticatedClient();
-  //   return httpClient.credentials.accessToken;
-  // }
-
   signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn(
