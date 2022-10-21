@@ -89,9 +89,11 @@ class MailStorage {
   }
 
   /// Deletes all mail pieces from database
-  Future<void> deleteAllMailPieces() async {
+  Future<bool> deleteAllMailPieces() async {
     final db = await database;
     await db.execute("""DELETE FROM $MAIL_PIECE_TABLE;""");
+    final result = await db.rawQuery("SELECT * FROM " + MAIL_PIECE_TABLE);
+    return result.toList().length == 0;
   }
 
   /// Returns all mail pieces that match the provided query.
