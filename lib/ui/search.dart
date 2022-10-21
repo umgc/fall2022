@@ -46,7 +46,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   TextEditingController senderInput = TextEditingController();
   TextEditingController mailBodyInput = TextEditingController();
 
-  final _mailStorage = MailStorage();
   final _mailService = MailService();
 
   // Apply and passed in search parameters to the filters
@@ -61,22 +60,20 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function)
-  {
-      if (function.methodName == "performSearch") {
-        if (function.parameters!.isNotEmpty)
-          {
-            final filters = SearchCriteria.withList(function.parameters!);
-            keywordInput.text = filters.keyword;
-            _start = filters.startDate ?? _start;
-            _end = filters.endDate ?? _end;
-            MailSearchParameters searchParams = new MailSearchParameters(keyword: keywordInput.text, startDate: _start, endDate: _end);
-            Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
-          }
+  void processFunction(ApplicationFunction function) {
+    if (function.methodName == "performSearch") {
+      if (function.parameters!.isNotEmpty) {
+        final filters = SearchCriteria.withList(function.parameters!);
+        keywordInput.text = filters.keyword;
+        _start = filters.startDate ?? _start;
+        _end = filters.endDate ?? _end;
+        MailSearchParameters searchParams = new MailSearchParameters(
+            keyword: keywordInput.text, startDate: _start, endDate: _end);
+        Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
       }
-      else {
-        super.processFunction(function);
-      }
+    } else {
+      super.processFunction(function);
+    }
   }
 
   @override
@@ -86,10 +83,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     keywordInput.text = _keyword;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
-        floatingActionButton: Visibility(
-          visible: showHomeButton,
-          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
-        ),
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(title: 'Mail Search'),
@@ -235,34 +232,37 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       textField: true,
                       label: "Keyword",
                       hint: "Enter keyword to search",
-                    child: Padding(
-                        padding: EdgeInsets.all(10),
-                      child: TypeAheadField(
-                        textFieldConfiguration: TextFieldConfiguration(
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                labelText: 'Enter keyword to search',
-                                border: OutlineInputBorder()),
-                            controller: keywordInput),
-                        onSuggestionSelected: (suggestion) {
-                          // Go directly to mail item if the user clicks a suggestion
-                          Navigator.pushNamed(context, '/mail_piece_view',
-                              arguments: suggestion);
-                        },
-                        suggestionsCallback: (pattern) {
-                          // Populate items from cache
-                          return _mailStorage.searchMailsPieces(pattern);
-                        },
-                        itemBuilder: (context, itemData) {
-                          return ListTile(
-                            title: Text(
-                                "From: ${(itemData as MailPiece).sender}, "
-                                "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
-                            subtitle: Text("Contents: "
-                                "${itemData.imageText}"),
-                          );
-                        },
-                      ))),
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter keyword to search',
+                                    border: OutlineInputBorder()),
+                                controller: keywordInput),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view',
+                                  arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              MailSearchParameters searchParams =
+                                  new MailSearchParameters(keyword: pattern);
+                              return _mailService
+                                  .searchMailPieces(searchParams);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title: Text(
+                                    "From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text("Contents: "
+                                    "${itemData.imageText}"),
+                              );
+                            },
+                          ))),
                 )),
             Visibility(
                 visible: _isAdvanced,
@@ -272,36 +272,38 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       textField: true,
                       label: "Keyword",
                       hint: "Enter sender to search",
-                    child: Padding(
-                        padding: EdgeInsets.all(10),
-                      child: TypeAheadField(
-                        textFieldConfiguration: TextFieldConfiguration(
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                labelText: 'Enter mail sender to search',
-                                border: OutlineInputBorder()),
-                            controller: senderInput),
-                        onSuggestionSelected: (suggestion) {
-                          // Go directly to mail item if the user clicks a suggestion
-                          Navigator.pushNamed(context, '/mail_piece_view',
-                              arguments: suggestion);
-                        },
-                        suggestionsCallback: (pattern) {
-                          // Populate items from cache
-                          MailSearchParameters searchParams =
-                              new MailSearchParameters(senderKeyword: pattern);
-                          return _mailService.searchMailPieces(searchParams);
-                        },
-                        itemBuilder: (context, itemData) {
-                          return ListTile(
-                            title: Text(
-                                "From: ${(itemData as MailPiece).sender}, "
-                                "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
-                            subtitle: Text("Contents: "
-                                "${itemData.imageText}"),
-                          );
-                        },
-                      ))),
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter mail sender to search',
+                                    border: OutlineInputBorder()),
+                                controller: senderInput),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view',
+                                  arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              MailSearchParameters searchParams =
+                                  new MailSearchParameters(
+                                      senderKeyword: pattern);
+                              return _mailService
+                                  .searchMailPieces(searchParams);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title: Text(
+                                    "From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text("Contents: "
+                                    "${itemData.imageText}"),
+                              );
+                            },
+                          ))),
                 )),
             Visibility(
                 visible: _isAdvanced,
@@ -312,36 +314,37 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       label: "Keyword",
                       hint: "Enter text to search",
                       child: Padding(
-                        padding: EdgeInsets.all(10),
-                      child: TypeAheadField(
-                        textFieldConfiguration: TextFieldConfiguration(
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                labelText: 'Enter mail body text to search',
-                                border: OutlineInputBorder()),
-                            controller: mailBodyInput),
-                        onSuggestionSelected: (suggestion) {
-                          // Go directly to mail item if the user clicks a suggestion
-                          Navigator.pushNamed(context, '/mail_piece_view',
-                              arguments: suggestion);
-                        },
-                        suggestionsCallback: (pattern) {
-                          // Populate items from cache
-                          MailSearchParameters searchParams =
-                              new MailSearchParameters(
-                                  mailBodyKeyword: pattern);
-                          return _mailService.searchMailPieces(searchParams);
-                        },
-                        itemBuilder: (context, itemData) {
-                          return ListTile(
-                            title: Text(
-                                "From: ${(itemData as MailPiece).sender}, "
-                                "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
-                            subtitle: Text("Contents: "
-                                "${itemData.imageText}"),
-                          );
-                        },
-                      ))),
+                          padding: EdgeInsets.all(10),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter mail body text to search',
+                                    border: OutlineInputBorder()),
+                                controller: mailBodyInput),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view',
+                                  arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              MailSearchParameters searchParams =
+                                  new MailSearchParameters(
+                                      mailBodyKeyword: pattern);
+                              return _mailService
+                                  .searchMailPieces(searchParams);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title: Text(
+                                    "From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text("Contents: "
+                                    "${itemData.imageText}"),
+                              );
+                            },
+                          ))),
                 )),
             new InkWell(
                 child: Align(
