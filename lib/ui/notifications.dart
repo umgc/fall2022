@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:summer2022/models/Notification.dart' as Notification;
 import 'package:summer2022/services/mail_notifier.dart';
+import '../models/MailPiece.dart';
+import '../services/mail_storage.dart';
 import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
@@ -12,17 +15,40 @@ class NotificationsWidget extends StatefulWidget {
 }
 
 GlobalConfiguration cfg = GlobalConfiguration();
+MailNotifier mn = new MailNotifier();
+MailStorage mailStorage = new MailStorage();
 
+final time =  DateTime.now().subtract(Duration(days: 30));
+ MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "");
 class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   final _notifier = MailNotifier();
   final _keywordController = TextEditingController();
 
   var _subscriptions = <NotificationSubscription>[];
-
+  var _notifications = <Notification.Notification>[];
   @override
   void initState() {
     super.initState();
     updateSubscriptionList();
+    updateNotificationList();
+    removeAllNotification();
+
+ this.fetch();
+
+    setState(() {});
+
+  }
+
+  Future<MailPiece> getMailPiece(String mailPieceId) async {
+    clickedMailPiece = (await mailStorage.getMailPiece(mailPieceId))!;
+    return clickedMailPiece;
+  }
+
+  void fetch() async{
+   mn.updateNotifications(time);
+    for (final notification in await mn.getNotifications()) {
+      addNotification(notification.mailPieceId);
+    }
   }
 
   @override
@@ -38,6 +64,13 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
     });
   }
 
+  Future<void> updateNotificationList() async {
+    final notifications = await _notifier.getNotifications();
+    setState(() {
+      _notifications = notifications;
+    });
+  }
+
   void addSubscription(String keywords) async {
     for (final text in keywords.split(',')) {
       final keyword = text.trim();
@@ -48,10 +81,30 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
     await updateSubscriptionList();
   }
 
+  void addNotification(String keywords) async {
+    for (final text in keywords.split(',')) {
+      final keyword = text.trim();
+      if (keyword.isEmpty) continue;
+     // final notification = Notification.Notification(keyword,keyword);
+    }
+    await updateNotificationList();
+  }
+
   void removeSubscription(String keyword) async {
     final subscription = NotificationSubscription(keyword);
     await _notifier.removeSubscription(subscription);
     await updateSubscriptionList();
+  }
+
+  void removeNotification(String mailPieceId, String keyword) async {
+    final notification =  Notification.Notification(mailPieceId,keyword);
+    await _notifier.clearNotification(notification);
+    await updateNotificationList();
+  }
+
+  void removeAllNotification() async {
+    await _notifier.clearAllNotifications();
+    await updateNotificationList();
   }
 
   @override
@@ -103,12 +156,37 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                             child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                 fontSize: 18),),
                             padding:
-                                EdgeInsets.only(left: 40, top: 20, bottom: 5)),
+                                EdgeInsets.only(left: 0, top: 15, bottom: 5)),
                         Container(
                           child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                               fontSize: 18),),
                           padding:
-                              EdgeInsets.only(left: 40, top: 20, bottom: 5),
+                              EdgeInsets.only(left: 0, top: 15, bottom: 5),
+                        ),
+                        SizedBox(
+
+                        ),
+                        SizedBox(
+
+                        ),
+                        SizedBox(
+
+                        ),
+                        Container(
+                          child: SizedBox(
+                            child: ElevatedButton(
+                              child: Text('Clear All', style: TextStyle(color: Colors.white),),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                                //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                              ),
+                              onPressed: () {
+                                removeAllNotification();
+                              },
+                            ),
+                          ),
+                            padding:
+                            EdgeInsets.only(left: 0, top: 5, bottom: 5)
                         ),
                       ]),
                   Padding(
@@ -121,6 +199,49 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                       color: Color.fromRGBO(51, 51, 102, 1),
                     ),
                   ),
+                  Column(
+                    children: [
+                      for(var item in _notifications)
+                        Row(
+                          children: [
+                            SizedBox(
+                              child: Text(item.mailPieceId.split("-")[1]+"-"+item.mailPieceId.split("-")[2]+"-"
+                              +item.mailPieceId.split("-")[3].split(" ")[0]),
+                              width: 100,
+                            ),
+                            SizedBox(
+                              child: Text(item.subscriptionKeyword),
+                              width: 100,
+                            ),
+                            SizedBox(
+                              child: ElevatedButton(
+                                child: Text('Go to Message', style: TextStyle(color: Colors.white),),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateColor.resolveWith((states) => Colors.black45),
+                                  //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                                ),
+                                onPressed: () async {
+                                  Navigator.pushNamed(context, '/mail_piece_view', arguments: await getMailPiece(item.mailPieceId));
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            SizedBox(
+                              child: ElevatedButton(
+                                child: Text('Clear', style: TextStyle(color: Colors.white),),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                                  //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                                ),
+                                onPressed: () {
+                                  removeNotification(item.mailPieceId,item.subscriptionKeyword);
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -231,4 +352,6 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
         ),
     );
   }
+
+
 }
