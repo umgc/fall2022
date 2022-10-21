@@ -12,7 +12,12 @@ import 'package:summer2022/utility/RouteGenerator.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:summer2022/utility/locator.dart';
+import 'package:receive_intent/receive_intent.dart' as receiveIntent;
 import 'firebase_options.dart';
+import 'package:receive_intent/receive_intent.dart' as recieveIntent;
+import 'dart:io' show Platform;
+import 'models/ApplicationFunction.dart';
+
 
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
@@ -49,19 +54,25 @@ void main() async {
         .setUserProperty(name: 'email_domain', value: emailDomain);
   }
 
+  ApplicationFunction? function;
+  receiveIntent.Intent? intent = await receiveIntent.ReceiveIntent.getInitialIntent();
+  if (intent != null) {
+    function = AssistantService.ParseIntent(intent!);
+  }
+
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
         //showSemanticsDebugger: true,
         title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
         initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
         onGenerateRoute: RouteGenerator.generateRoute,
-        home: buildScreen(emailAuthenticated),
+        home: buildScreen(emailAuthenticated, function),
         navigatorKey: navKey,
       )
   )
   );
 }
 
-Widget buildScreen(bool emailAuthenticated) {
-  return emailAuthenticated == true ? const MainWidget() : const SignInWidget();
+Widget buildScreen(bool emailAuthenticated, ApplicationFunction? function) {
+  return emailAuthenticated == true ? MainWidget(function: function) : SignInWidget(function : function);
 }
