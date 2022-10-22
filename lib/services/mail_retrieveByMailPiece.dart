@@ -34,7 +34,6 @@ class MailPieceEmailFetcher{
         return MimeMessage();
       } else {
         String searchCriteria = 'FROM ${senderFilter} ON ${_formatTargetDateForSearch(_timeStamp!)} SUBJECT "${subjectFilter}"';
-        debugPrint(searchCriteria);
 
         List<ReturnOption> returnOptions = [];
         ReturnOption option = ReturnOption("all");
@@ -77,7 +76,7 @@ class MailPieceEmailFetcher{
         await client.connectToServer(
             imapServerConfig!.hostname as String, imapServerConfig.port as int,
             isSecure: imapServerConfig.isSecureSocket);
-        await client.login(_username!, _password!);
+        await client.login(_username, _password);
         await client.selectInbox();
         return client;
       }

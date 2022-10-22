@@ -10,7 +10,6 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import '../models/Digest.dart';
 import '../services/mail_retrieveByMailPiece.dart';
 import 'package:html/parser.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
@@ -34,7 +33,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
   late Digest digest;
   late Image? mailImage = null;
-
   late bool hasLearnMore = false;
   late Uri learnMoreLinkUrl = Uri.parse("http://www.google.com");
   late Uri reminderLinkUrl = Uri.parse("http://www.google.com");
@@ -50,20 +48,14 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   Future<void> _getMailPieceEmail() async {
     MailPieceEmailFetcher mpef1 =
         await MailPieceEmailFetcher(widget.mailPiece.timestamp);
-    debugPrint("ID: " +
-        widget.mailPiece.id +
-        "\nEmail ID: " +
-        widget.mailPiece.emailId +
-        "\nmid: " +
-        widget.mailPiece.scanImgCID);
     digest = await mpef1.getMailPieceDigest();
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);
   }
 
+  //sets state mailImage given the found email based on mailPiece
   void _getImgFromEmail(MimeMessage m) async {
-    m = digest.message;
     for (int x = 0; x < m.mimeData!.parts!.length; x++) {
       if (m.mimeData!.parts!
               .elementAt(x)
@@ -96,31 +88,23 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                   .elementAt(y)
                   .decodeMessageData()
                   .toString();
-              //These are base64 encoded images with formatting
+              //These are base64 encoded images with formatting, remove all returns and lines
               picture = picture.replaceAll("\r\n", "");
-              //These are base64 encoded images with formatting
 
               setState(() {
                 mailImage = Image.memory(base64Decode(picture));
               });
-            }
-          }
-        }
-      }
-    }
-  }
+            } //end if y element contains midId
+          } //end if y element contains image
+        } //end element(y) for loop
+      } //end if contains multipart
+    } //end element(x) for loop
+  } //end _getImgFromEmail
 
+  //sets state of URLs given the found email based on mailPiece
   void _getLinkHtmlFromEmail(MimeMessage m) async {
-    m = digest.message;
-
     //based on test account, need to get 2nd level of parts to find image.  search in text/html part first
     for (int x = 0; x < m.mimeData!.parts!.length; x++) {
-      debugPrint("x = " +
-          x.toString() +
-          " of " +
-          m.mimeData!.parts!.length.toString());
-      debugPrint(m.mimeData!.parts!.elementAt(x).contentType?.value.toString());
-
       if (m.mimeData!.parts!
               .elementAt(x)
               .contentType
@@ -131,17 +115,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         for (int y = 0;
             y < m.mimeData!.parts!.elementAt(x).parts!.length;
             y++) {
-          debugPrint("y = " +
-              y.toString() +
-              " of " +
-              m.mimeData!.parts!.elementAt(x).parts!.length.toString());
-          debugPrint(m.mimeData!.parts!
-              .elementAt(x)
-              .parts!
-              .elementAt(y)
-              .contentType
-              ?.value
-              .toString());
           if (m.mimeData!.parts!
                   .elementAt(x)
                   .parts!
@@ -164,14 +137,14 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             var reminderItem = doc.querySelector(
                 'a[originalsrc*=\'${widget.mailPiece.uspsMID}\'], a[originalsrc*=\'Set Reminder\']');
 
-                  List<String> list = await _getLinks(reminderItem!.outerHtml.toString());
+            List<String> reminderLinkList =
+                await _getLinks(reminderItem!.outerHtml.toString());
 
-                  //finally, set the state of the links to the matched element
-                  setState(() {
-                    //get the number out of the matched text
-                    reminderLinkUrl = Uri.parse(list[0]);
-
-                  });
+            //finally, set the state of the links to the matched element
+            setState(() {
+              //get the number out of the matched text
+              reminderLinkUrl = Uri.parse(reminderLinkList[0]);
+            });
 
             //next, get a list of items that have the tracking link.  All learn more has the tracking link.
             var trackingItem = doc.querySelector(
@@ -182,35 +155,32 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             for (int i = 0; i < trackingItems.length; i++) {
             */
 
-
             if (trackingItem.toString().contains("alt=\"Learn More\"") &&
-               trackingItem.toString().contains(widget.mailPiece.uspsMID)) {
+                trackingItem.toString().contains(widget.mailPiece.uspsMID)) {
+              List<String> trackingLinkList =
+                  await _getLinks(trackingItem!.outerHtml.toString());
 
-                List<String> list2 = await _getLinks(trackingItem!.outerHtml.toString());
-
-                //set the state of the links to the matched element
-                setState(() {
-                  learnMoreLinkUrl = Uri.parse(list2[0]);
-                  hasLearnMore = true;
-                });
-                //break out of for after finding correct mailPiece
-              }
+              //set the state of the links to the matched element
+              setState(() {
+                learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+                hasLearnMore = true;
+              });
+              //break out of for after finding correct mailPiece
             }
-          }
-        }
-      }
-    }
-
+          } //end if contains text/html
+        } //end element(y) for loop
+      } //end if contains multipart
+    } //end element(x) for loop
+  } //end _getLinkHtmlFromEmail
 
   List<String> _getLinks(String x) {
     try {
       List<String> list = [];
       RegExp linkExp = RegExp(
-          //r"(http|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])");
           r'"(https:\/\/informeddelivery(.*?))"');
-          //r'"(https:\/\/nam11\.safelinks(.*?))"');
-      String text = x ?? ""; //get body text of email
-      debugPrint(text);
+
+      String text = x;
+
       //remove encoding to make text easier to interpret
       text = text.replaceAll('\r\n', " ");
       text = text.replaceAll('<', " ");
@@ -221,9 +191,11 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       while (linkExp.hasMatch(text)) {
         var match = linkExp.firstMatch(text)?.group(0);
         String link = match.toString();
+
         link = link.replaceAll('"', ""); //get rid of "
-        link = link.replaceAll('&amp','&'); //replace &amp with &
-        link = link.replaceAll(";",""); //get rid of ;
+        link = link.replaceAll('&amp', '&'); //replace &amp with &
+        link = link.replaceAll(";", ""); //get rid of ;
+
         list.add(link);
         text = text.substring(text.indexOf(match.toString()) +
             match
@@ -234,13 +206,12 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     } catch (e) {
       rethrow;
     }
-  }
+  } //end _getLinks
 
   @override
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
-
       floatingActionButton: Visibility(
         visible: showHomeButton,
         child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -248,9 +219,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
-        title:
-          'Search Result: ${widget.mailPiece.id}',
-        ),
+        title: 'Search Result: ${widget.mailPiece.id}',
+      ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(15.0),
@@ -295,10 +265,17 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                     borderRadius: new BorderRadius.circular(16.0),
                     color: _buttonColor),
                 child: Column(children: [
+                  Text(
+                    'Do more with your mail\n',
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        color: Colors.white),
+                  ),
                   Visibility(
                     visible: hasLearnMore,
-                    child:
-                    TextButton.icon(
+                    child: TextButton.icon(
                       onPressed: () async {
                         if (await canLaunchUrl(learnMoreLinkUrl)) {
                           await launchUrl(learnMoreLinkUrl!);
@@ -306,18 +283,17 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                           throw 'Could not launch $learnMoreLinkUrl';
                         }
                       },
-                      icon: Icon(Icons.language, size: 50.0),
-                      label: Text('LEARN MORE'),
+                      icon: Icon(Icons.language, size: 40.0),
+                      label: Text('Learn More'),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
-                        textStyle : const TextStyle(
-                          fontSize: 30.0,
+                        textStyle: const TextStyle(
+                          fontSize: 25.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-
                   TextButton.icon(
                     onPressed: () async {
                       if (await canLaunchUrl(reminderLinkUrl)) {
@@ -326,12 +302,12 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                         throw 'Could not launch $reminderLinkUrl';
                       }
                     },
-                    icon: Icon(Icons.calendar_month, size: 50.0),
-                    label: Text('SET A REMINDER'),
+                    icon: Icon(Icons.calendar_month, size: 40.0),
+                    label: Text('Set a Reminder'),
                     style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        textStyle : const TextStyle(
-                        fontSize: 30.0,
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(
+                        fontSize: 25.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -40,6 +40,9 @@ class MailService {
     if (searchArgs.keyword != null) {
       queryList.add("(image_text LIKE '%${searchArgs.keyword}%' OR sender LIKE '%${searchArgs.keyword}%')");
     }
+    else if(searchArgs.senderKeyword != null || searchArgs.mailBodyKeyword != null){
+      queryList.add("(image_text LIKE '%${searchArgs.mailBodyKeyword ?? ""}%' AND sender LIKE '%${searchArgs.senderKeyword ?? ""}%')");
+    }
     if (searchArgs.startDate != null && searchArgs.endDate != null) {
       DateTime start = searchArgs.startDate;
       DateTime end = searchArgs.endDate;
