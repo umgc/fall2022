@@ -140,52 +140,48 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             String reminderItem = "";
             String trackingItem = "";
             bool reminderMatch = false;
+            bool trackingMatch = false;
 
             for (int j = 0; j < docMailIDItems.length; j++) {
 
-              debugPrint("j = " + j.toString() + " of " + docMailIDItems.length.toString() );
-              debugPrint("ReminderMatch: " + reminderMatch.toString());
               //find the element that contains "Set a Reminder"
               if (reminderMatch == false) {
-                debugPrint(docMailIDItems[j].innerHtml.toString());
-                if (docMailIDItems[j].innerHtml.toString().contains(
-                    "Set a Reminder")) {
-                  debugPrint("found a match!");
+                if (docMailIDItems[j].outerHtml.toString().contains(
+                    "pages/reminder")) {
                   reminderItem = docMailIDItems[j].outerHtml.toString();
                   reminderMatch = true;
                 }
               }
 
-              debugPrint(docMailIDItems[j].attributes.toString());
-              debugPrint("learnMore = " + hasLearnMore.toString());
               //find the element that contains "Learn More"
-              if (hasLearnMore == false) {
-                if ( docMailIDItems[j].attributes.toString().contains(
-                    "Learn More") ) {
+              if (trackingMatch == false) {
+                if ( docMailIDItems[j].innerHtml.toString().contains(
+                    "alt=\"Learn More\"") ) {
                   trackingItem = docMailIDItems[j].outerHtml.toString();
-                  hasLearnMore = true;
+                  trackingMatch = true;
                 }
               }
-
               //stop searching after finding the correct matches
-              if (hasLearnMore == true && reminderMatch == true){
+              if (trackingMatch == true && reminderMatch == true){
                 break;
               }
-
             }
 
+            //get a list of links, only the first link should matter
             List<String> reminderLinkList = await _getLinks(reminderItem);
 
+            //get a list of links, if tracking match is not found it wont load a tracking link in set state below
             List<String> trackingLinkList = await _getLinks(trackingItem);
 
             //finally, set the state of the links to the matched element
             setState(() {
               //get the number out of the matched text
               reminderLinkUrl = Uri.parse(reminderLinkList[0]);
-              learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
-              hasLearnMore = true;
+              if(trackingMatch == true ) {
+                learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+                hasLearnMore = true;
+              }
             });
-
           } //end if contains text/html
         } //end element(y) for loop
       } //end if contains multipart
@@ -211,7 +207,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         var match = linkExp.firstMatch(text)?.group(0);
         String link = match.toString();
 
-        link = link.replaceAll('"', ""); //get rid of "
+        link = link.replaceAll('"', ""); //get rid of quotes
         link = link.replaceAll('&amp', '&'); //replace &amp with &
         link = link.replaceAll(";", ""); //get rid of ;
 
