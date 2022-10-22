@@ -9,7 +9,6 @@ class AssistantService
       if (intent.action == "actions.intent.action.GET_THING")
       {
           String query = intent.extra!["name"];
-
           if (query == "Digest")
           {
             return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/digest_mail"]);
@@ -17,6 +16,14 @@ class AssistantService
           else if (query.isNotEmpty)
           {
             return ApplicationFunction(methodName: "performSearch", parameters: <String>[query]);
+          }
+      }
+      else if (intent.action == "actions.intent.action.CREATE_THING")
+      {
+          String query = intent.extra!["name"];
+          if (query.isNotEmpty)
+          {
+            return ApplicationFunction(methodName: "addKeyword", parameters: <String>[query]);
           }
       }
 
