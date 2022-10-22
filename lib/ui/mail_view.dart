@@ -31,13 +31,13 @@ class MailViewWidgetState extends State<MailViewWidget> {
         10,
             (index) => new MailPiece(
             "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
-            ""),
+            "", ""),
         growable: true
     );
 
     MailPiece m = new MailPiece(
         "id", "emailId", DateTime(2022, 10, 3), "sender",
-        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'");
+        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'", "");
 
     _mailPieces.add(m);
 

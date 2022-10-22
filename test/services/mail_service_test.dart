@@ -11,7 +11,7 @@ void main() async {
   DateTime now = DateTime.now();
   DateTime today = new DateTime(now.year, now.month, now.day);
 
-  MailPiece mail = new MailPiece("", "", today, "", "test", "");
+  MailPiece mail = new MailPiece("", "", today, "", "test", "", "");
 
   setUpAll(() async {
     await setUpTestDatabase();
@@ -30,7 +30,7 @@ void main() async {
       "sender": mail.sender,
       "image_text": mail.imageText,
       "timestamp": mail.timestamp.millisecondsSinceEpoch,
-      "midId": mail.midId
+      "midId": mail.scanImgCID
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);

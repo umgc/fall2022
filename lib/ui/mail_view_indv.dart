@@ -31,11 +31,10 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _commonFontSize = 30;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
+
   late Digest digest;
   late Image? mailImage = null;
-  late String mailPieceId = '';
-  late String learnMoreLinkHtml = '';
-  late String reminderLinkHtml = '';
+
   late bool hasLearnMore = false;
   late Uri learnMoreLinkUrl = Uri.parse("http://www.google.com");
   late Uri reminderLinkUrl = Uri.parse("http://www.google.com");
@@ -56,7 +55,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         "\nEmail ID: " +
         widget.mailPiece.emailId +
         "\nmid: " +
-        widget.mailPiece.midId);
+        widget.mailPiece.scanImgCID);
     digest = await mpef1.getMailPieceDigest();
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
@@ -90,7 +89,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 .parts!
                 .elementAt(y)
                 .toString()
-                .contains(widget.mailPiece.midId)) {
+                .contains(widget.mailPiece.scanImgCID)) {
               var picture = m.mimeData!.parts!
                   .elementAt(x)
                   .parts!
@@ -161,99 +160,47 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 .decodeText(
                     ContentTypeHeader('text/html'), 'quoted-printable'));
 
-            //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
-            var scannedMailPieceItems = doc.querySelectorAll(
-                'img[alt*=\'Scanned image of your mail piece\']');
+            //next, get a list of items that have the reminder link.  All mailpieces have the reminder link.
+            var reminderItem = doc.querySelector(
+                'a[originalsrc*=\'${widget.mailPiece.uspsMID}\'], a[originalsrc*=\'Set Reminder\']');
 
-            //scan through the mailpiece images to figure out which index matches the mailPiece Id.
-            //this will be used to find the corresponding reminder link.
-            int matchingIndex = -1;
-            for (int i = 0; i < scannedMailPieceItems.length; i++) {
-              if (scannedMailPieceItems[i]
-                  .attributes
-                  .toString()
-                  .contains(widget.mailPiece.midId)) {
-                matchingIndex = i;
-                break;
-              }
-            }
-
-            //next, get a list of items that have the reminder link.  They all have the reminder link.
-            var reminderItems = doc.querySelectorAll(
-                'a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
-
-            //need a counter for times the reminder mailPiece with image was found
-            int reminderCount = 0;
-            //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
-            for (int i = 0; i < reminderItems.length; i++) {
-              if (reminderItems[i].innerHtml.toString().contains("img")) {
-                //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
-                if (reminderCount == matchingIndex) {
-                  var regex = RegExp(
-                      r'mailpieceId=\d*\"'); //finds the string mailpieceId=digits to "
-                  var regexNum = RegExp(r'\d+'); //get numbers only
-
-                  var mpID1 =
-                      regex.firstMatch(reminderItems[i].outerHtml.toString());
-
-                  List<String> list = await _getLinks(reminderItems[i].outerHtml.toString());
-
-                  debugPrint(list.toString());
+                  List<String> list = await _getLinks(reminderItem!.outerHtml.toString());
 
                   //finally, set the state of the links to the matched element
-                  debugPrint(reminderLinkUrl.toString());
-
                   setState(() {
                     //get the number out of the matched text
-                    mailPieceId = regexNum
-                        .firstMatch(mpID1![0]!.toString())![0]!
-                        .toString();
-                    reminderLinkHtml = reminderItems[i].outerHtml.toString();
                     reminderLinkUrl = Uri.parse(list[0]);
 
                   });
-                  //break out of for after finding correct mailPiece
-                  break;
-                }
-                reminderCount++;
-              }
-            }
 
             //next, get a list of items that have the tracking link.  All learn more has the tracking link.
-            var trackingItems = doc.querySelectorAll(
-                'a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
+            var trackingItem = doc.querySelector(
+                'a[originalsrc*=\'informeddelivery.usps.com/tracking\'], a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
 
-            //need a counter for times the reminder mailPiece with image was found
-            int trackingCount = 0;
-
+            /*
             //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
             for (int i = 0; i < trackingItems.length; i++) {
-              String htmlString1 = trackingItems[i].innerHtml.toString();
-              String htmlString2 = trackingItems[i].outerHtml.toString();
+            */
 
-              if (htmlString1.contains("alt=\"Learn More\"") &&
-                  htmlString2.contains(mailPieceId)) {
 
-                List<String> list2 = await _getLinks(trackingItems[i].outerHtml.toString());
+            if (trackingItem.toString().contains("alt=\"Learn More\"") &&
+               trackingItem.toString().contains(widget.mailPiece.uspsMID)) {
 
-                debugPrint(list2.toString());
+                List<String> list2 = await _getLinks(trackingItem!.outerHtml.toString());
 
                 //set the state of the links to the matched element
                 setState(() {
-                  learnMoreLinkHtml = trackingItems[i].outerHtml.toString();
                   learnMoreLinkUrl = Uri.parse(list2[0]);
                   hasLearnMore = true;
                 });
                 //break out of for after finding correct mailPiece
-                break;
               }
-              trackingCount++;
             }
           }
         }
       }
     }
-  }
+
 
   List<String> _getLinks(String x) {
     try {
@@ -388,12 +335,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-
-                  //it doesn't seem like the html works correctly,
-                  //ScottH could never get it to to display and be able to launch links
-                  Html(
-                    data: reminderLinkHtml,
                   ),
                 ]),
               ),
