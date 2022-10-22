@@ -133,40 +133,53 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 .decodeText(
                     ContentTypeHeader('text/html'), 'quoted-printable'));
 
-            //next, get a list of items that have the reminder link.  All mailpieces have the reminder link.
-            var reminderItem = doc.querySelector(
-                'a[originalsrc*=\'${widget.mailPiece.uspsMID}\'], a[originalsrc*=\'Set Reminder\']');
+            //next, get a list of items that have the uspsMailID.  All mailpieces have these.
+            var docMailIDItems = doc.querySelectorAll(
+                'a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
 
-            List<String> reminderLinkList =
-                await _getLinks(reminderItem!.outerHtml.toString());
+            String reminderItem = "";
+            String trackingItem = "";
+            bool reminderMatch = false;
+
+            for (int j = 0; j < docMailIDItems.length; j++) {
+
+              //find the element that contains "Set a Reminder"
+              if (reminderMatch == false) {
+                if (docMailIDItems[j].outerHtml.toString().contains(
+                    "Set Reminder")) {
+                  reminderItem = docMailIDItems[j].outerHtml.toString();
+                  reminderMatch = true;
+                }
+              }
+
+              //find the element that contains "Learn More"
+              if (hasLearnMore == false) {
+                if (docMailIDItems[j].outerHtml.toString().contains(
+                    "Learn More")) {
+                  trackingItem = docMailIDItems[j].outerHtml.toString();
+                  hasLearnMore = true;
+                }
+              }
+
+              //stop searching after finding the correct matches
+              if (hasLearnMore == true && reminderMatch == true){
+                break;
+              }
+
+            }
+
+            List<String> reminderLinkList = await _getLinks(reminderItem);
+
+            List<String> trackingLinkList = await _getLinks(trackingItem);
 
             //finally, set the state of the links to the matched element
             setState(() {
               //get the number out of the matched text
               reminderLinkUrl = Uri.parse(reminderLinkList[0]);
+              learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+              hasLearnMore = true;
             });
 
-            //next, get a list of items that have the tracking link.  All learn more has the tracking link.
-            var trackingItem = doc.querySelector(
-                'a[originalsrc*=\'informeddelivery.usps.com/tracking\'], a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
-
-            /*
-            //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
-            for (int i = 0; i < trackingItems.length; i++) {
-            */
-
-            if (trackingItem.toString().contains("alt=\"Learn More\"") &&
-                trackingItem.toString().contains(widget.mailPiece.uspsMID)) {
-              List<String> trackingLinkList =
-                  await _getLinks(trackingItem!.outerHtml.toString());
-
-              //set the state of the links to the matched element
-              setState(() {
-                learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
-                hasLearnMore = true;
-              });
-              //break out of for after finding correct mailPiece
-            }
           } //end if contains text/html
         } //end element(y) for loop
       } //end if contains multipart

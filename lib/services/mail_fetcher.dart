@@ -7,7 +7,6 @@ import 'package:enough_mail/enough_mail.dart';
 import '../models/Digest.dart';
 import 'package:intl/intl.dart';
 import 'package:html/parser.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 /// The `MailFetcher` class requests new mail from a mail server.
 class MailFetcher {
@@ -30,6 +29,7 @@ class MailFetcher {
       // Process each email
       for (final email in emails) {
         try {
+          debugPrint("Attempting to process email from " + email.decodeDate()!.toString());
           mailPieces.addAll(await _processEmail(email));
         } catch(e) {
           print("Unable to process individual email.");
@@ -54,6 +54,9 @@ class MailFetcher {
 
       mailPieces.add(mp);
     }
+
+    debugPrint("Finished processing " + mailPieceAttachments.length.toString() +
+          " mailpieces for email on " + email.decodeDate()!.toString());
 
     return mailPieces;
   }
@@ -187,15 +190,12 @@ class MailFetcher {
     final emailId = timestamp.toString();
 
 
+    //this section of code finds the USPS mailpiece ID in the email associated with the
+    //image CID.  Useful in getting links per mailpiece.
+
     String mailPieceId = "";
     //based on test account, need to get 2nd level of parts to find image.  search in text/html part first
     for (int x = 0; x < email.mimeData!.parts!.length; x++) {
-      debugPrint("x = " +
-          x.toString() +
-          " of " +
-          email.mimeData!.parts!.length.toString());
-      debugPrint(
-          email.mimeData!.parts!.elementAt(x).contentType?.value.toString());
 
       if (email.mimeData!.parts!
           .elementAt(x)
@@ -207,17 +207,6 @@ class MailFetcher {
         for (int y = 0;
         y < email.mimeData!.parts!.elementAt(x).parts!.length;
         y++) {
-          debugPrint("y = " +
-              y.toString() +
-              " of " +
-              email.mimeData!.parts!.elementAt(x).parts!.length.toString());
-          debugPrint(email.mimeData!.parts!
-              .elementAt(x)
-              .parts!
-              .elementAt(y)
-              .contentType
-              ?.value
-              .toString());
           if (email.mimeData!.parts!
               .elementAt(x)
               .parts!
@@ -253,10 +242,15 @@ class MailFetcher {
               }
             }
 
+            //print debug error that the scanImgCID didn't find a match.
+            if (matchingIndex == -1) {
+              debugPrint("For mailPiece " + scanImgCID + " there was no associated ID.");
+              break;
+            }
+
             //next, get a list of items that have the reminder link.  They all have the reminder link.
             var reminderItems = doc.querySelectorAll(
                 'a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
-
 
             //need a counter for times the reminder mailPiece with image was found
             int reminderCount = 0;
@@ -274,6 +268,8 @@ class MailFetcher {
 
                   mailPieceId = regexNum.firstMatch(mpID1![0]!.toString())![0]!
                       .toString();
+
+                  debugPrint("Date: " + DateFormat('yyyy/MM/dd').format(timestamp) + "; mailPieceCID: " + scanImgCID + "; has matching USPS-ID: " + mailPieceId);
 
                   //break out of for after finding correct mailPiece
                   break;
