@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:summer2022/services/assistantService.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/services/mail_utility.dart';
 import 'package:summer2022/utility/Keychain.dart';
@@ -14,8 +15,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:receive_intent/receive_intent.dart' as receiveIntent;
 import 'firebase_options.dart';
-import 'package:receive_intent/receive_intent.dart' as recieveIntent;
-import 'dart:io' show Platform;
 import 'models/ApplicationFunction.dart';
 
 
