@@ -143,19 +143,25 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
             for (int j = 0; j < docMailIDItems.length; j++) {
 
+              debugPrint("j = " + j.toString() + " of " + docMailIDItems.length.toString() );
+              debugPrint("ReminderMatch: " + reminderMatch.toString());
               //find the element that contains "Set a Reminder"
               if (reminderMatch == false) {
-                if (docMailIDItems[j].outerHtml.toString().contains(
-                    "Set Reminder")) {
+                debugPrint(docMailIDItems[j].innerHtml.toString());
+                if (docMailIDItems[j].innerHtml.toString().contains(
+                    "Set a Reminder")) {
+                  debugPrint("found a match!");
                   reminderItem = docMailIDItems[j].outerHtml.toString();
                   reminderMatch = true;
                 }
               }
 
+              debugPrint(docMailIDItems[j].attributes.toString());
+              debugPrint("learnMore = " + hasLearnMore.toString());
               //find the element that contains "Learn More"
               if (hasLearnMore == false) {
-                if (docMailIDItems[j].outerHtml.toString().contains(
-                    "Learn More")) {
+                if ( docMailIDItems[j].attributes.toString().contains(
+                    "Learn More") ) {
                   trackingItem = docMailIDItems[j].outerHtml.toString();
                   hasLearnMore = true;
                 }
