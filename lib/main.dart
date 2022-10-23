@@ -44,10 +44,16 @@ void main() async {
   }
 
   ApplicationFunction? function;
-  receiveIntent.Intent? intent =
-      await receiveIntent.ReceiveIntent.getInitialIntent();
-  if (intent != null) {
-    function = AssistantService.ParseIntent(intent!);
+
+  try {
+    receiveIntent.Intent? intent = await receiveIntent.ReceiveIntent
+        .getInitialIntent();
+    if (intent != null) {
+      function = AssistantService.ParseIntent(intent!);
+    }
+  }
+  catch(e) {
+    print("ios does not support receive_intent pkg");
   }
 
   runApp(GlobalLoaderOverlay(

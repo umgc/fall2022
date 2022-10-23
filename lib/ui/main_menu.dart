@@ -1,22 +1,19 @@
-import 'dart:io';
-import 'package:summer2022/image_processing/imageProcessing.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/email_processing/digest_email_parser.dart';
 import 'package:summer2022/email_processing/other_mail_parser.dart';
-import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/models/Digest.dart';
-import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
+import '../services/mail_loader.dart';
 import '../models/ApplicationFunction.dart';
 import 'assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
@@ -34,7 +31,7 @@ CloudVisionApi? vision = CloudVisionApi();
 class MainWidgetState extends AssistantState<MainWidget> {
   DateTime selectedDate = DateTime.now();
   String mailType = "Email";
-  final picker = ImagePicker();
+  final mailLoader = MailLoader();
   FontWeight commonFontWt = FontWeight.w700;
   double commonFontSize = 26;
   double commonBorderWidth = 1;
@@ -170,11 +167,11 @@ class MainWidgetState extends AssistantState<MainWidget> {
             button: true,
             label: "Upload Mail",
             onTap: () {
-              _uploadMail(ImageSource.gallery);
+              mailLoader.uploadMail(ImageSource.gallery);
             },
             child: ElevatedButton(
               onPressed: () {
-                _uploadMail(ImageSource.gallery);
+                mailLoader.uploadMail(ImageSource.gallery);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -195,11 +192,11 @@ class MainWidgetState extends AssistantState<MainWidget> {
             button: true,
             label: "Scan Mail",
             onTap: () {
-              _uploadMail(ImageSource.camera);
+              mailLoader.uploadMail(ImageSource.camera);
             },
             child: ElevatedButton(
               onPressed: () {
-                _uploadMail(ImageSource.camera);
+                mailLoader.uploadMail(ImageSource.camera);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -293,17 +290,6 @@ class MainWidgetState extends AssistantState<MainWidget> {
       }
       context.loaderOverlay.hide();
     }
-  }
-
-  void _uploadMail(ImageSource source) async {
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile == null) return;
-
-    final bytes = File(pickedFile.path).readAsBytesSync();
-    await deleteImageFiles();
-    await saveImageFile(bytes, "mailpiece.jpg");
-    MailResponse response = await processImage("$imagePath/mailpiece.jpg");
-    await CacheService.processUploadedMailPiece(response);
   }
 
   Future<void> selectDate(BuildContext context) async {
