@@ -8,9 +8,9 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import '../models/Digest.dart';
-import '../services/mail_retrieveByMailPiece.dart';
 import 'package:html/parser.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/mail_fetcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
@@ -34,8 +34,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late Digest digest;
   late Image? mailImage = null;
   late bool hasLearnMore = false;
-  late Uri learnMoreLinkUrl = Uri.parse("http://www.google.com");
-  late Uri reminderLinkUrl = Uri.parse("http://www.google.com");
+  late Uri learnMoreLinkUrl = Uri.parse("https://www.google.com");
+  late Uri reminderLinkUrl = Uri.parse("https://www.google.com");
 
   MailPieceViewWidgetState();
 
@@ -46,9 +46,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   }
 
   Future<void> _getMailPieceEmail() async {
-    MailPieceEmailFetcher mpef1 =
-        await MailPieceEmailFetcher(widget.mailPiece.timestamp);
-    digest = await mpef1.getMailPieceDigest();
+
+    MailFetcher mf1 = new MailFetcher();
+    digest = await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);
@@ -238,7 +238,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(15.0),
+          padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Center(
             child: Column(children: [
               Text(

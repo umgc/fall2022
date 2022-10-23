@@ -269,17 +269,6 @@ class MainWidgetState extends AssistantState<MainWidget> {
   }
 
   void _getDailyDigest() async {
-    if (mailType == "Email") {
-      context.loaderOverlay.show();
-      await getEmails(false, DateTime.now());
-      if (emails.isNotEmpty) {
-        Navigator.pushNamed(context, '/other_mail',
-            arguments: EmailWidgetArguments(emails));
-      } else {
-        showNoEmailsDialog();
-      }
-      context.loaderOverlay.hide();
-    } else {
       context.loaderOverlay.show();
       await getDigest();
       if (!digest.isNull()) {
@@ -289,43 +278,8 @@ class MainWidgetState extends AssistantState<MainWidget> {
         showNoDigestDialog();
       }
       context.loaderOverlay.hide();
-    }
   }
 
-  Future<void> selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime.now());
-    if ((picked != null) && (picked != selectedDate)) {
-      if (mailType == "Email") {
-        context.loaderOverlay.show();
-        await getEmails(false, picked);
-        if ((emails.isNotEmpty)) {
-          Navigator.pushNamed(context, '/other_mail',
-              arguments: EmailWidgetArguments(emails));
-        } else {
-          showNoEmailsDialog();
-        }
-        context.loaderOverlay.hide();
-      } else {
-        context.loaderOverlay.show();
-        await getDigest(picked);
-        if (!digest.isNull()) {
-          Navigator.pushNamed(context, '/digest_mail',
-              arguments: MailWidgetArguments(digest));
-        } else {
-          showNoDigestDialog();
-        }
-        context.loaderOverlay.hide();
-      }
-
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
     void showNoDigestDialog() {
       showDialog(
         context: context,
@@ -475,11 +429,11 @@ class MainWidgetState extends AssistantState<MainWidget> {
   late Digest digest;
   late List<Digest> emails;
 
-  Future<void> getDigest([DateTime? pickedDate]) async {
+  Future<void> getDigest() async {
     try {
       await DigestEmailParser()
           .createDigest(await Keychain().getUsername(),
-              await Keychain().getPassword(), pickedDate ?? selectedDate)
+              await Keychain().getPassword())
           .then((value) => digest = value);
     } catch (e) {
       showErrorDialog();

@@ -11,9 +11,9 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../models/ApplicationFunction.dart';
 import '../models/SearchCriteria.dart';
-import '../services/mail_service.dart';
+import '../services/mailPiece_service.dart';
 import 'assistant_state.dart';
-import '../services/mail_storage.dart';
+import '../services/mailPiece_storage.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
 class SearchWidget extends StatefulWidget {
@@ -45,8 +45,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   TextEditingController keywordInput = TextEditingController();
   TextEditingController senderInput = TextEditingController();
   TextEditingController mailBodyInput = TextEditingController();
+  final _mailPieceService = MailPieceService();
 
-  final _mailService = MailService();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {
@@ -92,7 +92,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
       appBar: TopBar(title: 'Mail Search'),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(15.0),
+          padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Column(children: [
             SfDateRangePicker(
               selectionMode: DateRangePickerSelectionMode.range,
@@ -250,7 +250,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               // Populate items from cache
                               MailSearchParameters searchParams =
                                   new MailSearchParameters(keyword: pattern);
-                              return _mailService
+                              return _mailPieceService
                                   .searchMailPieces(searchParams);
                             },
                             itemBuilder: (context, itemData) {
@@ -295,7 +295,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               MailSearchParameters searchParams =
                                   new MailSearchParameters(
                                       senderKeyword: pattern);
-                              return _mailService
+                              return _mailPieceService
                                   .searchMailPieces(searchParams);
                             },
                             itemBuilder: (context, itemData) {
@@ -340,7 +340,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               MailSearchParameters searchParams =
                                   new MailSearchParameters(
                                       mailBodyKeyword: pattern);
-                              return _mailService
+                              return _mailPieceService
                                   .searchMailPieces(searchParams);
                             },
                             itemBuilder: (context, itemData) {
@@ -379,7 +379,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
             Row(children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 50.0),
+                  padding: EdgeInsets.only(top: 30.0),
                   child: SizedBox(
                     height: _preferredButtonHeight,
                     child: OutlinedButton.icon(

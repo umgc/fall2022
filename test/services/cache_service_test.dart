@@ -6,12 +6,12 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:summer2022/services/mail_notifier.dart';
-import 'package:summer2022/services/mail_storage.dart';
+import 'package:summer2022/services/mailPiece_storage.dart';
 
 @GenerateNiceMocks([
   MockSpec<MailFetcher>(),
   MockSpec<MailNotifier>(),
-  MockSpec<MailStorage>()
+  MockSpec<MailPieceStorage>()
 ])
 
 import 'cache_service_test.mocks.dart';

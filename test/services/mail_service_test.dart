@@ -2,11 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:summer2022/exceptions/fetch_mail_exception.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
-import 'package:summer2022/services/mail_service.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
 import 'package:summer2022/services/sqlite_database.dart';
 
 void main() async {
-  final search = MailService();
+  final search = MailPieceService();
 
   DateTime now = DateTime.now();
   DateTime today = new DateTime(now.year, now.month, now.day);

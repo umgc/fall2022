@@ -214,7 +214,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
     // reset to default app settings
     cfg.loadFromAsset("app_settings");
     // clear cache
-    CacheService.getInstance(null, null).clearAllCachedData();
+    CacheService.getInstance().clearAllCachedData();
     // return to login screen
     Navigator.pushNamed(context, '/sign_in');
   }
@@ -234,7 +234,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
         fit: StackFit.expand,
         children: <Widget>[
           SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
