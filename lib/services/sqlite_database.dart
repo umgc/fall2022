@@ -12,7 +12,7 @@ String _dbPath = "mail.db";
 
 Future<Database> get database async {
   return await openDatabase(_dbPath,
-      version: 2,
+      version: 3,
       onConfigure: _configureClient,
       onUpgrade: _createTables,
       singleInstance: true);
@@ -55,10 +55,31 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
   if (prev <= 1) {
     try {
       await db.execute("""
-      ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN midId TEXT;
-    """);
+        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN midId TEXT;
+      """);
+    } catch (e) {
+      // Do nothing, prevent duplicate column from being added
     }
-    catch (e) {
+  }
+
+  if (prev <= 2) {
+    try {
+      await db.execute("""
+        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN links TEXT;
+      """);
+      await db.execute("""
+        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN emails TEXT;
+      """);
+      await db.execute("""
+        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN phone_numbers TEXT;
+      """);
+      await db.execute("""
+        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN image_bytes TEXT;
+      """);
+      await db.execute("""
+        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN featured_html TEXT;
+      """);
+    } catch (e) {
       // Do nothing, prevent duplicate column from being added
     }
   }
