@@ -92,7 +92,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
       appBar: TopBar(title: 'Mail Search'),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(15.0),
+          padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Column(children: [
             SfDateRangePicker(
               selectionMode: DateRangePickerSelectionMode.range,
@@ -379,7 +379,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
             Row(children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 50.0),
+                  padding: EdgeInsets.only(top: 30.0),
                   child: SizedBox(
                     height: _preferredButtonHeight,
                     child: OutlinedButton.icon(

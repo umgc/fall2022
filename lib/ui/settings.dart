@@ -234,7 +234,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
         fit: StackFit.expand,
         children: <Widget>[
           SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
