@@ -35,7 +35,8 @@ void main() async {
           "sender": mail.sender,
           "image_text": mail.imageText,
           "timestamp": mail.timestamp.millisecondsSinceEpoch,
-          "scanImgCID": mail.scanImgCID
+          "scanImgCID": mail.scanImgCID,
+          "uspsMID": mail.uspsMID,
         });
       }
 
