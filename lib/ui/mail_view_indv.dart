@@ -342,8 +342,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     for(int i=0; i< originalSplit.length; i++) {
         if(originalSplit[i].length < 50)
           originalSplit[i] += '\n';
-        //originalSplit[i] = originalSplit[i].substring(0, originalSplit[i].length - 2);
-        //else
     };
     return originalSplit.join(' ');
   }
@@ -367,7 +365,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         child: Container(
           alignment: Alignment.topCenter,
           margin: EdgeInsets.all(10.0),
-          //padding: EdgeInsets.all(2.0),
           child: Center(
             widthFactor: .975,
             child: Column(children: [
