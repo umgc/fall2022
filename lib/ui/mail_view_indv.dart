@@ -37,7 +37,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late Image? mailImage = null;
   late String mailPieceId = '';
   late String originalText = widget.mailPiece.imageText;
-  late String mailPieceText = '';
+  String mailPieceText = '';
 
   late bool hasLearnMore = false;
   late Uri learnMoreLinkUrl = Uri.parse("https://www.google.com");
@@ -54,6 +54,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   void initState() {
     super.initState();
     _getMailPieceEmail();
+    mailPieceText = _reformatMailPieceString(originalText);
   }
 
   Future<void> _getMailPieceEmail() async {
@@ -65,7 +66,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);
-    mailPieceText = await _reformatMailPieceString(originalText);
+
   }
 
   void _getImgFromEmail(MimeMessage m) async {
@@ -333,8 +334,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
   //Function to strip out all line feeds \n to make sure test would wrap, then add it back
   //for shorter blocks such as address or title blocks - currently set to 50 characters.
-
-  Future<String> _reformatMailPieceString(String x) async {
+  //Future<String> _reformatMailPieceString(String x) async
+  _reformatMailPieceString(String x) {
     final find = '\n';
     final replaceWith = ' ';
     final String original = x;
