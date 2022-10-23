@@ -42,8 +42,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   TextEditingController keywordInput = TextEditingController();
   TextEditingController senderInput = TextEditingController();
   TextEditingController mailBodyInput = TextEditingController();
+  final _mailPieceService = MailPieceService();
 
-  final _mailService = MailService();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {
@@ -247,7 +247,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               // Populate items from cache
                               MailSearchParameters searchParams =
                                   new MailSearchParameters(keyword: pattern);
-                              return _mailService
+                              return _mailPieceService
                                   .searchMailPieces(searchParams);
                             },
                             itemBuilder: (context, itemData) {
@@ -292,7 +292,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               MailSearchParameters searchParams =
                                   new MailSearchParameters(
                                       senderKeyword: pattern);
-                              return _mailService
+                              return _mailPieceService
                                   .searchMailPieces(searchParams);
                             },
                             itemBuilder: (context, itemData) {
@@ -337,7 +337,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               MailSearchParameters searchParams =
                                   new MailSearchParameters(
                                       mailBodyKeyword: pattern);
-                              return _mailService
+                              return _mailPieceService
                                   .searchMailPieces(searchParams);
                             },
                             itemBuilder: (context, itemData) {

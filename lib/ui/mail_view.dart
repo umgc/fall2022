@@ -6,13 +6,13 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
-import 'package:summer2022/services/mail_service.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
 
 class MailViewWidget extends StatefulWidget {
 
   final MailSearchParameters query;
 
-  final MailService _mailService = MailService();
+  final MailPieceService _mailService = MailPieceService();
 
   MailViewWidget({required this.query});
 

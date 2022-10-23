@@ -5,9 +5,9 @@ import 'package:summer2022/services/mail_notifier.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/MailPiece.dart';
-import 'package:summer2022/services/mail_storage.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/services/mailPiece_storage.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
@@ -18,7 +18,7 @@ class NotificationsWidget extends StatefulWidget {
 
 GlobalConfiguration cfg = GlobalConfiguration();
 MailNotifier mn = new MailNotifier();
-MailStorage mailStorage = new MailStorage();
+MailPieceStorage mailStorage = new MailPieceStorage();
 
 final time =  DateTime.now().subtract(Duration(days: 30));
 MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "");

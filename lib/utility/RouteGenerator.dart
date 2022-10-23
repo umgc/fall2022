@@ -1,4 +1,3 @@
-import 'package:enough_mail/enough_mail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:summer2022/models/MailPiece.dart';

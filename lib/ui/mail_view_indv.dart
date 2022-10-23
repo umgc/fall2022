@@ -8,10 +8,10 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
-import 'package:summer2022/services/mail_retrieveByMailPiece.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
@@ -52,11 +52,14 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   }
 
   Future<void> _getMailPieceEmail() async {
-
-    MailPieceEmailFetcher mpef1 =
-        await MailPieceEmailFetcher(widget.mailPiece.timestamp);
-
-    digest = await mpef1.getMailPieceDigest();
+    MailFetcher mf1 = new MailFetcher();
+    debugPrint("ID: " +
+        widget.mailPiece.id +
+        "\nEmail ID: " +
+        widget.mailPiece.emailId +
+        "\nmid: " +
+        widget.mailPiece.midId);
+    digest = await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);

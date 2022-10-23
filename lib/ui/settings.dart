@@ -209,7 +209,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
     // reset to default app settings
     cfg.loadFromAsset("app_settings");
     // clear cache
-    CacheService.getInstance(null, null).clearAllCachedData();
+    CacheService.getInstance().clearAllCachedData();
     // return to login screen
     Navigator.pushNamed(context, '/sign_in');
   }
