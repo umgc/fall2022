@@ -18,7 +18,9 @@ import 'package:summer2022/ui/floating_home_button.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
+
   const SearchWidget({this.parameters = const []});
+
   @override
   SearchWidgetState createState() => SearchWidgetState();
 }
@@ -38,9 +40,13 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   DateTime _start = DateTime.now();
   DateTime _end = DateTime.now();
   String _keyword = "";
+  String _advancedText = "Advanced Search";
+  bool _isAdvanced = false;
   TextEditingController keywordInput = TextEditingController();
+  TextEditingController senderInput = TextEditingController();
+  TextEditingController mailBodyInput = TextEditingController();
+  final _mailPieceService = MailPieceService();
 
-  final _mailStorage = MailPieceStorage();
 
   // Apply and passed in search parameters to the filters
   void applyFilters() {
@@ -54,22 +60,20 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function)
-  {
-      if (function.methodName == "performSearch") {
-        if (function.parameters!.isNotEmpty)
-          {
-            final filters = SearchCriteria.withList(function.parameters!);
-            keywordInput.text = filters.keyword;
-            _start = filters.startDate ?? _start;
-            _end = filters.endDate ?? _end;
-            MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, _start, _end);
-            Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
-          }
+  void processFunction(ApplicationFunction function) {
+    if (function.methodName == "performSearch") {
+      if (function.parameters!.isNotEmpty) {
+        final filters = SearchCriteria.withList(function.parameters!);
+        keywordInput.text = filters.keyword;
+        _start = filters.startDate ?? _start;
+        _end = filters.endDate ?? _end;
+        MailSearchParameters searchParams = new MailSearchParameters(
+            keyword: keywordInput.text, startDate: _start, endDate: _end);
+        Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
       }
-      else {
-        super.processFunction(function);
-      }
+    } else {
+      super.processFunction(function);
+    }
   }
 
   @override
@@ -79,243 +83,335 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     keywordInput.text = _keyword;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
-        floatingActionButton: Visibility(
-          visible: showHomeButton,
-          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
-        ),
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(title: 'Mail Search'),
-      body:
-      SingleChildScrollView(
-        child:
-        Container(
-          padding: EdgeInsets.all(15.0),
-          child: Column(
-              children: [
-                SfDateRangePicker(
-                  selectionMode: DateRangePickerSelectionMode.range,
-                  onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-                    final DateTime rangeStartDate;
-                    final DateTime rangeEndDate;
-                    final dynamic value = args.value;
-                    if (args.value is PickerDateRange) {
-                      rangeStartDate = value.startDate;
-                      rangeEndDate = value.endDate == null ? value.startDate : value.endDate;
-                    }
-                    else {
-                      rangeStartDate = _today;
-                      rangeEndDate = _today;
-                    }
-                    setState(() {
-                      _start = rangeStartDate;
-                      _end = rangeEndDate;
-                    });
-                  },
-                  showNavigationArrow: true,
-                  maxDate: _today,
-                  rangeSelectionColor: Color.fromRGBO(51, 51, 102, 100.0),
-                  startRangeSelectionColor: Color.fromRGBO(51, 51, 102, 1.0),
-                  endRangeSelectionColor: Color.fromRGBO(51, 51, 102, 1.0),
-                  todayHighlightColor: Color.fromRGBO(231, 25, 33, 1.0),
-                ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child:
-                        Padding(padding: EdgeInsets.only(right:5.0),
-                          child:
-                          Semantics(
-                            label: "Start Date",
-                            onTap: (){
-                              //TODO: add function that types in date and displays it in the calendar view
-                            },
-                            child:
-                            MergeSemantics(
-                              child:
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children:[
-                                    Text(
-                                      "Start Date:",
-                                      semanticsLabel: "",
-                                      style: TextStyle(
-                                          fontSize: _buttonLabelTextSize,
-                                          fontWeight: _commonFontWeight,
-                                          color: Color.fromRGBO(51, 51, 102, 100)
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 50.0,
-                                      child:
-                                      ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
-                                        ),
-                                        icon: Icon(Icons.calendar_month_outlined,
-                                            size: _buttonIconSize,
-                                            color: Colors.white
-                                        ),
-                                        label: Text('${_dateFormat.format(_start)}',
-                                            semanticsLabel: " ${DateFormat('MMM,d,yyyy').format(_start)}",
-                                            style: TextStyle(
-                                                fontWeight: _buttonFontWeight,
-                                                fontSize: _buttonTextSize,
-                                                color: _buttonTextColor
-                                            )
-                                        ),
-                                        onPressed: () {
-                                          //TODO: add function that types in date and displays it in the calendar view
-                                        },
-                                      ),
-                                    ),
-                                  ]
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
+          child: Column(children: [
+            SfDateRangePicker(
+              selectionMode: DateRangePickerSelectionMode.range,
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                final DateTime rangeStartDate;
+                final DateTime rangeEndDate;
+                final dynamic value = args.value;
+                if (args.value is PickerDateRange) {
+                  rangeStartDate = value.startDate;
+                  rangeEndDate =
+                      value.endDate == null ? value.startDate : value.endDate;
+                } else {
+                  rangeStartDate = _today;
+                  rangeEndDate = _today;
+                }
+                setState(() {
+                  _start = rangeStartDate;
+                  _end = rangeEndDate;
+                });
+              },
+              showNavigationArrow: true,
+              maxDate: _today,
+              rangeSelectionColor: Color.fromRGBO(51, 51, 102, 100.0),
+              startRangeSelectionColor: Color.fromRGBO(51, 51, 102, 1.0),
+              endRangeSelectionColor: Color.fromRGBO(51, 51, 102, 1.0),
+              todayHighlightColor: Color.fromRGBO(231, 25, 33, 1.0),
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 5.0),
+                  child: Semantics(
+                    label: "Start Date",
+                    onTap: () {
+                      //TODO: add function that types in date and displays it in the calendar view
+                    },
+                    child: MergeSemantics(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              "Start Date:",
+                              semanticsLabel: "",
+                              style: TextStyle(
+                                  fontSize: _buttonLabelTextSize,
+                                  fontWeight: _commonFontWeight,
+                                  color: Color.fromRGBO(51, 51, 102, 100)),
+                            ),
+                            SizedBox(
+                              height: 50.0,
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Color.fromRGBO(51, 51, 102, 1.0),
+                                ),
+                                icon: Icon(Icons.calendar_month_outlined,
+                                    size: _buttonIconSize, color: Colors.white),
+                                label: Text('${_dateFormat.format(_start)}',
+                                    semanticsLabel:
+                                        " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                                    style: TextStyle(
+                                        fontWeight: _buttonFontWeight,
+                                        fontSize: _buttonTextSize,
+                                        color: _buttonTextColor)),
+                                onPressed: () {
+                                  //TODO: add function that types in date and displays it in the calendar view
+                                },
                               ),
                             ),
-                         ),
-                        ),
-                      ),
-                      Expanded(
-                        child:
-                        Padding(padding: EdgeInsets.only(left:5.0),
-                          child:
-                          Semantics(
-                            label: "End Date",
-                            onTap: (){
-                              //TODO: add function that types in date and displays it in the calendar view
-                            },
-                            child:
-                            MergeSemantics(
-                              child:
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children:[
-                                    Text(
-                                      "End Date:",
-                                      semanticsLabel: "",
-                                      style: TextStyle(
-                                          fontWeight: _commonFontWeight,
-                                          fontSize: _buttonLabelTextSize,
-                                          color: Color.fromRGBO(51, 51, 102, 100)
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: _preferredButtonHeight,
-                                      child:
-                                      ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: _buttonColor,
-                                        ),
-                                        icon: Icon(Icons.calendar_month_outlined,
-                                            size: 35,
-                                            color: Colors.white
-                                        ),
-                                        label: Text(
-                                            '${_dateFormat.format(_end)}',
-                                            semanticsLabel: "${DateFormat('MMM,d,yyyy').format(_end)}",
-                                            style: TextStyle(
-                                                fontWeight: _buttonFontWeight,
-                                                fontSize: _buttonTextSize,
-                                                color: _buttonTextColor
-                                            )
-                                        ),
-                                        onPressed: (){
-                                          //TODO: add function that types in date and displays it in the calendar view
-                                        },
-                                      ),
-                                    ),
-                                  ]
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 20.0),
-                  child:
-                  Text(
-                    'Duration: $_duration day(s)',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 20,
-                      color: _labelTextColor,
+                          ]),
                     ),
                   ),
                 ),
-                Container(
-                    child: Semantics(
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 5.0),
+                  child: Semantics(
+                    label: "End Date",
+                    onTap: () {
+                      //TODO: add function that types in date and displays it in the calendar view
+                    },
+                    child: MergeSemantics(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              "End Date:",
+                              semanticsLabel: "",
+                              style: TextStyle(
+                                  fontWeight: _commonFontWeight,
+                                  fontSize: _buttonLabelTextSize,
+                                  color: Color.fromRGBO(51, 51, 102, 100)),
+                            ),
+                            SizedBox(
+                              height: _preferredButtonHeight,
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _buttonColor,
+                                ),
+                                icon: Icon(Icons.calendar_month_outlined,
+                                    size: 35, color: Colors.white),
+                                label: Text('${_dateFormat.format(_end)}',
+                                    semanticsLabel:
+                                        "${DateFormat('MMM,d,yyyy').format(_end)}",
+                                    style: TextStyle(
+                                        fontWeight: _buttonFontWeight,
+                                        fontSize: _buttonTextSize,
+                                        color: _buttonTextColor)),
+                                onPressed: () {
+                                  //TODO: add function that types in date and displays it in the calendar view
+                                },
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+              ),
+            ]),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 20.0),
+              child: Text(
+                'Duration: $_duration day(s)',
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontSize: 20,
+                  color: _labelTextColor,
+                ),
+              ),
+            ),
+            Visibility(
+                visible: !_isAdvanced,
+                child: Container(
+                  child: Semantics(
                       excludeSemantics: true,
                       textField: true,
                       label: "Keyword",
                       hint: "Enter keyword to search",
-                      child: TypeAheadField(
-                        textFieldConfiguration: TextFieldConfiguration(
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                                labelText: 'Enter keyword to search',
-                                border: OutlineInputBorder()
-                            ),
-                          controller: keywordInput
-                        ),
-                        onSuggestionSelected: (suggestion) {
-                          // Go directly to mail item if the user clicks a suggestion
-                          Navigator.pushNamed(context, '/mail_piece_view', arguments: suggestion);
-                        },
-                        suggestionsCallback: (pattern) {
-                          // Populate items from cache
-                          return _mailStorage.searchMailsPieces(pattern);
-                        },
-                        itemBuilder: (context, itemData) {
-                          return ListTile(
-                            title:  Text("From: ${(itemData as MailPiece).sender}, "
-                                "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
-                            subtitle: Text("Contents: "
-                                "${itemData.imageText}"),
-                          );
-                        },
-                      )
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter keyword to search',
+                                    border: OutlineInputBorder()),
+                                controller: keywordInput),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view',
+                                  arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              MailSearchParameters searchParams =
+                                  new MailSearchParameters(keyword: pattern);
+                              return _mailPieceService
+                                  .searchMailPieces(searchParams);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title: Text(
+                                    "From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text(
+                                  "Contents: "
+                                  "${itemData.imageText}",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                          ))),
+                )),
+            Visibility(
+                visible: _isAdvanced,
+                child: Container(
+                  child: Semantics(
+                      excludeSemantics: true,
+                      textField: true,
+                      label: "Keyword",
+                      hint: "Enter sender to search",
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter mail sender to search',
+                                    border: OutlineInputBorder()),
+                                controller: senderInput),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view',
+                                  arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              MailSearchParameters searchParams =
+                                  new MailSearchParameters(
+                                      senderKeyword: pattern);
+                              return _mailPieceService
+                                  .searchMailPieces(searchParams);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title: Text(
+                                    "From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text(
+                                  "Contents: "
+                                  "${itemData.imageText}",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                          ))),
+                )),
+            Visibility(
+                visible: _isAdvanced,
+                child: Container(
+                  child: Semantics(
+                      excludeSemantics: true,
+                      textField: true,
+                      label: "Keyword",
+                      hint: "Enter text to search",
+                      child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                    labelText: 'Enter mail body text to search',
+                                    border: OutlineInputBorder()),
+                                controller: mailBodyInput),
+                            onSuggestionSelected: (suggestion) {
+                              // Go directly to mail item if the user clicks a suggestion
+                              Navigator.pushNamed(context, '/mail_piece_view',
+                                  arguments: suggestion);
+                            },
+                            suggestionsCallback: (pattern) {
+                              // Populate items from cache
+                              MailSearchParameters searchParams =
+                                  new MailSearchParameters(
+                                      mailBodyKeyword: pattern);
+                              return _mailPieceService
+                                  .searchMailPieces(searchParams);
+                            },
+                            itemBuilder: (context, itemData) {
+                              return ListTile(
+                                title: Text(
+                                    "From: ${(itemData as MailPiece).sender}, "
+                                    "Date: ${DateFormat('MM/dd/yyyy').format(itemData.timestamp)}"),
+                                subtitle: Text(
+                                  "Contents: "
+                                  "${itemData.imageText}",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                          ))),
+                )),
+            new InkWell(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: new Text(
+                    _advancedText,
+                    style: TextStyle(
+                        fontWeight: _commonFontWeight,
+                        decoration: TextDecoration.underline),
                   ),
                 ),
-                Row(
-                    children: [
-                      Expanded(
-                        child:
-                        Padding( padding: EdgeInsets.symmetric(vertical: 50.0),
-                          child:
-                          SizedBox(
-                            height: _preferredButtonHeight,
-                            child:
-                            OutlinedButton.icon(
-                                style: OutlinedButton.styleFrom(
-                                  backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
-                                ),
-                                onPressed: () {
-                                  MailSearchParameters searchParams = new MailSearchParameters(keywordInput.text, _start, _end);
-                                  Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
-                                },
-                                icon: const Icon(
-                                    Icons.search,
-                                    size: 35,
-                                    color: Colors.white
-                                ),
-                                label: Text("Search",
-                                    style: TextStyle(
-                                        fontWeight: _buttonFontWeight,
-                                        fontSize: _buttonTextSize + 4.0,
-                                        color: _buttonTextColor
-                                    )
-                                )
-                            ),
-                          ),
+                onTap: () {
+                  setState(() {
+                    _isAdvanced = !_isAdvanced;
+                    _advancedText =
+                        _isAdvanced ? "Standard Search" : "Advanced Search";
+                  });
+                  print("isAdvanced: " + _isAdvanced.toString());
+                }),
+            Row(children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 30.0),
+                  child: SizedBox(
+                    height: _preferredButtonHeight,
+                    child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(51, 51, 102, 1.0),
                         ),
-                      ),
-                    ]
+                        onPressed: () {
+                          MailSearchParameters searchParams = _isAdvanced
+                              ? new MailSearchParameters(
+                                  senderKeyword: senderInput.text,
+                                  mailBodyKeyword: mailBodyInput.text,
+                                  startDate: _start,
+                                  endDate: _end)
+                              : new MailSearchParameters(
+                                  keyword: keywordInput.text,
+                                  startDate: _start,
+                                  endDate: _end);
+                          Navigator.pushNamed(context, '/mail_view',
+                              arguments: searchParams);
+                        },
+                        icon: const Icon(Icons.search,
+                            size: 35, color: Colors.white),
+                        label: Text("Search",
+                            style: TextStyle(
+                                fontWeight: _buttonFontWeight,
+                                fontSize: _buttonTextSize + 4.0,
+                                color: _buttonTextColor))),
+                  ),
                 ),
-              ]
-          ),
+              ),
+            ]),
+          ]),
         ),
       ),
     );

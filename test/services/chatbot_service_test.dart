@@ -12,7 +12,7 @@ void main() async {
       var result = service.performChatFunction(SiteAreas.Home, "help");
       expect(result.methodName, "");
       expect(result.parameters, null);
-      expect(result.message.contains("Available commands on this page:"), true);
+      expect(result.messages?.elementAt(0).contains("Available commands on this page:"), true);
     });
     test("Verify ChatBot to homepage", () {
       var service = ChatBotService();
@@ -39,6 +39,18 @@ void main() async {
       var searchCriteria = SearchCriteria.withList(result.parameters!);
       expect(searchCriteria.startDate, DateTime(2022, 10, 20));
       expect(searchCriteria.endDate, DateTime(2022, 10, 20));
+    });
+    test("Verify Create Notification", () {
+      var service = ChatBotService();
+      var result = service.performChatFunction(SiteAreas.Home, "notifications add test");
+      expect(result.methodName, "addNotification");
+      expect(result.parameters?[0], "test");
+    });
+    test("Verify Delete Notification", () {
+      var service = ChatBotService();
+      var result = service.performChatFunction(SiteAreas.Home, "notifications delete test");
+      expect(result.methodName, "deleteNotification");
+      expect(result.parameters?[0], "test");
     });
   });
 }

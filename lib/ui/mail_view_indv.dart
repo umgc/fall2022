@@ -330,7 +330,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
-
       floatingActionButton: Visibility(
         visible: showHomeButton,
         child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -343,7 +342,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(15.0),
+          padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Center(
             child: Column(children: [
               Text(

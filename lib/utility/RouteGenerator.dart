@@ -16,7 +16,6 @@ import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/ui/mail_view.dart';
 
 import '../models/MailSearchParameters.dart';
-import '../services/mailPiece_service.dart';
 import '../ui/mail_view_indv.dart';
 
 // Enum defining all areas of the application
@@ -77,14 +76,19 @@ class RouteGenerator {
 
   // Update previous route to new route if it matches any valid routes
   // This is for use by the ChatBot to determine the user's page
-  // TODO: Probably a better way to handle this with Navigator/navkey
   static void _updatePreviousRoute(String newRoute) {
     switch (newRoute) {
+      case '/digest_mail':
       case '/mail_view':
+      case '/other_mail':
+      case '/mail_piece_view':
         previousRoute = SiteAreas.MailView;
         break;
       case '/main':
         previousRoute = SiteAreas.Home;
+        break;
+      case '/notifications':
+        previousRoute = SiteAreas.NotificationManage;
         break;
       case '/settings':
         previousRoute = SiteAreas.Settings;

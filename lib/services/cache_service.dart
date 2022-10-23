@@ -60,8 +60,8 @@ class CacheService {
   }
 
   Future<void> clearAllCachedData() async {
-    _storage.deleteAllMailPieces();
-    _notifier.clearAllNotifications();
-    _notifier.clearAllSubscriptions();
+    await _storage.deleteAllMailPieces();
+    await _notifier.clearAllNotifications();
+    await _notifier.clearAllSubscriptions();
   }
 }
