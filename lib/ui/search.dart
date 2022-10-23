@@ -271,7 +271,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                   child: Semantics(
                       excludeSemantics: true,
                       textField: true,
-                      label: "Keyword",
+                      label: "Sender Keyword",
                       hint: "Enter sender to search",
                       child: Padding(
                           padding: EdgeInsets.all(10),
@@ -316,7 +316,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                   child: Semantics(
                       excludeSemantics: true,
                       textField: true,
-                      label: "Keyword",
+                      label: "In-text Keyword",
                       hint: "Enter text to search",
                       child: Padding(
                           padding: EdgeInsets.all(10),
@@ -355,15 +355,19 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                             },
                           ))),
                 )),
+
             new InkWell(
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: new Text(
+                  child: Semantics(
+                    explicitChildNodes: true,
+                    label: "${_advancedText}",
+                    child:new Text(
                     _advancedText,
                     style: TextStyle(
                         fontWeight: _commonFontWeight,
                         decoration: TextDecoration.underline),
-                  ),
+                  ),),
                 ),
                 onTap: () {
                   setState(() {
@@ -371,7 +375,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                     _advancedText =
                         _isAdvanced ? "Standard Search" : "Advanced Search";
                   });
-                  print("isAdvanced: " + _isAdvanced.toString());
                 }),
             Row(children: [
               Expanded(

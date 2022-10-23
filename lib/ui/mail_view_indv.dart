@@ -434,8 +434,12 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
                   //it doesn't seem like the html works correctly,
                   //ScottH could never get it to to display and be able to launch links
-                  Html(
-                    data: reminderLinkHtml,
+                  Semantics(
+                    excludeSemantics: true,
+                    child:
+                      Html(
+                        data: reminderLinkHtml,
+                    ),
                   ),
 
                 ]),
