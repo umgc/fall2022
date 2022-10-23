@@ -12,10 +12,9 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
-
-import '../services/mail_loader.dart';
-import '../models/ApplicationFunction.dart';
-import 'assistant_state.dart';
+import 'package:summer2022/services/mail_loader.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
 class MainWidget extends StatefulWidget {

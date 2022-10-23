@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
+import 'package:flutter/rendering.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -16,9 +16,9 @@ class TopBarState extends State<TopBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-
         actions:[
           Semantics(
+              sortKey: OrdinalSortKey(3),
               label: "Show Menu",
               button: true,
               excludeSemantics: true,
@@ -65,6 +65,7 @@ class TopBarState extends State<TopBar> {
         leading:
         (this.widget.title != "Main Menu" && this.widget.title != "Sign In") ?
         (Semantics (
+            sortKey: OrdinalSortKey(2),
             excludeSemantics: true,
             button: true,
             label: "Back",
@@ -79,8 +80,12 @@ class TopBarState extends State<TopBar> {
           )
         ) : null,
         centerTitle: true,
-        title: Text("${this.widget.title}", style:
-        TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+        title: Semantics(
+          sortKey: OrdinalSortKey(1),
+          child:
+            Text("${this.widget.title}", style:
+            TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+          ),
         ),
         automaticallyImplyLeading: false,
         backgroundColor: Color.fromRGBO(51, 51, 102, 1),

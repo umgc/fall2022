@@ -8,8 +8,7 @@ import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'assistant_state.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 
 class SignInWidget extends StatefulWidget {
   final ApplicationFunction? function;
@@ -409,31 +408,35 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                   child: Form(
                     child: Column(
                       children: [
-                        /*Container(
-                          alignment: Alignment.center,
-                          child: Text("MailSpeak",
-                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),)
-                        ),*/
+                        // Text for Accessibility purpose
+                        Visibility(
+                            visible: false,
+                            maintainState: true,
+                            maintainSize: true,
+                            maintainAnimation: true,
+                            maintainSemantics: true,
+                            child: Text("MailSpeak Application. Log in.")
+                        ),
                         Container(
                           alignment: Alignment.center,
                           child: Image.asset("assets/icon/applogo-mailspeak-200.png" ),
                         ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      alignment: Alignment.center,
-                      child: Text("USPS Informed Delivery Registered Email"),
+                        Container(
+                          padding: const EdgeInsets.only(top: 10),
+                          alignment: Alignment.center,
+                          child: Text("USPS Informed Delivery Registered Email"),
                       ),
                         Container(
-                      padding: const EdgeInsets.only(top: 15),
-                      alignment: Alignment.center,
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'E-Mail Address',
+                          padding: const EdgeInsets.only(top: 15),
+                          alignment: Alignment.center,
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'E-Mail Address',
+                            ),
+                            controller: emailController,
+                          ),
                         ),
-                        controller: emailController,
-                      ),
-                    ),
                     Container(
                       padding: const EdgeInsets.only(top: 15),
                       alignment: Alignment.center,
@@ -453,13 +456,16 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                       alignment: Alignment.center,
                       child: Row(
                         children: [
-                          Checkbox(
-                            value: checked,
-                            onChanged: (value) {
-                              setState(() {
-                                checked = value ?? false;
-                              });
-                            },
+                          Semantics(
+                            label: "Terms",
+                            child: Checkbox(
+                              value: checked,
+                              onChanged: (value) {
+                                setState(() {
+                                  checked = value ?? false;
+                                });
+                              },
+                            ),
                           ),
                           Expanded(
                             child: Text.rich(

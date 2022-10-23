@@ -6,8 +6,8 @@ import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/services/mail_storage.dart';
-import 'assistant_state.dart';
-import 'bottom_app_bar.dart';
+import 'package:summer2022/ui/assistant_state.dart';
+import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
