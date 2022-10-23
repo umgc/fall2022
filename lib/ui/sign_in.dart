@@ -2,13 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/utility/Keychain.dart';
-import 'package:summer2022/utility/Client.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../services/mail_utility.dart';
 import 'assistant_state.dart';
 
 class SignInWidget extends StatefulWidget {
@@ -520,12 +520,14 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                             String password = passwordController.text.toString().trim();
                             //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
                             if(email.isNotEmpty && password.isNotEmpty) {
-                              var loggedIn = await Client()
-                                  .getImapClient(email, password);
+
+                              //check for that email and password provided can successfully login
+                              MailUtility mail = new MailUtility();
+                              var loggedIn = await mail.getImapClient(email, password);
                               //Store the credentials into the the secure storage only if validated
                               if (loggedIn) {
                                 Keychain().addCredentials(email, password);
-                                await CacheService.updateMail(email, password);
+                                await CacheService.updateMail();
                                 //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture
                                 Navigator.pushNamedAndRemoveUntil(context, '/main', (Route<dynamic> route) => false);
                               }

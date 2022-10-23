@@ -10,7 +10,7 @@ import 'package:summer2022/models/MailPiece.dart' as _i4;
 import 'package:summer2022/models/NotificationSubscription.dart' as _i6;
 import 'package:summer2022/services/mail_fetcher.dart' as _i2;
 import 'package:summer2022/services/mail_notifier.dart' as _i5;
-import 'package:summer2022/services/mail_storage.dart' as _i7;
+import 'package:summer2022/services/mailPiece_storage.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -91,7 +91,7 @@ class MockMailNotifier extends _i1.Mock implements _i5.MailNotifier {
 /// A class which mocks [MailStorage].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMailStorage extends _i1.Mock implements _i7.MailStorage {
+class MockMailStorage extends _i1.Mock implements _i7.MailPieceStorage {
   @override
   _i3.Future<DateTime> get lastTimestamp => (super.noSuchMethod(
         Invocation.getter(#lastTimestamp),
