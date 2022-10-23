@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
@@ -22,13 +23,9 @@ class DigestEmailParser {
   String filePath = '';
   String imagePath = '';
 
-  Future<Digest> createDigest(String userName, String password,
-      [DateTime? targetDate]) async {
+  Future<Digest> createDigest(String userName, String password) async {
     try {
-      _userName = userName;
-      _password = password;
-      _targetDate = targetDate;
-      Digest digest = Digest(await _getDigestEmail());
+      Digest digest = Digest(await _getDigestEmail(userName, password));
 
         if (!digest.isNull()) {
         digest.attachments = await _getAttachments(digest.message);
@@ -45,28 +42,35 @@ class DigestEmailParser {
       List<Attachment> list = [];
       await deleteImageFiles(); //this method deletes the current list of user images in the app local directory
       for (int x = 0; x < m.mimeData!.parts!.length; x++) {
-        if (m.mimeData!.parts!
-                .elementAt(x)
+        var firstLevel = m.mimeData!.parts!.elementAt(x);
+        if (firstLevel.parts != null && firstLevel.parts!.isNotEmpty) {
+          for (int y = 0; y < firstLevel!.parts!.length; y++) {
+            if (firstLevel
+            !.parts
+            !.elementAt(y)
                 .contentType
                 ?.value
                 .toString()
                 .contains("image") ??
-            false)
-          {
-            var attachment = Attachment();
-            attachment.attachment = m.mimeData!.parts!
-              .elementAt(x)
-              .decodeMessageData()
-              .toString(); //These are base64 encoded images with formatting
-            attachment.attachmentNoFormatting = attachment.attachment
-              .toString()
-              .replaceAll(
+                false) {
+              var attachment = Attachment();
+              attachment.attachment = firstLevel.parts!
+                  .elementAt(y)
+                  .decodeMessageData()
+                  .toString(); //These are base64 encoded images with formatting
+              attachment.attachmentNoFormatting = attachment.attachment
+                  .toString()
+                  .replaceAll(
                   "\r\n", ""); //These are base64 encoded images with formatting
-            /* get the position of element with value "image" and save to attachment.  delete all returns */
-          await saveImageFile(base64Decode(attachment.attachmentNoFormatting),
-              "mailpiece$x.jpg");
-          attachment.detailedInformation = await processImage(filePath); //process image defined below
-          list.add(attachment); //add attachment to list of attachments
+              /* get the position of element with value "image" and save to attachment.  delete all returns */
+              await saveImageFile(
+                  base64Decode(attachment.attachmentNoFormatting),
+                  "mailpiece$y.jpg");
+              attachment.detailedInformation =
+              await processImage(filePath); //process image defined below
+              list.add(attachment); //add attachment to list of attachments
+            }
+          }
         }
       }
       return list;
@@ -116,12 +120,11 @@ class DigestEmailParser {
     return format.format(date);
   }
 
-  Future<MimeMessage> _getDigestEmail() async {
+  Future<MimeMessage> _getDigestEmail(String username, String password) async {
     final client = ImapClient(isLogEnabled: true);
     try {
-      DateTime targetDate = _targetDate ?? DateTime.now();
       //Retrieve the imap server config
-      var config = await Discover.discover(_userName, isLogEnabled: false);
+      var config = await Discover.discover(username, isLogEnabled: false);
       if (config == null) {
         return MimeMessage();
       } else {
@@ -129,29 +132,27 @@ class DigestEmailParser {
         await client.connectToServer(
             imapServerConfig!.hostname as String, imapServerConfig.port as int,
             isSecure: imapServerConfig.isSecureSocket);
-        await client.login(_userName, _password);
+        await client.login(username, password);
         await client.selectInbox();
-        //Search for sequence id of the Email
-        String searchCriteria =
-            'FROM USPSInformeddelivery@email.informeddelivery.usps.com ON ${_formatTargetDateForSearch(targetDate)} SUBJECT "Your Daily Digest"';
-        List<ReturnOption> returnOptions = [];
-        ReturnOption option = ReturnOption("all");
-        returnOptions.add(option);
+
+        String searchCriteria = 'FROM USPSInformeddelivery@email.informeddelivery.usps.com SUBJECT "Your Daily Digest"';
         final searchResult = await client.searchMessages(searchCriteria: searchCriteria);
-        //extract sequence id
-        int? seqID;
-        final matchingSequence = searchResult.matchingSequence;
+        MessageSequence? matchingSequence = searchResult.matchingSequence;
+
         if (matchingSequence != null) {
-          seqID = matchingSequence.isNotEmpty
-              ? matchingSequence.elementAt(0)
-              : null; // this gets the sequence id of the desired email
+          final messages = await client.fetchMessages(
+              matchingSequence, 'BODY.PEEK[]');
+
+          final messagesList = messages.messages;
+
+          if (messagesList.isNotEmpty) {
+            messagesList.sort((a, b) =>
+                (a.decodeDate() ?? new DateTime(1970)).compareTo(
+                    (b.decodeDate() ?? new DateTime(1970))));
+            return messagesList.last;
+          }
         }
-        if (seqID != null) {
-          //Fetch Email Results
-          final fetchedMessage =
-              await client.fetchMessage(seqID, 'BODY.PEEK[]');
-          return fetchedMessage.messages.first;
-        }
+
         return MimeMessage();
       }
     } catch (e) {
