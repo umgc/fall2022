@@ -62,7 +62,8 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => checkPassedInFunction());
     locator<AnalyticsService>().logScreens(name: "signIn");
 
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "SignIn");
@@ -75,16 +76,14 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     );*/
   }
 
-  void checkPassedInFunction()
-  {
+  void checkPassedInFunction() {
     if (this.widget.function != null) {
       processFunction(this.widget.function!);
     }
   }
 
   @override
-  void processFunction(ApplicationFunction function)
-  {
+  void processFunction(ApplicationFunction function) {
     showDialog(
       context: context,
       builder: (context) {
@@ -125,19 +124,21 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
           actions: [
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
-                padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
-                textStyle: MaterialStateProperty.all(TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                backgroundColor:
+                    MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                padding: MaterialStateProperty.all(
+                    EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                textStyle: MaterialStateProperty.all(
+                  TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              onPressed: (){
+              onPressed: () {
                 Navigator.of(context).pop();
-              }, child: Text(
-                'Close'
-            ),
+              },
+              child: Text('Close'),
             ),
           ],
           actionsAlignment: MainAxisAlignment.center,
@@ -161,57 +162,55 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Center(
-            child: Text.rich(
-              TextSpan(
-                text: 'Error',
-                style: TextStyle(
-                  fontSize: 22,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
+            title: Center(
+              child: Text.rich(
+                TextSpan(
+                  text: 'Error',
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ),
-          ),
             actions: [
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
-                  padding: MaterialStateProperty.all(EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
-                  textStyle: MaterialStateProperty.all(TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  backgroundColor:
+                      MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                  padding: MaterialStateProperty.all(
+                      EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                  textStyle: MaterialStateProperty.all(
+                    TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                onPressed: (){
+                onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text(
-                  'Close'
-              ),
+                child: Text('Close'),
               ),
             ],
             actionsAlignment: MainAxisAlignment.center,
-          content: SizedBox(
-            height: 75.0,
-            width: 75.0,
-            child: Center(
-                child: Text.rich(
-                  textAlign: TextAlign.left,
-                  TextSpan(
-                      text: 'Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      )
-                  )
-                )
-            ),
-          )
-        );
+            content: SizedBox(
+              height: 75.0,
+              width: 75.0,
+              child: Center(
+                  child: Text.rich(
+                      textAlign: TextAlign.left,
+                      TextSpan(
+                          text:
+                              'Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          )))),
+            ));
       },
     );
   }
@@ -409,7 +408,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
       body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          height: 900.0,
+          height: 800.0,
           child: SafeArea(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -441,141 +440,144 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         alignment: Alignment.center,
                         child: Text("USPS Informed Delivery Registered Email"),
                       ),
-                        Container(
-                      padding: const EdgeInsets.only(top: 15),
-                      alignment: Alignment.center,
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'E-Mail Address',
-                        ),
-                        controller: emailController,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 15),
-                      alignment: Alignment.center,
-                      child: TextField(
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        controller: passwordController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(15),
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            value: checked,
-                            onChanged: (value) {
-                              setState(() {
-                                checked = value ?? false;
-                              });
-                            },
+                      Container(
+                        padding: const EdgeInsets.only(top: 15),
+                        alignment: Alignment.center,
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'E-Mail Address',
                           ),
-                          Expanded(
-                            child: Text.rich(
-                              TextSpan(
-                                text: 'I have read and agree to the ',
-                                style: TextStyle(
-                                  fontSize: 14, color: Colors.black
-                                ),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: 'Terms and Conditions',
+                          controller: emailController,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 15),
+                        alignment: Alignment.center,
+                        child: TextField(
+                          obscureText: true,
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          controller: passwordController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Password',
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        alignment: Alignment.center,
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: checked,
+                              onChanged: (value) {
+                                setState(() {
+                                  checked = value ?? false;
+                                });
+                              },
+                            ),
+                            Expanded(
+                              child: Text.rich(
+                                TextSpan(
+                                    text: 'I have read and agree to the ',
                                     style: TextStyle(
-                                      fontSize: 14, color: Colors.blue,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      showTermsAndConditionsDialog();
-                                    }
-                                  ),
-                                  TextSpan(
-                                    text: ' and ',
-                                    style: TextStyle(
-                                      fontSize: 14, color: Colors.black
-                                    ),
+                                        fontSize: 14, color: Colors.black),
                                     children: <TextSpan>[
                                       TextSpan(
-                                          text: 'Privacy Policy', style: TextStyle(
-                                          fontSize: 14, color: Colors.blue,
-                                          fontWeight: FontWeight.bold,
-                                          decoration: TextDecoration.underline
-                                      ),
+                                          text: 'Terms and Conditions',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () {
-                                              showPrivacyPolicyDialog();
-                                            }
-                                      )
-                                    ]
-                                  )
-                                ]
+                                              showTermsAndConditionsDialog();
+                                            }),
+                                      TextSpan(
+                                          text: ' and ',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: 'Privacy Policy',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.blue,
+                                                    fontWeight: FontWeight.bold,
+                                                    decoration: TextDecoration
+                                                        .underline),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        showPrivacyPolicyDialog();
+                                                      })
+                                          ])
+                                    ]),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      alignment: Alignment.center,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          if (checked != true) {
-                            showTermsAndPrivacyAgreementErrorDialog();
-                            //If check box is not ticked off, show error dialog
-                          } else {
-                            // .trim() removes any leading and trailing white spaces
-                            String email = emailController.text.toString().trim();
-                            String password = passwordController.text.toString().trim();
-                            //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
-                            if(email.isNotEmpty && password.isNotEmpty) {
-                              var loggedIn = await Client()
-                                  .getImapClient(email, password);
-                              //Store the credentials into the the secure storage only if validated
-                              if (loggedIn) {
-                                Keychain().addCredentials(email, password);
-                                await CacheService.updateMail(email, password);
-                                //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture
-                                Navigator.pushNamedAndRemoveUntil(context, '/main', (Route<dynamic> route) => false);
+                      Container(
+                          alignment: Alignment.center,
+                          child: OutlinedButton(
+                            onPressed: () async {
+                              if (checked != true) {
+                                showTermsAndPrivacyAgreementErrorDialog();
+                                //If check box is not ticked off, show error dialog
+                              } else {
+                                // .trim() removes any leading and trailing white spaces
+                                String email =
+                                    emailController.text.toString().trim();
+                                String password =
+                                    passwordController.text.toString().trim();
+                                //If email validated through enough mail then switch to the main screen, if not, add error text to the to show on the screen
+                                if (email.isNotEmpty && password.isNotEmpty) {
+                                  var loggedIn = await Client()
+                                      .getImapClient(email, password);
+                                  //Store the credentials into the the secure storage only if validated
+                                  if (loggedIn) {
+                                    Keychain().addCredentials(email, password);
+                                    await CacheService.updateMail(
+                                        email, password);
+                                    //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/main',
+                                        (Route<dynamic> route) => false);
+                                  } else {
+                                    showLoginErrorDialog();
+                                    context.loaderOverlay.hide();
+                                  }
+                                } else {
+                                  showLoginErrorDialog();
+                                  context.loaderOverlay.hide();
+                                }
                               }
-                              else {
-                                showLoginErrorDialog();
-                                context.loaderOverlay.hide();
-                              }
-                            }else {
-                              showLoginErrorDialog();
-                              context.loaderOverlay.hide();
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(51, 51, 102, 1),
-                          shadowColor: Colors.grey,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(5))),
-                        ),
-                        child: const Text(
-                          "RETRIEVE MAIL",
-                          style: TextStyle(color: Colors.white)                          ,
-                        ),
-                      )
-                    ),
-                    Container(
-                      child:
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                          TextSpan(
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromRGBO(51, 51, 102, 1),
+                              shadowColor: Colors.grey,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5))),
+                            ),
+                            child: const Text(
+                              "RETRIEVE MAIL",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )),
+                      Container(
+                          child: RichText(
+                              text: TextSpan(children: [
+                        TextSpan(
                           text: 'Not registered, ',
                           style: TextStyle(
                             fontSize: 14,
@@ -622,45 +624,6 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                     text: 'Sign In with Google',
                                   ),
                                 ))
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.only(top: 10),
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 35, right: 35),
-                                  child: SignInButton(
-                                    Buttons.AppleDark,
-                                    onPressed: () {
-                                      Navigator.pushNamed(context,
-                                          UserAuthService().signInWithApple());
-                                    },
-                                    text: 'Sign In with Apple',
-                                  ),
-                                )),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.only(top: 10),
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 35, right: 35),
-                                  child: SignInButton(Buttons.Microsoft,
-                                      onPressed: () {
-                                    Navigator.pushNamed(
-                                        context,
-                                        UserAuthService()
-                                            .signInWithMicrosoft());
-                                  }, text: 'Sign In with Microsoft'),
-                                )),
                               ],
                             ),
                           ],
