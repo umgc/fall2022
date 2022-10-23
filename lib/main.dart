@@ -6,6 +6,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/services/assistantService.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/services/mail_utility.dart';
+import 'package:summer2022/services/background_service.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/ui/main_menu.dart';
 import 'package:summer2022/ui/sign_in.dart';
@@ -17,7 +18,6 @@ import 'package:receive_intent/receive_intent.dart' as receiveIntent;
 import 'firebase_options.dart';
 import 'models/ApplicationFunction.dart';
 
-
 final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 void main() async {
@@ -26,12 +26,13 @@ void main() async {
   GlobalConfiguration cfg = GlobalConfiguration();
   await setupLocator();
   await cfg.loadFromAsset("app_settings");
+  BackgroundService.init();
+
   var emailAuthenticated = false; // default false go to signin page
   String? username = await Keychain().getUsername();
   String? password = await Keychain().getPassword();
   if (username != null && password != null) {
-
-    //Check that email and password still can login
+    // Check that email and password still can login
     MailUtility mail = new MailUtility();
     emailAuthenticated = (await mail.getImapClient(
         username, password)); //Replace with config read for credentials
@@ -43,6 +44,7 @@ void main() async {
   // Cache emails
   if (emailAuthenticated) {
     await CacheService.updateMail();
+    BackgroundService.registerBackgroundUpdates();
   }
 
   if (Firebase.apps.length == 0) {
@@ -55,29 +57,28 @@ void main() async {
 
   ApplicationFunction? function;
   try {
-    receiveIntent.Intent? intent = await receiveIntent.ReceiveIntent
-        .getInitialIntent();
+    receiveIntent.Intent? intent =
+        await receiveIntent.ReceiveIntent.getInitialIntent();
     if (intent != null) {
       function = AssistantService.ParseIntent(intent!);
     }
-  }
-  catch(e) {
+  } catch (e) {
     print("ios does not support receive_intent pkg");
   }
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-        //showSemanticsDebugger: true,
-        title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
-        initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
-        onGenerateRoute: RouteGenerator.generateRoute,
-        home: buildScreen(emailAuthenticated, function),
-        navigatorKey: navKey,
-      )
-  )
-  );
+    //showSemanticsDebugger: true,
+    title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
+    initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
+    onGenerateRoute: RouteGenerator.generateRoute,
+    home: buildScreen(emailAuthenticated, function),
+    navigatorKey: navKey,
+  )));
 }
 
 Widget buildScreen(bool emailAuthenticated, ApplicationFunction? function) {
-  return emailAuthenticated == true ? MainWidget(function: function) : SignInWidget(function : function);
+  return emailAuthenticated == true
+      ? MainWidget(function: function)
+      : SignInWidget(function: function);
 }

@@ -4,6 +4,7 @@ import 'package:summer2022/models/MailResponse.dart';
 import 'mail_fetcher.dart';
 import 'mail_notifier.dart';
 import 'mailPiece_storage.dart';
+import 'notification_service.dart';
 
 /// The `CacheService` is the mechanism the application uses to ingest new
 /// pieces of mail. This should be configured to run on start-up and scheduled
@@ -19,27 +20,33 @@ class CacheService {
 
   static CacheService getInstance() {
     if (_instance == null) {
-      _instance = CacheService(
-          MailFetcher(), MailPieceStorage(), MailNotifier());
+      _instance =
+          CacheService(MailFetcher(), MailPieceStorage(), MailNotifier());
     }
     return _instance!;
   }
 
   /// Builds a default CacheService and uses it to fetch the latest mail.
-  static Future<void> updateMail() async {
-    await CacheService.getInstance()
-        .fetchAndProcessLatestMail();
+  static Future<void> updateMail({bool displayNotification = false}) async {
+    final numNotifications =
+        await CacheService.getInstance().fetchAndProcessLatestMail();
+
+    if (displayNotification && numNotifications > 0) {
+      final notificationService = NotificationService();
+      await notificationService.setup();
+      notificationService.displayNotificationForNewMailPieces(numNotifications);
+    }
   }
 
   /// Fetches mail since the last time a piece of mail was received, and then
   /// stores and processes that mail, making it available to the application and
   /// updating notifications.
-  Future<void> fetchAndProcessLatestMail() async {
+  Future<int> fetchAndProcessLatestMail() async {
     final lastTimestamp = await _storage.lastTimestamp;
     for (final piece in await _fetcher.fetchMail(lastTimestamp)) {
       await _storage.saveMailPiece(piece);
     }
-    await _notifier.updateNotifications(lastTimestamp);
+    return await _notifier.updateNotifications(lastTimestamp);
   }
 
   static Future<void> processUploadedMailPiece(MailResponse mail) async {
