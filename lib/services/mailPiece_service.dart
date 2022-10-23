@@ -4,7 +4,7 @@ import 'package:summer2022/exceptions/fetch_mail_exception.dart';
 import '../models/MailPiece.dart';
 import '../models/MailSearchParameters.dart';
 
-class MailService {
+class MailPieceService {
   /// Retrieves all mail from local cache that matches [searchArgs.keyword] and is within [searchArgs.startDate] and [searchArgs.endDate]
   /// [searchArgs.startDate] and [searchArgs.endDate] should either both have values or both be null
   /// throws a [FetchMailException] error if retrieval, parsing, or filtering fails
@@ -63,7 +63,8 @@ class MailService {
               DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
               row["sender"] as String,
               row["image_text"] as String,
-              row["midId"] as String))
+              row["scanImgCID"] as String,
+              row["uspsMID"] as String ))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());

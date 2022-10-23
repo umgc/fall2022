@@ -3,7 +3,7 @@ import 'package:summer2022/services/sqlite_database.dart';
 import '../models/MailPiece.dart';
 
 /// The `MailStorage` class saves a piece of mail to the database.
-class MailStorage {
+class MailPieceStorage {
   /// The latest timestamp associated with a stored piece of mail.
   /// This should be used to fetch new mail, ensuring mail received
   /// before this date is already stored and does not need to get fetched.
@@ -37,7 +37,8 @@ class MailStorage {
       "sender": piece.sender,
       "image_text": piece.imageText,
       "timestamp": piece.timestamp.millisecondsSinceEpoch,
-      "midId": piece.midId
+      "scanImgCID": piece.scanImgCID,
+      "uspsMID": piece.uspsMID
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);
@@ -59,7 +60,8 @@ class MailStorage {
         DateTime.fromMillisecondsSinceEpoch(result[0]["timestamp"] as int),
         result[0]["sender"]?.toString() ?? "",
         result[0]["image_text"]?.toString() ?? "",
-        result[0]["midId"]?.toString() ?? "");
+        result[0]["scanImgCID"]?.toString() ?? "",
+        result[0]["uspsMID"]?.toString() ?? "" );
   }
 
   /// Updates a single mail piece that matches the provided id
@@ -72,7 +74,8 @@ class MailStorage {
       'timestamp': updated.timestamp.millisecondsSinceEpoch,
       'sender': updated.sender,
       'image_text': updated.imageText,
-      'midId': updated.midId
+      'scanImgCID': updated.scanImgCID,
+      'uspsMID': updated.uspsMID
     };
     final result = await db.update(MAIL_PIECE_TABLE, updatedValues,
         where: "id = ?", whereArgs: [id]);
@@ -109,7 +112,8 @@ class MailStorage {
             DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
             row["sender"]?.toString() ?? "",
             row["image_text"]?.toString() ?? "",
-            row["midId"]?.toString() ?? ""))
+            row["scanImgCID"]?.toString() ?? "",
+            row["uspsMID"]?.toString() ?? "" ))
         .toList();
   }
 }

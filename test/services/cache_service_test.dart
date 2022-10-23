@@ -6,12 +6,12 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:summer2022/services/mail_notifier.dart';
-import 'package:summer2022/services/mail_storage.dart';
+import 'package:summer2022/services/mailPiece_storage.dart';
 
 @GenerateNiceMocks([
   MockSpec<MailFetcher>(),
   MockSpec<MailNotifier>(),
-  MockSpec<MailStorage>()
+  MockSpec<MailPieceStorage>()
 ])
 
 import 'cache_service_test.mocks.dart';
@@ -27,9 +27,9 @@ void main() {
 
   test('it processes mail', () async {
     final mailPieces = [
-      MailPiece("1", "test-1", now, "test", "some text", "test"),
-      MailPiece("2", "test-2", now, "test", "some text", "test"),
-      MailPiece("3", "test-3", now, "test", "some text", "test"),
+      MailPiece("1", "test-1", now, "test", "some text", "test", "test"),
+      MailPiece("2", "test-2", now, "test", "some text", "test", "test"),
+      MailPiece("3", "test-3", now, "test", "some text", "test", "test"),
     ];
 
     when(fetcher.fetchMail(any)).thenAnswer((_) => Future.value(mailPieces));

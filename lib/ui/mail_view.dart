@@ -7,13 +7,13 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import '../models/MailSearchParameters.dart';
-import '../services/mail_service.dart';
+import '../services/mailPiece_service.dart';
 
 class MailViewWidget extends StatefulWidget {
 
   final MailSearchParameters query;
 
-  final MailService _mailService = MailService();
+  final MailPieceService _mailService = MailPieceService();
 
   MailViewWidget({required this.query});
 
@@ -31,13 +31,13 @@ class MailViewWidgetState extends State<MailViewWidget> {
         10,
             (index) => new MailPiece(
             "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
-            ""),
+            "", ""),
         growable: true
     );
 
     MailPiece m = new MailPiece(
         "id", "emailId", DateTime(2022, 10, 3), "sender",
-        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'");
+        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'", "");
 
     _mailPieces.add(m);
 
