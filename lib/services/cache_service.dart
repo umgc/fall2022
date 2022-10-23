@@ -52,7 +52,7 @@ class CacheService {
         ? mail.textAnnotations.first.text ?? ""
         : "";
     final piece = MailPiece(id, "", timestamp, sender, text, "", "");
-    await MailStorage().saveMailPiece(piece);
+    await MailPieceStorage().saveMailPiece(piece);
 
   }
 
