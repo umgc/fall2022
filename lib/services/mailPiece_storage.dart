@@ -3,7 +3,7 @@ import 'package:summer2022/services/sqlite_database.dart';
 import '../models/MailPiece.dart';
 
 /// The `MailStorage` class saves a piece of mail to the database.
-class MailStorage {
+class MailPieceStorage {
   /// The latest timestamp associated with a stored piece of mail.
   /// This should be used to fetch new mail, ensuring mail received
   /// before this date is already stored and does not need to get fetched.
