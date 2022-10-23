@@ -350,7 +350,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
-
       floatingActionButton: Visibility(
         visible: showHomeButton,
         child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -364,9 +363,10 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       body: SingleChildScrollView(
         child: Container(
           alignment: Alignment.topCenter,
-          margin: EdgeInsets.all(10.0),
+          margin: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
+          //padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Center(
-            widthFactor: .975,
+            widthFactor: .85,
             child: Column(children: [
               Text(
                 'SENT BY: ${widget.mailPiece.sender}\n',
@@ -401,11 +401,70 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                         ),
                         Row(
                           children:[
-                            Text('RELEVANT TEXT: \n', /*+ widget.mailPiece.imageText,*/
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color.fromRGBO(51, 51, 102, 1.0))),
+                            Container(
+                              width: MediaQuery.of(context).size.width/1.15,
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: new BorderRadius.circular(16.0),
+                                  color: _buttonColor),
+                              child: Column(children: [
+                                Text(
+                                  'Do more with your mail\n',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.white),
+                                ),
+                                Visibility(
+                                  visible: hasLearnMore,
+                                  child:
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      if (await canLaunchUrl(learnMoreLinkUrl)) {
+                                        await launchUrl(learnMoreLinkUrl!);
+                                      } else {
+                                        throw 'Could not launch $learnMoreLinkUrl';
+                                      }
+                                    },
+                                    icon: Icon(Icons.language, size: 40.0),
+                                    label: Text('Learn More'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      textStyle : const TextStyle(
+                                        fontSize: 25.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TextButton.icon(
+                                  onPressed: () async {
+                                    if (await canLaunchUrl(reminderLinkUrl)) {
+                                      await launchUrl(reminderLinkUrl!);
+                                    } else {
+                                      throw 'Could not launch $reminderLinkUrl';
+                                    }
+                                  },
+                                  icon: Icon(Icons.calendar_month, size: 40.0),
+                                  label: Text('Set a Reminder'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    textStyle : const TextStyle(
+                                      fontSize: 25.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+
+                                //it doesn't seem like the html works correctly,
+                                //ScottH could never get it to to display and be able to launch links
+                                Html(
+                                  data: reminderLinkHtml,
+                                ),
+                              ]),
+                            )
                           ]
                         ),
                         Row(
@@ -420,73 +479,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                         ),
                       ]),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: new BorderRadius.circular(16.0),
-                    color: _buttonColor),
-                child: Column(children: [
-
-                  Text(
-                    'Do more with your mail\n',
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        color: Colors.white),
-                  ),
-
-                  Visibility(
-                    visible: hasLearnMore,
-                    child:
-                    TextButton.icon(
-                      onPressed: () async {
-                        if (await canLaunchUrl(learnMoreLinkUrl)) {
-                          await launchUrl(learnMoreLinkUrl!);
-                        } else {
-                          throw 'Could not launch $learnMoreLinkUrl';
-                        }
-                      },
-                      icon: Icon(Icons.language, size: 40.0),
-                      label: Text('Learn More'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        textStyle : const TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  TextButton.icon(
-                    onPressed: () async {
-                      if (await canLaunchUrl(reminderLinkUrl)) {
-                        await launchUrl(reminderLinkUrl!);
-                      } else {
-                        throw 'Could not launch $reminderLinkUrl';
-                      }
-                    },
-                    icon: Icon(Icons.calendar_month, size: 40.0),
-                    label: Text('Set a Reminder'),
-                    style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        textStyle : const TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  //it doesn't seem like the html works correctly,
-                  //ScottH could never get it to to display and be able to launch links
-                  Html(
-                    data: reminderLinkHtml,
-                  ),
-
-                ]),
               ),
             ]),
           ),
