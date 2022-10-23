@@ -330,6 +330,4 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
       ),
     );
   }
-
-
 }

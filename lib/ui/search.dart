@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/SearchCriteria.dart';
-import 'package:summer2022/services/mail_service.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
