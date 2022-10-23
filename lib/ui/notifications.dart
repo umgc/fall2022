@@ -5,13 +5,15 @@ import 'package:summer2022/services/mail_notifier.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/MailPiece.dart';
+import '../models/ApplicationFunction.dart';
 import '../services/mailPiece_storage.dart';
 import 'assistant_state.dart';
 import 'bottom_app_bar.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 
 class NotificationsWidget extends StatefulWidget {
-  const NotificationsWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const NotificationsWidget({Key? key, this.function}) : super(key: key);
   @override
   NotificationsWidgetState createState() => NotificationsWidgetState();
 }
@@ -37,8 +39,16 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
 
     this.fetch();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
+
     setState(() {});
 
+  }
+
+  void checkPassedInFunction() {
+    if (this.widget.function != null) {
+      processFunction(widget.function!);
+    }
   }
 
   Future<MailPiece> getMailPiece(String mailPieceId) async {
@@ -59,6 +69,15 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   void dispose() {
     _keywordController.dispose();
     super.dispose();
+  }
+
+  Future<void> processFunction(ApplicationFunction function) async {
+    if (function.methodName == "addKeyword") {
+      addSubscription(function.parameters![0]);
+    }
+    else {
+      await super.processFunction(function);
+    }
   }
 
   Future<void> updateSubscriptionList() async {

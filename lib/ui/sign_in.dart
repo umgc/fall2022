@@ -55,7 +55,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function)
+  Future<void> processFunction(ApplicationFunction function) async
   {
     showDialog(
       context: context,

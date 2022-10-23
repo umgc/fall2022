@@ -60,7 +60,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function) {
+  Future<void> processFunction(ApplicationFunction function) async {
     if (function.methodName == "performSearch") {
       if (function.parameters!.isNotEmpty) {
         final filters = SearchCriteria.withList(function.parameters!);
@@ -72,7 +72,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
         Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
       }
     } else {
-      super.processFunction(function);
+      await super.processFunction(function);
     }
   }
 

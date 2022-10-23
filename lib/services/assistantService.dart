@@ -11,7 +11,7 @@ class AssistantService
           String query = intent.extra!["name"];
           if (query == "Digest")
           {
-            return ApplicationFunction(methodName: "navigateTo", parameters: <String>["/digest_mail"]);
+            return ApplicationFunction(methodName: "digest");
           }
           else if (query.isNotEmpty)
           {

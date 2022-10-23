@@ -3,6 +3,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/models/Digest.dart';
@@ -43,6 +44,13 @@ class MailWidgetState extends AssistantState<MailWidget> {
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
       side: BorderSide(width: commonBorderWidth, color: Colors.black),
     );
+  }
+
+  @override
+  Future<void> processFunction(ApplicationFunction function) async{
+    if (function.methodName != "digest") {
+      await super.processFunction(function);
+    }
   }
 
   @override
