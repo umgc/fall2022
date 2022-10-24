@@ -12,8 +12,8 @@ void main() async {
   DateTime today = new DateTime(now.year, now.month, now.day);
 
   var mailPieces = <MailPiece>[
-    new MailPiece("", "", today, "sender", "test", ""),
-    new MailPiece("", "", today, "empty", "empty", "")
+    new MailPiece("", "", today, "sender", "test", "", ""),
+    new MailPiece("", "", today, "empty", "empty", "", "")
   ];
 
   setUpAll(() async {
@@ -35,7 +35,8 @@ void main() async {
           "sender": mail.sender,
           "image_text": mail.imageText,
           "timestamp": mail.timestamp.millisecondsSinceEpoch,
-          "midId": mail.midId
+          "scanImgCID": mail.scanImgCID,
+          "uspsMID": mail.uspsMID,
         });
       }
 

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Summer2022</string>
+	<string>MailSpeak</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,13 +15,24 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>summer2022</string>
+	<string>fall2022</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -31,6 +42,12 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Looking for local tcp Bonjour service</string>
+    <key>NSBonjourServices</key>
+    <array>
+    	<string>_dartobservatory._tcp</string>
+    </array>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access to take pictures</string>
 	<key>NSMicrophoneUsageDescription</key>

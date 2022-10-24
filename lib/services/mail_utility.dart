@@ -1,3 +1,6 @@
+import 'package:summer2022/email_processing/gmail_api_service.dart';
+import 'package:summer2022/utility/user_auth_service.dart';
+
 import '../exceptions/fetch_mail_exception.dart';
 import 'package:enough_mail/enough_mail.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +13,9 @@ class MailUtility {
   /// Retrieve emails based on a start date, sender filter, and subject filter
   Future<List<MimeMessage>> getEmailsSince(
       DateTime date, String senderFilter, String subjectFilter) async {
+    if (await UserAuthService().isSignedIntoGoogle) {
+      return await fetchMailFromGoogle(date, senderFilter, subjectFilter);
+    }
     //call the username/password out of keychain only when needed, no need to pass in
     String _username = await Keychain().getUsername();
     String _password = await Keychain().getPassword();
@@ -145,4 +151,22 @@ class MailUtility {
     return format.format(date);
   }
 
+  Future<List<MimeMessage>> fetchMailFromGoogle(
+      DateTime startDate, String senderFilter, String subjectFilter) async {
+    //https://developers.google.com/gmail/api/reference/rest/v1/users.messages/list
+    // use same query format as gmail search bar
+    // must allow for at least a day buffer if searching for specific date (limitation of the gmail api)
+    final dateFormatter = DateFormat('yyyy/MM/dd');
+    String after =
+        dateFormatter.format(startDate.subtract(const Duration(days: 1)));
+    String before =
+        dateFormatter.format(startDate.add(const Duration(days: 2)));
+    Map<String, String> queryDict = {
+      'from:': senderFilter,
+      'subject:': subjectFilter,
+      'after:': after,
+      'before:': before
+    };
+    return GmailApiService().fetchMail(queryDict);
+  }
 }

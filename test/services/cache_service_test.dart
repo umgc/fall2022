@@ -26,9 +26,9 @@ void main() {
 
   test('it processes mail', () async {
     final mailPieces = [
-      MailPiece("1", "test-1", now, "test", "some text", "test"),
-      MailPiece("2", "test-2", now, "test", "some text", "test"),
-      MailPiece("3", "test-3", now, "test", "some text", "test"),
+      MailPiece("1", "test-1", now, "test", "some text", "test", "test"),
+      MailPiece("2", "test-2", now, "test", "some text", "test", "test"),
+      MailPiece("3", "test-3", now, "test", "some text", "test", "test"),
     ];
 
     when(fetcher.fetchMail(any)).thenAnswer((_) => Future.value(mailPieces));

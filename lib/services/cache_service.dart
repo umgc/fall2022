@@ -58,8 +58,9 @@ class CacheService {
     final text = mail.textAnnotations.isNotEmpty
         ? mail.textAnnotations.first.text ?? ""
         : "";
-    final piece = MailPiece(id, "", timestamp, sender, text, "");
+    final piece = MailPiece(id, "", timestamp, sender, text, "", "");
     await MailPieceStorage().saveMailPiece(piece);
+
   }
 
   static Future<void> clearEverything() async {

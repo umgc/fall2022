@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:receive_intent/receive_intent.dart' as receiveIntent;
-import '../models/ApplicationFunction.dart';
-import '../services/assistantService.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
+import 'package:summer2022/services/assistantService.dart';
 
 abstract class AssistantState<T extends StatefulWidget> extends State<T>
 {

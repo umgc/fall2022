@@ -3,8 +3,6 @@ import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/bases/chat_bot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
-import '../models/SearchCriteria.dart';
-
 class ChatBotService implements ChatBot {
   // This list of functions should be available on all pages
   static const availableOnAllPages = <String>[
