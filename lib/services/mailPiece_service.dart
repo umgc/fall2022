@@ -60,13 +60,13 @@ class MailPieceService {
           : await db.query(MAIL_PIECE_TABLE, where: query);
       return result
           .map((row) => MailPiece(
-              row["id"] as String,
-              row["email_id"] as String,
+              row["id"]?.toString() ?? "",
+              row["email_id"]?.toString() ?? "",
               DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
-              row["sender"] as String,
-              row["image_text"] as String,
-              row["scanImgCID"] as String,
-              row["uspsMID"] as String))
+              row["sender"]?.toString() ?? "",
+              row["image_text"]?.toString() ?? "",
+              row["scanImgCID"]?.toString() ?? "",
+              row["uspsMID"]?.toString() ?? ""))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());
