@@ -62,15 +62,14 @@ class ChatBotService implements ChatBot {
     switch (command) {
       case "digest":
         // Perform navigate to digest function
-        // TODO: May need to be action that gets digest and navigates
-        result = ApplicationFunction(messages: <String>["Digest is currently unsupported from the chatbot."]);
+        result = ApplicationFunction(methodName: 'digest');
         usage.add("'digest': Navigates to Daily Digest Page");
         break;
       case "help":
         // Return list of available commands
         var commands = ChatFunctions[currentArea]?.toList().join(", ");
-        result =  ApplicationFunction(messages: <String>["Available commands on this page: ${commands!}. Note: If you need help with "
-            "a specific command, enter <command> help to view any extra command options." + commands!]);
+        result =  ApplicationFunction(messages: <String>["Available commands on this page: ${commands!}.", "Note: If you need help with "
+            "a specific command, enter '<command> help' to view any extra command options."]);
         usage.add("'help': Displays list of commands available");
         break;
       case "home":

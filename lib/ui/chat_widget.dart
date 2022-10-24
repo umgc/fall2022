@@ -15,6 +15,12 @@ import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:summer2022/services/mail_loader.dart';
 
+import '../email_processing/digest_email_parser.dart';
+import '../email_processing/other_mail_parser.dart';
+import '../models/Arguments.dart';
+import '../models/Digest.dart';
+import '../utility/Keychain.dart';
+
 class ChatWidget extends StatefulWidget {
   final SiteAreas currentPage;
   const ChatWidget({super.key, required this.currentPage});
@@ -27,9 +33,8 @@ class _ChatWidgetState extends State<ChatWidget> {
   final ChatBotService _chatBotService = ChatBotService();
   final _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
   final _system = const types.User(id: 'system', /* imageUrl: TODO: Add chatBot image */);
-  final FontWeight _commonFontWt = FontWeight.w700;
-  final double _commonFontSize = 30;
   final mailLoader = MailLoader();
+  final selectedDate = DateTime.now();
   List<types.Message> _messages = [];
 
   @override
@@ -111,6 +116,10 @@ class _ChatWidgetState extends State<ChatWidget> {
         _notifier.removeSubscription(subscription);
         _addSystemMessage("Notification for ${subscription.keyword} has been deleted.");
         break;
+      case 'digest':
+        _addSystemMessage("Fetching daily digest...");
+        _getDailyDigest(context);
+        break;
       case 'navigateTo':
         Navigator.pushNamed(context, chatFunction.parameters![0]);
         break;
@@ -134,5 +143,41 @@ class _ChatWidgetState extends State<ChatWidget> {
       text: input,
     );
     _addMessage(message);
+  }
+
+  void _getDailyDigest(BuildContext context) async {
+    await getDigest();
+    if (!digest.isNull()) {
+      Navigator.pushNamed(context, '/digest_mail',
+          arguments: MailWidgetArguments(digest));
+      _addSystemMessage("Digest successfully retrieved.");
+    } else {
+      _addSystemMessage("No items could be found.");
+    }
+  }
+
+  late Digest digest;
+  late List<Digest> emails;
+
+  Future<void> getDigest() async {
+    try {
+      await DigestEmailParser()
+          .createDigest(await Keychain().getUsername(),
+          await Keychain().getPassword())
+          .then((value) => digest = value);
+    } catch (e) {
+      _addSystemMessage("Error retrieving Daily Digest.");
+    }
+  }
+
+  Future<void> getEmails(bool isUnread, [DateTime? pickedDate]) async {
+    try {
+      await OtherMailParser()
+          .createEmailList(isUnread, await Keychain().getUsername(),
+          await Keychain().getPassword(), pickedDate ?? selectedDate)
+          .then((value) => emails = value);
+    } catch (e) {
+      _addSystemMessage("Error retrieving Daily Digest.");
+    }
   }
 }
