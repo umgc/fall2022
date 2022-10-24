@@ -7,11 +7,11 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
-import '../models/Digest.dart';
+import 'package:summer2022/models/Digest.dart';
 import 'package:html/parser.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/utility/linkwell.dart';
-import '../services/mail_fetcher.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;

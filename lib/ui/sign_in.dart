@@ -430,6 +430,16 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           child: Text("MailSpeak",
                             style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),)
                         ),*/
+
+                      // Text for Accessibility purpose
+                      Visibility(
+                          visible: false,
+                          maintainState: true,
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          maintainSemantics: true,
+                          child: Text("MailSpeak Application. Log in.")
+                      ),
                       Container(
                         alignment: Alignment.center,
                         child: Image.asset(
