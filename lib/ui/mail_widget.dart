@@ -292,6 +292,5 @@ class MailWidgetState extends AssistantState<MailWidget> {
       }
     }
     links = newLinks;
-
   }
 }

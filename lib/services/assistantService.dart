@@ -26,6 +26,13 @@ class AssistantService
             return ApplicationFunction(methodName: "addKeyword", parameters: <String>[query]);
           }
       }
+      else if (intent.action == "actions.intent.OPEN_APP_FEATURE") {
+          String query = intent.extra!["name"];
+          if (query.isNotEmpty)
+          {
+            return ApplicationFunction(methodName: "navigateTo", parameters: <String>['/notifications']);
+          }
+      }
 
       return null;
   }
