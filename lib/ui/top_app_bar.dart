@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:summer2022/utility/user_auth_service.dart';
+import 'package:summer2022/main.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final Size preferredSize;
-
+  
   TopBar(
       {Key? key, required this.title}): this.preferredSize= ((title == "Notifications") ? Size.fromHeight(100.0) : Size.fromHeight(50.0)), super(key:key);
 
@@ -27,62 +28,57 @@ class TopBarState extends State<TopBar> {
                   return [
                     PopupMenuItem<int>(
                       value: 0,
-                      child:
-                      Row(
-                          children: [
-                            Text("Settings"),
-                            Spacer(),
-                            Image.asset(
-                              "assets/icon/settings-icon.png", width: 30,
-                              height: 30,
-                              excludeFromSemantics: true,),
-                          ]),
+                      child: Row(children: [
+                        Text("Settings"),
+                        Spacer(),
+                        Image.asset("assets/icon/settings-icon.png",
+                            width: 30, height: 30, excludeFromSemantics: true,),
+                      ]),
                     ),
                     PopupMenuItem<int>(
                       value: 1,
-                      child:
-                      Row(children: [
+                      child: Row(children: [
                         Text("Logout"),
                         Spacer(),
-                        Image.asset("assets/icon/exit-icon.png", width: 30,
-                          height: 30,
-                          excludeFromSemantics: true,),
+                        Image.asset("assets/icon/exit-icon.png",
+                            width: 30, height: 30, excludeFromSemantics: true,),
                       ]),
                     ),
                   ];
                 },
-                onSelected:
-                    (value) {
+                onSelected: (value) async {
                   if (value == 0) {
                     Navigator.pushNamed(context, '/settings');
                   } else if (value == 1) {
                     /**
-                     * Clears navigation stack, which will prevent redirecting to previous page with back gesture
-                     * **/
+                       * Clears navigation stack, which will prevent redirecting to previous page with back gesture
+                       * **/
+                    bool isSignedGoogle =
+                        await UserAuthService().isSignedIntoGoogle;
+                    if (isSignedGoogle) {
+                      await UserAuthService().signOut();
+                    }
                     Navigator.pushNamedAndRemoveUntil(
                         context, '/sign_in', (Route<dynamic> route) => false);
                   }
-                }
-            ))
+                }))
       ],
       leading:
-      (this.widget.title != "Main Menu" && this.widget.title != "Sign In") ?
-      (Semantics(
-        sortKey: OrdinalSortKey(2),
-        excludeSemantics: true,
-        button: true,
-        label: "Back",
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child:
-        IconButton(
-            icon: new Image.asset(
-                "assets/icon/back-icon.png", width: 30, height: 30),
-            onPressed: () => Navigator.pop(context)
-        ),
-      )
-      ) : null,
+          (this.widget.title != "Main Menu" && this.widget.title != "Sign In")
+              ? (Semantics(
+                  sortKey: OrdinalSortKey(2),
+                  excludeSemantics: true,
+                  button: true,
+                  label: "Back",
+                  onTap: () {
+                    navKey.currentState!.pushNamed('/main');
+                  },
+                  child: IconButton(
+                      icon: new Image.asset("assets/icon/back-icon.png",
+                          width: 30, height: 30),
+                      onPressed: () => Navigator.pop(context)),
+                ))
+              : null,
       centerTitle: true,
       title: Semantics(
         sortKey: OrdinalSortKey(1),
@@ -93,15 +89,10 @@ class TopBarState extends State<TopBar> {
       ),
       automaticallyImplyLeading: false,
       backgroundColor: Color.fromRGBO(51, 51, 102, 1),
-      bottom:
-      (this.widget.title == "Notifications") ?
-      (const TabBar(
-          tabs: <Widget>[
-            Tab(text: "Notifications"),
-            Tab(text: "Manage")
-          ]
-      )
-      ) : null,
+      bottom: (this.widget.title == "Notifications")
+          ? (const TabBar(
+              tabs: <Widget>[Tab(text: "Notifications"), Tab(text: "Manage")]))
+          : null,
     );
   }
 }

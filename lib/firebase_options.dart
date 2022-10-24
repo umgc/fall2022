@@ -18,8 +18,8 @@ class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for windows - '
-            'you can reconfigure this by running the FlutterFire CLI again.',
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
       );
     }
     switch (defaultTargetPlatform) {
@@ -29,8 +29,8 @@ class DefaultFirebaseOptions {
         return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
         throw UnsupportedError(
@@ -59,34 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDYZCRwouCzacVzbxF5qVasIN4jVQU7cr4',
-    appId: '1:872576625259:ios:aafd44597e5e92c97f1f2e',
+    appId: '1:872576625259:ios:4d620245ac4775dd7f1f2e',
     messagingSenderId: '872576625259',
     projectId: 'swen670-b197f',
     storageBucket: 'swen670-b197f.appspot.com',
-    iosClientId: '872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com',
-    iosBundleId: 'com.example.summer2022',
+    androidClientId: '872576625259-9tvmkki1cm62g55ec4ch29d9r949bftt.apps.googleusercontent.com',
+    iosClientId: '872576625259-fk23dbk9p1vgn414dbvfc46416dskfi3.apps.googleusercontent.com',
+    iosBundleId: 'com.example.fall2022',
   );
-
-  /*
-    static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBA7mKhpBPlAX0f6Uk8VVtHFVxnElR62Ek',
-    appId: '1:872576625259:web:12ce406f12f7ffa77f1f2e',
-    messagingSenderId: '872576625259',
-    projectId: 'swen670-b197f',
-    authDomain: 'swen670-b197f.firebaseapp.com',
-    storageBucket: 'swen670-b197f.appspot.com',
-    measurementId: 'G-EHPVPHQZZQ',
-    );
-
-    static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDYZCRwouCzacVzbxF5qVasIN4jVQU7cr4',
-    appId: '1:872576625259:ios:aafd44597e5e92c97f1f2e',
-    messagingSenderId: '872576625259',
-    projectId: 'swen670-b197f',
-    storageBucket: 'swen670-b197f.appspot.com',
-    iosClientId: '872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c.apps.googleusercontent.com',
-    iosBundleId: 'com.example.summer2022',
-  );*/
 }
-
-
