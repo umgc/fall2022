@@ -62,8 +62,6 @@ class ChatBotService implements ChatBot {
     switch (command) {
       case "digest":
         // Perform navigate to digest function
-        // TODO: May need to be action that gets digest and navigates
-        //result = ApplicationFunction(messages: <String>["Digest is currently unsupported from the chatbot."]);
         result = ApplicationFunction(methodName: 'digest');
         usage.add("'digest': Navigates to Daily Digest Page");
         break;
