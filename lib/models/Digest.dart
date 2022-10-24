@@ -1,11 +1,13 @@
 import 'package:enough_mail/enough_mail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:summer2022/models/MailResponse.dart';
+import 'package:summer2022/models/MailPiece.dart';
 
 class Digest {
   MimeMessage message = MimeMessage();
   List<Attachment> attachments = [];
   List<Link> links = [];
+  List<MailPiece> mailPieces = [];
 
   Digest([MimeMessage? m]) {
     if(m != null) {

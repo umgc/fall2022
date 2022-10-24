@@ -10,6 +10,7 @@ import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class NotificationsWidget extends StatefulWidget {
   final ApplicationFunction? function;
@@ -217,7 +218,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                         //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
                                       ),
                                       onPressed: () async {
-                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: await getMailPiece(item.mailPieceId));
+                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(await getMailPiece(item.mailPieceId)));
                                       },
                                   ),
                                   Spacer(),
