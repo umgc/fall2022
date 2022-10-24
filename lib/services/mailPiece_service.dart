@@ -37,11 +37,13 @@ class MailPieceService {
   /// Any empty or null query returns all mail pieces.
   Future<List<MailPiece>> searchMailPieces(searchArgs) async {
     List<String> queryList = [];
-    if (searchArgs.keyword != null) {
-      queryList.add("(image_text LIKE '%${searchArgs.keyword}%' OR sender LIKE '%${searchArgs.keyword}%')");
-    }
-    else if(searchArgs.senderKeyword != null || searchArgs.mailBodyKeyword != null){
-      queryList.add("(image_text LIKE '%${searchArgs.mailBodyKeyword ?? ""}%' AND sender LIKE '%${searchArgs.senderKeyword ?? ""}%')");
+    if (!searchArgs.keyword.toString().isEmpty) {
+      queryList.add(
+          "(image_text LIKE '%${searchArgs.keyword}%' OR sender LIKE '%${searchArgs.keyword}%')");
+    } else if (searchArgs.senderKeyword != null ||
+        searchArgs.mailBodyKeyword != null) {
+      queryList.add(
+          "(image_text LIKE '%${searchArgs.mailBodyKeyword ?? ""}%' AND sender LIKE '%${searchArgs.senderKeyword ?? ""}%')");
     }
     if (searchArgs.startDate != null && searchArgs.endDate != null) {
       DateTime start = searchArgs.startDate;
