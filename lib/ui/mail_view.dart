@@ -1,13 +1,12 @@
 import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
-import '../models/MailSearchParameters.dart';
-import '../services/mailPiece_service.dart';
+import 'package:summer2022/models/MailSearchParameters.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
 
 class MailViewWidget extends StatefulWidget {
 

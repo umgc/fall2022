@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:summer2022/utility/user_auth_service.dart';
-import '../main.dart';
+import 'package:summer2022/main.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
-  final Size preferredSize = Size.fromHeight(50.0);
+  final Size preferredSize;
 
-  TopBar({Key? key, required this.title}) : super(key: key);
+  TopBar(
+      {Key? key, required this.title}): this.preferredSize= ((title == "Notifications") ? Size.fromHeight(100.0) : Size.fromHeight(50.0)), super(key:key);
 
   @override
   TopBarState createState() => TopBarState();
@@ -18,9 +20,7 @@ class TopBarState extends State<TopBar> {
     return AppBar(
       actions: [
         Semantics(
-            label: "Show Menu",
-            button: true,
-            excludeSemantics: true,
+            sortKey: OrdinalSortKey(3),
             child: PopupMenuButton(
                 position: PopupMenuPosition.under,
                 icon: Icon(Icons.menu_outlined),
@@ -32,7 +32,7 @@ class TopBarState extends State<TopBar> {
                         Text("Settings"),
                         Spacer(),
                         Image.asset("assets/icon/settings-icon.png",
-                            width: 30, height: 30),
+                            width: 30, height: 30, excludeFromSemantics: true),
                       ]),
                     ),
                     PopupMenuItem<int>(
@@ -41,7 +41,7 @@ class TopBarState extends State<TopBar> {
                         Text("Logout"),
                         Spacer(),
                         Image.asset("assets/icon/exit-icon.png",
-                            width: 30, height: 30),
+                            width: 30, height: 30, excludeFromSemantics: true),
                       ]),
                     ),
                   ];
@@ -66,6 +66,7 @@ class TopBarState extends State<TopBar> {
       leading:
           (this.widget.title != "Main Menu" && this.widget.title != "Sign In")
               ? (Semantics(
+                  sortKey: OrdinalSortKey(2),
                   excludeSemantics: true,
                   button: true,
                   label: "Back",
@@ -79,9 +80,12 @@ class TopBarState extends State<TopBar> {
                 ))
               : null,
       centerTitle: true,
-      title: Text(
-        "${this.widget.title}",
-        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+      title: Semantics(
+        sortKey: OrdinalSortKey(1),
+        child:
+        Text("${this.widget.title}", style:
+        TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+        ),
       ),
       automaticallyImplyLeading: false,
       backgroundColor: Color.fromRGBO(51, 51, 102, 1),

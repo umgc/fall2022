@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/main.dart';
@@ -11,8 +10,7 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
-
-import 'assistant_state.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 
 class MailWidget extends StatefulWidget {
   final Digest digest;

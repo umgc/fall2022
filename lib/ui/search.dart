@@ -8,12 +8,10 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-import '../models/ApplicationFunction.dart';
-import '../models/SearchCriteria.dart';
-import '../services/mailPiece_service.dart';
-import 'assistant_state.dart';
-import '../services/mailPiece_storage.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
+import 'package:summer2022/models/SearchCriteria.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
 class SearchWidget extends StatefulWidget {
@@ -274,7 +272,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                   child: Semantics(
                       excludeSemantics: true,
                       textField: true,
-                      label: "Keyword",
+                      label: "Sender Keyword",
                       hint: "Enter sender to search",
                       child: Padding(
                           padding: EdgeInsets.all(10),
@@ -319,7 +317,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                   child: Semantics(
                       excludeSemantics: true,
                       textField: true,
-                      label: "Keyword",
+                      label: "In-Text Keyword",
                       hint: "Enter text to search",
                       child: Padding(
                           padding: EdgeInsets.all(10),
@@ -361,11 +359,15 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
             new InkWell(
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: new Text(
+                    child: Semantics(
+                      explicitChildNodes: true,
+                      label: "${_advancedText}",
+                      child:new Text(
                     _advancedText,
                     style: TextStyle(
                         fontWeight: _commonFontWeight,
                         decoration: TextDecoration.underline),
+                      ),
                   ),
                 ),
                 onTap: () {
@@ -374,7 +376,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                     _advancedText =
                         _isAdvanced ? "Standard Search" : "Advanced Search";
                   });
-                  print("isAdvanced: " + _isAdvanced.toString());
                 }),
             Row(children: [
               Expanded(

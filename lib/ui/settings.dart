@@ -1,18 +1,13 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
-import 'package:summer2022/main.dart';
 import 'package:summer2022/services/cache_service.dart';
-import 'package:summer2022/services/mail_notifier.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
-import 'package:summer2022/ui/sign_in.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/locator.dart';
-
-import 'assistant_state.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 
 
 class SettingsWidget extends StatefulWidget {
