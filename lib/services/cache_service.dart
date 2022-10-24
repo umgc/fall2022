@@ -1,9 +1,8 @@
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/models/MailResponse.dart';
-
-import 'mail_fetcher.dart';
-import 'mail_notifier.dart';
-import 'mailPiece_storage.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
+import 'package:summer2022/services/mail_notifier.dart';
+import 'package:summer2022/services/mailPiece_storage.dart';
 
 /// The `CacheService` is the mechanism the application uses to ingest new
 /// pieces of mail. This should be configured to run on start-up and scheduled
