@@ -10,10 +10,12 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import '../models/Digest.dart';
 import 'package:html/parser.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:summer2022/utility/linkwell.dart';
 import '../services/mail_fetcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
+
 
   const MailPieceViewWidget({Key? key, required this.mailPiece})
       : super(key: key);
@@ -33,9 +35,20 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
   late Digest digest;
   late Image? mailImage = null;
+
+  late String mailPieceId = '';
+  late String originalText = widget.mailPiece.imageText;
+  String mailPieceText = '';
+
   late bool hasLearnMore = false;
   late Uri learnMoreLinkUrl = Uri.parse("https://www.google.com");
   late Uri reminderLinkUrl = Uri.parse("https://www.google.com");
+
+
+  //these Html links really aren't used - delete eventually.  URL launcher works better
+  late String learnMoreLinkHtml = '';
+  late String reminderLinkHtml = '';
+
 
   MailPieceViewWidgetState();
 
@@ -43,6 +56,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   void initState() {
     super.initState();
     _getMailPieceEmail();
+    mailPieceText = _reformatMailPieceString(originalText);
   }
 
   Future<void> _getMailPieceEmail() async {
@@ -52,6 +66,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);
+
   }
 
   //sets state mailImage given the found email based on mailPiece
@@ -188,6 +203,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     } //end element(x) for loop
   } //end _getLinkHtmlFromEmail
 
+
+
+
   List<String> _getLinks(String x) {
     try {
       List<String> list = [];
@@ -223,6 +241,21 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     }
   } //end _getLinks
 
+  //Function to strip out all line feeds \n to make sure test would wrap, then add it back
+  //for shorter blocks such as address or title blocks - currently set to 50 characters.
+  //Future<String> _reformatMailPieceString(String x) async
+  _reformatMailPieceString(String x) {
+    final find = '\n';
+    final replaceWith = ' ';
+    final String original = x;
+    final originalSplit = x.split('\n');
+    for(int i=0; i< originalSplit.length; i++) {
+        if(originalSplit[i].length < 50)
+          originalSplit[i] += '\n';
+    };
+    return originalSplit.join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
@@ -238,8 +271,11 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
+          alignment: Alignment.topCenter,
+          margin: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
+          //padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Center(
+            widthFactor: .85,
             child: Column(children: [
               Text(
                 'SENT BY: ${widget.mailPiece.sender}\n',
@@ -250,84 +286,102 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
               ),
               mailImage ?? Text("No Photo Loaded"), //load link to photo
               Container(
-                padding: EdgeInsets.all(15),
+                margin: EdgeInsets.all(15),
                 child: Align(
-                  alignment: Alignment.topLeft,
+                  alignment: Alignment.topCenter,
                   child: Wrap(
                       direction: Axis.vertical,
                       alignment: WrapAlignment.start,
                       spacing: 15,
                       children: [
-                        Text(
-                            'RECEIVED: ' +
-                                DateFormat('yyyy/MM/dd')
-                                    .format(widget.mailPiece.timestamp) +
-                                ' ' +
-                                DateFormat('EEE hh:mm a')
-                                    .format(widget.mailPiece.timestamp),
-                            style: TextStyle(fontSize: 15)),
-                        Text('RELEVANT TEXT: \n' + widget.mailPiece.imageText,
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Color.fromRGBO(51, 51, 102, 1.0))),
+                        Row(
+                          children:[
+                                Text(
+                                'RECEIVED: ',
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, )),
+                                Text(
+                                    DateFormat('yyyy/MM/dd')
+                                        .format(widget.mailPiece.timestamp) +
+                                    ' ' +
+                                    DateFormat('EEE hh:mm a')
+                                        .format(widget.mailPiece.timestamp),
+                                style: TextStyle(fontSize: 15)),
+                              ],
+                        ),
+                        Row(
+                          children:[
+                            Container(
+                              width: MediaQuery.of(context).size.width/1.15,
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: new BorderRadius.circular(16.0),
+                                  color: _buttonColor),
+                              child: Column(children: [
+                                Text(
+                                  'Do more with your mail\n',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.white),
+                                ),
+                                Visibility(
+                                  visible: hasLearnMore,
+                                  child:
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      if (await canLaunchUrl(learnMoreLinkUrl)) {
+                                        await launchUrl(learnMoreLinkUrl!);
+                                      } else {
+                                        throw 'Could not launch $learnMoreLinkUrl';
+                                      }
+                                    },
+                                    icon: Icon(Icons.language, size: 40.0),
+                                    label: Text('Learn More'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      textStyle : const TextStyle(
+                                        fontSize: 25.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TextButton.icon(
+                                  onPressed: () async {
+                                    if (await canLaunchUrl(reminderLinkUrl)) {
+                                      await launchUrl(reminderLinkUrl!);
+                                    } else {
+                                      throw 'Could not launch $reminderLinkUrl';
+                                    }
+                                  },
+                                  icon: Icon(Icons.calendar_month, size: 40.0),
+                                  label: Text('Set a Reminder'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    textStyle : const TextStyle(
+                                      fontSize: 25.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            )
+                          ]
+                        ),
+                        Row(
+                            children:[
+                                  Container(
+                                    width: MediaQuery.of(context).size.width/1.15,
+                                    child: LinkWell(
+                                      mailPieceText,
+                                      style: TextStyle(color: Color.fromRGBO(51, 51, 102, 1.0), fontStyle: FontStyle.italic),),
+                                  )
+                                    ],
+                        ),
                       ]),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: new BorderRadius.circular(16.0),
-                    color: _buttonColor),
-                child: Column(children: [
-                  Text(
-                    'Do more with your mail\n',
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        color: Colors.white),
-                  ),
-                  Visibility(
-                    visible: hasLearnMore,
-                    child: TextButton.icon(
-                      onPressed: () async {
-                        if (await canLaunchUrl(learnMoreLinkUrl)) {
-                          await launchUrl(learnMoreLinkUrl!);
-                        } else {
-                          throw 'Could not launch $learnMoreLinkUrl';
-                        }
-                      },
-                      icon: Icon(Icons.language, size: 40.0),
-                      label: Text('Learn More'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        textStyle: const TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () async {
-                      if (await canLaunchUrl(reminderLinkUrl)) {
-                        await launchUrl(reminderLinkUrl!);
-                      } else {
-                        throw 'Could not launch $reminderLinkUrl';
-                      }
-                    },
-                    icon: Icon(Icons.calendar_month, size: 40.0),
-                    label: Text('Set a Reminder'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ]),
               ),
             ]),
           ),
