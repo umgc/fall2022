@@ -9,9 +9,8 @@ import 'package:summer2022/services/cache_service.dart';
 import 'package:summer2022/utility/user_auth_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../services/mail_utility.dart';
-import 'assistant_state.dart';
+import 'package:summer2022/services/mail_utility.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 
 /// Helper class to show a snackbar using the passed context.
 class ScaffoldSnackbar {
