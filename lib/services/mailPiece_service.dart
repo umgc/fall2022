@@ -66,7 +66,7 @@ class MailPieceService {
               row["sender"] as String,
               row["image_text"] as String,
               row["scanImgCID"] as String,
-              row["uspsMID"] as String ))
+              row["uspsMID"] as String))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());
