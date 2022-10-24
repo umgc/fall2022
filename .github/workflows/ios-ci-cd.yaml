@@ -43,6 +43,7 @@ jobs:
       - name: Run Unit Tests
         run: flutter test
       - name: Deploy iOS Beta to TestFlight via Fastlane
+        continue_on_error: true
         uses: maierj/fastlane-action@v1.4.0
         with:
           lane: closed_beta
