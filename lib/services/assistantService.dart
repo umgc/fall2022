@@ -6,7 +6,7 @@ class AssistantService
   static ApplicationFunction? ParseIntent(Intent intent)
   {
       // Try to get our action from the intent
-      if (intent.action == "actions.intent.action.GET_THING")
+      if (intent.action == "actions.intent.GET_THING")
       {
           String query = intent.extra!["name"];
           if (query == "Digest")
@@ -18,7 +18,7 @@ class AssistantService
             return ApplicationFunction(methodName: "performSearch", parameters: <String>[query]);
           }
       }
-      else if (intent.action == "actions.intent.action.CREATE_THING")
+      else if (intent.action == "actions.intent.CREATE_THING")
       {
           String query = intent.extra!["name"];
           if (query.isNotEmpty)
