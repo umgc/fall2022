@@ -1,5 +1,8 @@
+import 'package:googleapis/gmail/v1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:summer2022/models/MailResponse.dart';
+import 'package:summer2022/email_processing/gmail_api_service.dart';
+import 'package:summer2022/utility/user_auth_service.dart';
 import 'package:summer2022/services/mail_utility.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
@@ -31,11 +34,11 @@ class MailFetcher {
         try {
           debugPrint("Attempting to process email from " + email.decodeDate()!.toString());
           mailPieces.addAll(await _processEmail(email));
-        } catch(e) {
+        } catch (e) {
           print("Unable to process individual email.");
         }
       }
-    } catch(e) {
+    } catch (e) {
       print("Unable to retrieve email.");
     }
 
@@ -57,7 +60,6 @@ class MailFetcher {
     // Get attachments with metadata and convert them to MailPieces
     final mailPieceAttachments = await _getAttachments(email);
     for (final attachment in mailPieceAttachments) {
-
       MailPiece mp = await _processMailImage(email, attachment, email.decodeDate()!, mailPieces.length);
 
       mailPieces.add(mp);
@@ -69,38 +71,52 @@ class MailFetcher {
     return mailPieces;
   }
 
+  Attachment _grabImage(MimeData data) {
+    var attachment = Attachment()
+      ..contentID =
+          _getHeader(data, "Content-ID").replaceAll('<', '').replaceAll('>', '')
+      ..sender =
+          "Test Sender" //todo: pull from emailBodyHtml by parsing the HTML
+      ..attachment = data
+          .decodeMessageData()
+          .toString() //These are base64 encoded images with formatting
+      ..attachmentNoFormatting = data.decodeMessageData().toString().replaceAll(
+          "\r\n", ""); //These are base64 encoded images with formatting
+
+    return attachment;
+  }
+
   /// Retrieve a list of the mail image "attachments" with accompanying metadata
   Future<List<Attachment>> _getAttachments(MimeMessage email) async {
-    var mimeParts = email.mimeData!.parts!.first;
+    var mimeParts = email.mimeData!.parts!;
     List<Attachment> attachments = [];
 
-    if (mimeParts.parts != null) {
-      var emailHtml = mimeParts.parts!.first.toString(); //todo: this is the full email HTML for stripping out the possible sender and "do more with your mail" sections
+    for (var i = 0; i < mimeParts.length; i++) {
+      var mimeTopType = mimeParts[i].contentType!.mediaType.top;
 
-      //for each part in the email html, look for parts with image. this becomes an attachment.
-      for (final part in mimeParts.parts!) {
-        if (_isContentType(part, "image")) {
-
-          if ( !_getHeader(part, "Content-ID").contains("ra_") ) {
-              var attachment = Attachment();
-
-              attachment.contentID = _getHeader(part, "Content-ID")
-                  .replaceAll('<', '').replaceAll('>', '');
-              attachment.sender =
-              "Test Sender"; //todo: pull from emailBodyHtml by parsing the HTML
-
-              attachment.attachment = part.decodeMessageData()
-                  .toString(); //These are base64 encoded images with formatting
-
-              //The daily digest emails have base64 encoded images with formatting
-              //that needs to be removed for google vision to interpret
-              attachment.attachmentNoFormatting = attachment.attachment.toString()
-                  .replaceAll(
-              "\r\n", "");
-
-              attachments.add(attachment);
+      switch (mimeTopType) {
+        case MediaToptype.image:
+          //grab the image
+          attachments.add(_grabImage(mimeParts[i]));
+          break;
+        case MediaToptype.multipart:
+          // there might be more subparts
+          for (var j = 0; j < mimeParts[i].parts!.length; j++) {
+            var subPartTopType =
+                mimeParts[i].parts![j].contentType!.mediaType.top;
+            switch (subPartTopType) {
+              case MediaToptype.image:
+                attachments.add(_grabImage(mimeParts[i].parts![j]));
+                break;
+              default:
+                // only go two parts deep
+                break;
+            }
           }
-        }
+          break;
+        default:
+          // we only care about the image
+          break;
       }
     }
     return attachments;
@@ -108,13 +124,13 @@ class MailFetcher {
 
   /// Get particular header value from a MimeData part
   String _getHeader(MimeData part, String headerName) {
-    return part.headersList!.where((element) => element.name == headerName).first.value.toString();
+    return part.headersList!
+        .where((element) => element.name == headerName)
+        .first
+        .value
+        .toString();
   }
 
-  /// Check if MimeData part is of a specified content type
-  bool _isContentType(MimeData part, String contentType) {
-    return part.contentType?.value.toString().contains(contentType) ?? false;
-  }
 
   /// Process an individual mail image, converting it into a MailPiece
   Future<MailPiece> _processMailImage(MimeMessage email,

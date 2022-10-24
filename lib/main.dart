@@ -23,6 +23,9 @@ final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // needed to access Keychain prior to main finishing
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   GlobalConfiguration cfg = GlobalConfiguration();
   await setupLocator();
   await cfg.loadFromAsset("app_settings");
@@ -45,15 +48,8 @@ void main() async {
     await CacheService.updateMail();
   }
 
-  if (Firebase.apps.length == 0) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FirebaseAnalytics.instance
-        .setUserProperty(name: 'email_domain', value: emailDomain);
-  }
-
   ApplicationFunction? function;
+
   try {
     receiveIntent.Intent? intent = await receiveIntent.ReceiveIntent
         .getInitialIntent();
@@ -67,17 +63,17 @@ void main() async {
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-        //showSemanticsDebugger: true,
-        title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
-        initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
-        onGenerateRoute: RouteGenerator.generateRoute,
-        home: buildScreen(emailAuthenticated, function),
-        navigatorKey: navKey,
-      )
-  )
-  );
+    //showSemanticsDebugger: true,
+    title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
+    initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
+    onGenerateRoute: RouteGenerator.generateRoute,
+    home: buildScreen(emailAuthenticated, function),
+    navigatorKey: navKey,
+  )));
 }
 
 Widget buildScreen(bool emailAuthenticated, ApplicationFunction? function) {
-  return emailAuthenticated == true ? MainWidget(function: function) : SignInWidget(function : function);
+  return emailAuthenticated == true
+      ? MainWidget(function: function)
+      : SignInWidget(function: function);
 }
