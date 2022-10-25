@@ -8,9 +8,12 @@ class MailPiece {
   final String imageText;
   final String scanImgCID;
   final String uspsMID;
+  List<String>? links; // Links from QR code, barcodes etc..
+  List<String>? emailList;
+  List<String>? phoneNumbersList;
 
   MailPiece(this.id, this.emailId, this.timestamp, this.sender, this.imageText,
-      this.scanImgCID, this.uspsMID);
+      this.scanImgCID, this.uspsMID, [this.links, this.emailList, this.phoneNumbersList]);
 
   factory MailPiece.fromJson(dynamic json) {
     return MailPiece(
@@ -33,5 +36,8 @@ class MailPiece {
       other.sender == this.sender &&
       other.imageText == this.imageText &&
       other.scanImgCID == this.scanImgCID &&
-      other.uspsMID == this.uspsMID;
+      other.uspsMID == this.uspsMID &&
+      other.links == this.links &&
+      other.emailList == this.emailList &&
+      other.phoneNumbersList == this.phoneNumbersList;
 }
