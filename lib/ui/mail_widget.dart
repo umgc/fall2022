@@ -62,8 +62,6 @@ class MailWidgetState extends AssistantState<MailWidget> {
   @override
   initState() {
     super.initState();
-    var fetcher = new MailFetcher();
-
     if (widget.digest.attachments.isNotEmpty) {
       buildLinks();
     }
