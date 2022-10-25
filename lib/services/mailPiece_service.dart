@@ -35,17 +35,21 @@ class MailPieceService {
 
   /// Returns all mail pieces that match the provided query.
   /// Any empty or null query returns all mail pieces.
-  Future<List<MailPiece>> searchMailPieces(searchArgs) async {
+  Future<List<MailPiece>> searchMailPieces(
+      MailSearchParameters searchArgs) async {
     List<String> queryList = [];
-    if (searchArgs.keyword != null) {
-      queryList.add("(image_text LIKE '%${searchArgs.keyword}%' OR sender LIKE '%${searchArgs.keyword}%')");
-    }
-    else if(searchArgs.senderKeyword != null || searchArgs.mailBodyKeyword != null){
-      queryList.add("(image_text LIKE '%${searchArgs.mailBodyKeyword ?? ""}%' AND sender LIKE '%${searchArgs.senderKeyword ?? ""}%')");
+    if (searchArgs.keyword != null &&
+        searchArgs.keyword.toString().isNotEmpty) {
+      queryList.add(
+          "(image_text LIKE '%${searchArgs.keyword}%' OR sender LIKE '%${searchArgs.keyword}%')");
+    } else if (searchArgs.senderKeyword != null ||
+        searchArgs.mailBodyKeyword != null) {
+      queryList.add(
+          "(image_text LIKE '%${searchArgs.mailBodyKeyword ?? ""}%' AND sender LIKE '%${searchArgs.senderKeyword ?? ""}%')");
     }
     if (searchArgs.startDate != null && searchArgs.endDate != null) {
-      DateTime start = searchArgs.startDate;
-      DateTime end = searchArgs.endDate;
+      DateTime start = searchArgs.startDate!;
+      DateTime end = searchArgs.endDate!;
       queryList.add(
           "timestamp >= '${start.millisecondsSinceEpoch}' AND timestamp <= '${end.millisecondsSinceEpoch}'");
     }
@@ -58,13 +62,13 @@ class MailPieceService {
           : await db.query(MAIL_PIECE_TABLE, where: query);
       return result
           .map((row) => MailPiece(
-              row["id"] as String,
-              row["email_id"] as String,
+              row["id"]?.toString() ?? "",
+              row["email_id"]?.toString() ?? "",
               DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
-              row["sender"] as String,
-              row["image_text"] as String,
-              row["scanImgCID"] as String,
-              row["uspsMID"] as String ))
+              row["sender"]?.toString() ?? "",
+              row["image_text"]?.toString() ?? "",
+              row["scanImgCID"]?.toString() ?? "",
+              row["uspsMID"]?.toString() ?? ""))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());
