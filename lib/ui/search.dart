@@ -37,7 +37,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
   DateTime _start = DateTime.now();
   DateTime _end = DateTime.now();
-  String _keyword = "";
   String _advancedText = "Advanced Search";
   bool _isAdvanced = false;
   TextEditingController keywordInput = TextEditingController();
@@ -54,7 +53,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     // Update local variables
     _start = filters.startDate ?? _start;
     _end = filters.endDate ?? _end;
-    _keyword = filters.keyword;
   }
 
   @override
@@ -78,7 +76,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   Widget build(BuildContext context) {
     applyFilters();
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
-    keywordInput.text = _keyword;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
       floatingActionButton: Visibility(
