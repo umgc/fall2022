@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string
+        name="notification_short_label"
+        >Notification</string>
+    <string
+        name="notification_long_label"
+        >Notifications</string>
+</resources>

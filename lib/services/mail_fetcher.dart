@@ -32,7 +32,7 @@ class MailFetcher {
         try {
           debugPrint("Attempting to process email from " +
               email.decodeDate()!.toString());
-          mailPieces.addAll(await _processEmail(email));
+          mailPieces.addAll(await processEmail(email));
         } catch (e) {
           print("Unable to process individual email.");
         }
@@ -55,7 +55,7 @@ class MailFetcher {
   }
 
   /// Process an individual email, converting it into a list of MailPieces
-  Future<List<MailPiece>> _processEmail(MimeMessage email) async {
+  Future<List<MailPiece>> processEmail(MimeMessage email) async {
     List<MailPiece> mailPieces = <MailPiece>[];
 
     // Get attachments with metadata and convert them to MailPieces

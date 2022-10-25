@@ -1,5 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:global_configuration/global_configuration.dart';
+import 'package:summer2022/main.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
+import 'package:summer2022/models/MailPiece.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/models/Digest.dart';
@@ -8,6 +13,7 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:summer2022/ui/assistant_state.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class MailWidget extends StatefulWidget {
   final Digest digest;
@@ -39,6 +45,13 @@ class MailWidgetState extends AssistantState<MailWidget> {
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
       side: BorderSide(width: commonBorderWidth, color: Colors.black),
     );
+  }
+
+  @override
+  Future<void> processFunction(ApplicationFunction function) async{
+    if (function.methodName != "digest") {
+      await super.processFunction(function);
+    }
   }
 
   @override
@@ -154,7 +167,7 @@ class MailWidgetState extends AssistantState<MailWidget> {
                         height: commonButtonHeight, // UNREAD Button
                         child: OutlinedButton(
                           onPressed: () {
-                            //readMailPiece();
+                            Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(widget.digest.mailPieces[attachmentIndex], widget.digest));;
                           },
                           style: commonButtonStyleElevated(
                               Colors.white, Colors.grey),
@@ -277,17 +290,5 @@ class MailWidgetState extends AssistantState<MailWidget> {
       }
     }
     links = newLinks;
-
   }
-
-  // Future<void> readMailPiece() async {
-  //   try {
-  //     if (reader != null) {
-  //       await reader!.readDigestInfo();
-  //       //Future.wait([reader!.readDigestInfo()]);
-  //     }
-  //   } catch (e) {
-  //     debugPrint("ERROR: Read digest piece: ${e.toString()}");
-  //   }
-  // }
 }

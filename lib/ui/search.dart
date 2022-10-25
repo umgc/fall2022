@@ -13,6 +13,7 @@ import 'package:summer2022/models/SearchCriteria.dart';
 import 'package:summer2022/services/mailPiece_service.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -58,7 +59,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function) {
+  Future<void> processFunction(ApplicationFunction function) async {
     if (function.methodName == "performSearch") {
       if (function.parameters!.isNotEmpty) {
         final filters = SearchCriteria.withList(function.parameters!);
@@ -70,7 +71,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
         Navigator.pushNamed(context, '/mail_view', arguments: searchParams);
       }
     } else {
-      super.processFunction(function);
+      await super.processFunction(function);
     }
   }
 
@@ -242,7 +243,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                             onSuggestionSelected: (suggestion) {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
-                                  arguments: suggestion);
+                                  arguments: new MailPieceViewArguments(suggestion as MailPiece));
                             },
                             suggestionsCallback: (pattern) {
                               // Populate items from cache
@@ -286,7 +287,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                             onSuggestionSelected: (suggestion) {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
-                                  arguments: suggestion);
+                                  arguments: new MailPieceViewArguments(suggestion as MailPiece));
                             },
                             suggestionsCallback: (pattern) {
                               // Populate items from cache
@@ -331,7 +332,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                             onSuggestionSelected: (suggestion) {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
-                                  arguments: suggestion);
+                                  arguments: new MailPieceViewArguments(suggestion as MailPiece));
                             },
                             suggestionsCallback: (pattern) {
                               // Populate items from cache

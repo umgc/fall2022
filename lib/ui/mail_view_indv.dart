@@ -15,9 +15,9 @@ import 'package:summer2022/services/mail_fetcher.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
+  final Digest? digest;
 
-
-  const MailPieceViewWidget({Key? key, required this.mailPiece})
+  const MailPieceViewWidget({Key? key, required this.mailPiece, this.digest})
       : super(key: key);
 
   @override
@@ -60,13 +60,11 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   }
 
   Future<void> _getMailPieceEmail() async {
-
     MailFetcher mf1 = new MailFetcher();
-    digest = await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
+    digest = widget.digest ?? await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);
-
   }
 
   //sets state mailImage given the found email based on mailPiece
