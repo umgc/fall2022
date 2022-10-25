@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/services/mail_utility.dart';
+import '../models/Code.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
@@ -125,12 +126,24 @@ class MailFetcher {
     //todo: save list of Emails found on the ocrScanResult
     //todo: save list of Phone Numbers found on the ocrScanResult
 
+    List<CodeObject> codeObj = ocrScanResult.codes;
+    var links = <String>[];
+
+    for (int i = 0; i < codeObj.length; i++) {
+
+      if (codeObj[i].getType == 'qr') {
+        links.add(codeObj[i].getInfo.toString());
+      }
+
+    }
+
+
     //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
     //todo: otherwise the date is probably fine since there is only one USPS ID email per day
     final emailId = timestamp.toString();
 
     return new MailPiece(
-        id, emailId, timestamp, attachment.sender, text!, mid);
+        id, emailId, timestamp, attachment.sender, text!, mid, links);
   }
 
   /// Perform OCR scan once on the mail image to get the results for further processing

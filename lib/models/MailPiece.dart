@@ -7,9 +7,14 @@ class MailPiece {
   final String sender;
   final String imageText;
   final String midId;
+  List<String>? links; // Links from QR code, barcodes etc..
+  List<String>? emailList;
+  List<String>? phoneNumbersList;
+
 
   MailPiece(this.id, this.emailId, this.timestamp, this.sender, this.imageText,
-      this.midId);
+      this.midId, [this.links, this.emailList, this.phoneNumbersList]);
+
 
   factory MailPiece.fromJson(dynamic json) {
     return MailPiece(
@@ -19,7 +24,8 @@ class MailPiece {
         json['sender'] as String,
         json['imageText'] as String,
         json['midId'] as String
-        );
+
+    );
   }
 
   bool operator ==(Object other) =>
@@ -30,5 +36,9 @@ class MailPiece {
           this.timestamp.millisecondsSinceEpoch &&
       other.sender == this.sender &&
       other.imageText == this.imageText &&
-      other.midId == this.midId;
+      other.midId == this.midId&&
+          other.links == this.links &&
+          other.emailList == this.emailList &&
+          other.phoneNumbersList == this.phoneNumbersList;
+
 }
