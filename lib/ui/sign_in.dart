@@ -56,7 +56,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   static const kPrimaryColor = Color(0xFF6F35A5);
   static const kPrimaryLightColor = Color(0xFFF1E6FF);
   static const double defaultPadding = 16.0;
-  bool checked = false;
+  bool policyChecked = false;
 
   @override
   void initState() {
@@ -437,8 +437,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           maintainSize: true,
                           maintainAnimation: true,
                           maintainSemantics: true,
-                          child: Text("MailSpeak Application. Log in.")
-                      ),
+                          child: Text("MailSpeak Application. Log in.")),
                       Container(
                         alignment: Alignment.center,
                         child: Image.asset(
@@ -480,10 +479,10 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         child: Row(
                           children: [
                             Checkbox(
-                              value: checked,
+                              value: policyChecked,
                               onChanged: (value) {
                                 setState(() {
-                                  checked = value ?? false;
+                                  policyChecked = value ?? false;
                                 });
                               },
                             ),
@@ -537,7 +536,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           alignment: Alignment.center,
                           child: OutlinedButton(
                             onPressed: () async {
-                              if (checked != true) {
+                              if (policyChecked != true) {
                                 showTermsAndPrivacyAgreementErrorDialog();
                                 //If check box is not ticked off, show error dialog
                               } else {
@@ -619,16 +618,21 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                   child: SignInButton(
                                     Buttons.Google,
                                     onPressed: () async {
-                                      // To get oauth token
-                                      bool success = await UserAuthService()
-                                          .signInGoogleEmail();
-
-                                      if (success) {
-                                        await CacheService.updateMail();
-                                        Navigator.pushNamed(context, '/main');
+                                      if (policyChecked != true) {
+                                        showTermsAndPrivacyAgreementErrorDialog();
+                                        //If check box is not ticked off, show error dialog
                                       } else {
-                                        showLoginErrorDialog();
-                                        context.loaderOverlay.hide();
+                                        // To get oauth token
+                                        bool success = await UserAuthService()
+                                            .signInGoogleEmail();
+
+                                        if (success) {
+                                          await CacheService.updateMail();
+                                          Navigator.pushNamed(context, '/main');
+                                        } else {
+                                          showLoginErrorDialog();
+                                          context.loaderOverlay.hide();
+                                        }
                                       }
                                     },
                                     text: 'Sign In with Google',
