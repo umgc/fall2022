@@ -36,8 +36,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _buttonLabelTextSize = 26;
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
-  DateTime? _start;// = DateTime.now();
-  DateTime? _end;// = DateTime.now();
+  DateTime? _start;
+  DateTime? _end;
   String _advancedText = "Advanced Search";
   bool _isAdvanced = false;
   TextEditingController keywordInput = TextEditingController();
