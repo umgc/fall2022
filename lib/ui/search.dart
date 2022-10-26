@@ -36,8 +36,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _buttonLabelTextSize = 26;
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
-  DateTime _start = DateTime.now();
-  DateTime _end = DateTime.now();
+  DateTime? _start;
+  DateTime? _end;
   String _advancedText = "Advanced Search";
   bool _isAdvanced = false;
   TextEditingController keywordInput = TextEditingController();
@@ -76,7 +76,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   @override
   Widget build(BuildContext context) {
     applyFilters();
-    int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
+    int _duration = _start != null && _end != null ? DateTimeRange(start: _start!, end: _end!).duration.inDays + 1 : 0;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -147,9 +147,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                 ),
                                 icon: Icon(Icons.calendar_month_outlined,
                                     size: _buttonIconSize, color: Colors.white),
-                                label: Text('${_dateFormat.format(_start)}',
+                                label: Text(_getDateDisplay(_start),
                                     semanticsLabel:
-                                        " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                                        " ${_getDateDisplay(_start)}",
                                     style: TextStyle(
                                         fontWeight: _buttonFontWeight,
                                         fontSize: _buttonTextSize,
@@ -192,9 +192,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                 ),
                                 icon: Icon(Icons.calendar_month_outlined,
                                     size: 35, color: Colors.white),
-                                label: Text('${_dateFormat.format(_end)}',
-                                    semanticsLabel:
-                                        "${DateFormat('MMM,d,yyyy').format(_end)}",
+                                label: Text(_getDateDisplay(_end),
+                                    semanticsLabel: " ${_getDateDisplay(_end)}",
                                     style: TextStyle(
                                         fontWeight: _buttonFontWeight,
                                         fontSize: _buttonTextSize,
@@ -213,7 +212,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 20.0),
               child: Text(
-                'Duration: $_duration day(s)',
+                _duration > 0 ? 'Duration: $_duration day(s)' : 'Date range has not been selected',
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
                   fontSize: 20,
@@ -418,5 +417,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
         ),
       ),
     );
+  }
+
+  String _getDateDisplay(DateTime? date) {
+    return date != null ? _dateFormat.format(date) : "None";
   }
 }
