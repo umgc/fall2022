@@ -15,8 +15,7 @@ import 'package:summer2022/ui/mail_view.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
 import 'package:summer2022/ui/mail_view_indv.dart';
-
-import '../models/ApplicationFunction.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
