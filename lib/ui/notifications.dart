@@ -152,7 +152,8 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Notifications", tabController: _tabController),
-        body: TabBarView(
+        body:
+        TabBarView(
             controller: _tabController,
             children: <Widget>[
               Container( //Notifications
@@ -163,15 +164,23 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                          Semantics(
+                            explicitChildNodes: true,
+                            child:
+                            SizedBox(
+                              child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                    fontSize: 18), textAlign: TextAlign.center,),
+                              width: MediaQuery.of(context).size.width/6,
+                                ),
+                          ),
+                          Semantics(
+                            explicitChildNodes: true,
+                            child:
+                            SizedBox(
+                              child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                   fontSize: 18), textAlign: TextAlign.center),
-                            width: MediaQuery.of(context).size.width/6,
-                              ),
-                          SizedBox(
-                            child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
-                                fontSize: 18), textAlign: TextAlign.center),
-                              width: MediaQuery.of(context).size.width/4,
+                                width: MediaQuery.of(context).size.width/4,
+                            ),
                           ),
                           Spacer(),
                           SizedBox(
@@ -219,7 +228,9 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                      child: Text('Go to Message', style: TextStyle(color: Colors.white),),
+                                      child: Text('Go to Message',
+                                        semanticsLabel: "Go to " + item.subscriptionKeyword + " Message",
+                                        style: TextStyle(color: Colors.white),),
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateColor.resolveWith((states) => Colors.black45),
                                         //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
@@ -230,7 +241,9 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                      child: Text('Clear', style: TextStyle(color: Colors.white),),
+                                      child: Text('Clear',
+                                        semanticsLabel: "Clear " + item.subscriptionKeyword,
+                                        style: TextStyle(color: Colors.white),),
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
                                         //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
@@ -248,22 +261,27 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                   ],
                 ),
               ),
-              Container(  //Manager1
+              Container(
+               //Manager1
                 padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: Column(
                   children: [
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child:
-                            Semantics(
-                              excludeSemantics: true,
-                              textField: true,
-                              focusable: true,
-                              label: "Keyword",
-                              hint: "Enter notification keyword to add",
-                              child:
-                                Padding(padding:EdgeInsets.only(right:20), child:
+                          Semantics(
+                            explicitChildNodes: true,
+                            child:
+                          Container(
+                            width: MediaQuery.of(context).size.width/1.5,
+                            alignment: Alignment.center,
+                            child:
+                                Semantics(
+                                  excludeSemantics: true,
+                                  label: "Keyword",
+                                  textField: true,
+                                  hint: "Enter notification keyword to add",
+                                  child:
                                   TextField(
                                       controller: _keywordController,
                                       onSubmitted: (keywords) {
@@ -279,10 +297,8 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                           labelStyle: TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                               fontSize: 18),
                                           isDense: true),
-                                    ),
-                                ),
-                            ),
-                          ),
+                                    ),),
+                          ),),
                           Container(
                             child: OutlinedButton(
                               child: Text(
@@ -330,6 +346,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                     child: OutlinedButton(
                                       child: Text(
                                         'Delete',
+                                        semanticsLabel: "Delete " + item.keyword,
                                         style: TextStyle(color: Colors.white,fontSize: 18),
                                       ),
                                       style: ButtonStyle(
