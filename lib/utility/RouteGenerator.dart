@@ -16,6 +16,8 @@ import 'package:summer2022/models/MailPieceViewArguments.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
 import 'package:summer2022/ui/mail_view_indv.dart';
 
+import '../models/ApplicationFunction.dart';
+
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
 
@@ -26,7 +28,8 @@ class RouteGenerator {
     _updatePreviousRoute(settings.name!);
     switch (settings.name) {
       case '/main':
-        return CupertinoPageRoute(builder: (_) => const MainWidget());
+        var parameters = settings.arguments != null ? settings.arguments as ApplicationFunction : null;
+        return CupertinoPageRoute(builder: (_) => MainWidget(function: parameters));
       case '/settings':
         return CupertinoPageRoute(builder: (_) => const SettingsWidget());
       case '/digest_mail':
@@ -60,8 +63,9 @@ class RouteGenerator {
         return CupertinoPageRoute(
             builder: (_) => MailPieceViewWidget(mailPiece: parameters.mailPiece, digest: parameters.digest));
       case '/notifications':
+        var parameters = settings.arguments != null ? settings.arguments as ApplicationFunction : null;
         return CupertinoPageRoute(
-            builder: (_) => NotificationsWidget());
+            builder: (_) => NotificationsWidget(function: parameters));
       default:
         return CupertinoPageRoute(builder: (_) {
           return Scaffold(

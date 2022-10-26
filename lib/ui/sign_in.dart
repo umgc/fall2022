@@ -559,7 +559,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                     Navigator.pushNamedAndRemoveUntil(
                                         context,
                                         '/main',
-                                        (Route<dynamic> route) => false);
+                                        (Route<dynamic> route) => false, arguments: widget.function);
                                   } else {
                                     showLoginErrorDialog();
                                     context.loaderOverlay.hide();
