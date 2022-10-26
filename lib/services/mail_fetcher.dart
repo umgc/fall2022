@@ -79,8 +79,7 @@ class MailFetcher {
     var attachment = Attachment()
       ..contentID =
           _getHeader(data, "Content-ID").replaceAll('<', '').replaceAll('>', '')
-      ..sender =
-          "Test Sender" //todo: pull from emailBodyHtml by parsing the HTML
+      ..sender = '' //Sender gets set in _processMailImage
       ..attachment = data
           .decodeMessageData()
           .toString() //These are base64 encoded images with formatting
@@ -135,15 +134,86 @@ class MailFetcher {
         .toString();
   }
 
+  /**
+   * @param full = the full string you wish to parse
+   * @param sub = the substring you are searching for
+   * @retval = list of starting indicies of all sub matches
+   */
+  List<int> _parseForAllStartingPoints(String full, String sub) {
+    List<int> startingPositions = [];
+    int index = 0;
+
+    while (index != -1) {
+      index = full.indexOf(sub, index);
+
+      if (index != -1) {
+        startingPositions.add(index);
+        index += sub.length;
+      }
+    }
+    return startingPositions;
+  }
+
   /// Process an individual mail image, converting it into a MailPiece
   Future<MailPiece> _processMailImage(MimeMessage email, Attachment attachment,
       DateTime timestamp, int index) async {
     MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
-    // Sender text is actually sometimes included in the Email body as text for "partners".
-    // We prefer to use this rather than try and deduce it using the image itself.
+    // If sender is not stored in metadata
+    if (email.sender == null) {
+      //get full html string of the email
+      String fullHtml = email.mimeData!.parts!.first.toString();
+      List<int> matchIndicies =
+          _parseForAllStartingPoints(fullHtml, 'From</strong>');
+
+      if (matchIndicies.isNotEmpty) {
+        // Find all potential cid's in html, try to match one to the attachment
+        // TODO: A more efficient solution where you cache so you only search each html string once
+        for (int i in matchIndicies) {
+          int cidStart = fullHtml.indexOf('cid', i) + 4;
+          String parsedCid =
+              fullHtml.substring(cidStart, fullHtml.indexOf("\"", cidStart));
+
+          //Parsing the html gives us some delimiters, so must get rid of
+          var parts = parsedCid.split("=");
+          var getRidOfStrangeWhiteSpace = parts[1].trim();
+          parsedCid = parts[0] + getRidOfStrangeWhiteSpace;
+
+          if (attachment.contentID == parsedCid) {
+            attachment.sender = fullHtml
+                .substring(i + 13, fullHtml.indexOf('</td>', i + 13))
+                .trim();
+            break;
+          }
+        }
+      }
+    } else {
+      if (email.sender!.hasPersonalName) {
+        attachment.sender = email.sender!.personalName.toString();
+      } else {
+        attachment.sender = email.sender!.email;
+      }
+    }
+
+    // If no sender text included in email, use OCR results
+    // This code is a bit messy because there's no way to check if those objects = null
     if (attachment.sender.isEmpty) {
-      attachment.sender = ocrScanResult.addresses.first.name;
+      try {
+        if (ocrScanResult.addresses.first.name.isNotEmpty) {
+          attachment.sender = ocrScanResult.addresses.first.name;
+        }
+      } catch (e) {
+        debugPrint("No addresses detected for this attachment");
+
+        try {
+          if (ocrScanResult.logos.first.getName.isNotEmpty) {
+            attachment.sender = ocrScanResult.logos.first.getName;
+          }
+        } catch (e) {
+          debugPrint("No logos detected for this attachment");
+          attachment.sender = "Unknown Sender";
+        }
+      }
     }
 
     final id = "${attachment.sender}-$timestamp-$index";
