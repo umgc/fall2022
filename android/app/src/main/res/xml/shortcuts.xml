@@ -33,7 +33,7 @@
         android:shortcutLongLabel="@string/notification_long_label">
         <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
             <parameter-binding
-                android:value="featureParam"
+                android:value="feature"
                 android:key="name"/>
         </capability-binding>
     </shortcut>
