@@ -6,8 +6,8 @@
         android:shortcutLongLabel="@string/notification_long_label">
         <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
             <parameter-binding
-                android:value="feature"
-                android:key="@array/notification_names"/>
+                android:key="feature"
+                android:value="@array/notification_names" />
         </capability-binding>
     </shortcut>
     <capability android:name="actions.intent.GET_THING">
