@@ -377,6 +377,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                             onPressed: () async {
                                               if (await canLaunchUrl(learnMoreLinkUrl!)) {
                                                 await launchUrl(learnMoreLinkUrl!);
+                                                FirebaseAnalytics.instance.logEvent(name: 'LearnMore_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
                                               } else {
                                                 throw 'Could not launch $learnMoreLinkUrl';
                                               }
@@ -396,6 +397,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                         onPressed: () async {
                                           if (await canLaunchUrl(reminderLinkUrl!)) {
                                             await launchUrl(reminderLinkUrl!);
+                                            FirebaseAnalytics.instance.logEvent(name: 'SetAReminder_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
                                           } else {
                                             throw 'Could not launch $reminderLinkUrl';
                                           }
