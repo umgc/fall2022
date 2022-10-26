@@ -22,7 +22,7 @@ class NotificationService {
                 'Notifications for USPS Informed Delivery emails.',
             importance: Importance.max,
             priority: Priority.high,
-            ticker: 'USPS Informed Delivery');
+            ticker: 'Mail Speak');
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
     await _notificationPlugin.show(
