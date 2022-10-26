@@ -62,6 +62,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
             Container(
               child:
                 ListTile(
+                    isThreeLine: true,
                     horizontalTitleGap: 10.0,
                     contentPadding: EdgeInsets.all(5),
                     dense: true,
@@ -90,7 +91,9 @@ class MailViewWidgetState extends State<MailViewWidget> {
                           ),
                         ]
                     ),
-                    subtitle: Text(mailPiece.imageText.toString()),
+                    subtitle: Text(mailPiece.imageText.toString(),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,),
                 ),
             ),
           ),
