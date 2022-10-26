@@ -7,6 +7,7 @@ import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
 import 'package:summer2022/services/mailPiece_service.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class MailViewWidget extends StatefulWidget {
 
@@ -65,7 +66,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                     contentPadding: EdgeInsets.all(5),
                     dense: true,
                     onTap: () {
-                      Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
+                      Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(mailPiece));
                     },
                     //leading: mailPiece.mailImage,
                     title:

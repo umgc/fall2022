@@ -13,6 +13,7 @@ import 'package:summer2022/image_processing/barcode_scanner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:summer2022/image_processing/usps_address_verification.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
 
 class DigestEmailParser {
   String _userName = ''; // Add your credentials
@@ -28,9 +29,11 @@ class DigestEmailParser {
       Digest digest = Digest(await _getDigestEmail(userName, password));
 
         if (!digest.isNull()) {
-        digest.attachments = await _getAttachments(digest.message);
-        digest.links = _getLinks(digest.message);
-      }
+          var fetcher = MailFetcher();
+          digest.attachments = await _getAttachments(digest.message);
+          digest.links = _getLinks(digest.message);
+          digest.mailPieces = await fetcher.processEmail(digest.message);
+        }
       return digest;
     } catch (e) {
       rethrow;

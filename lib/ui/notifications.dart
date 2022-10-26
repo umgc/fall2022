@@ -8,10 +8,13 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/services/mailPiece_storage.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class NotificationsWidget extends StatefulWidget {
-  const NotificationsWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const NotificationsWidget({Key? key, this.function}) : super(key: key);
   @override
   NotificationsWidgetState createState() => NotificationsWidgetState();
 }
@@ -37,8 +40,16 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
 
     this.fetch();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
+
     setState(() {});
 
+  }
+
+  void checkPassedInFunction() {
+    if (this.widget.function != null) {
+      processFunction(widget.function!);
+    }
   }
 
   Future<MailPiece> getMailPiece(String mailPieceId) async {
@@ -59,6 +70,15 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   void dispose() {
     _keywordController.dispose();
     super.dispose();
+  }
+
+  Future<void> processFunction(ApplicationFunction function) async {
+    if (function.methodName == "addKeyword") {
+      addSubscription(function.parameters![0]);
+    }
+    else {
+      await super.processFunction(function);
+    }
   }
 
   Future<void> updateSubscriptionList() async {
@@ -198,7 +218,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                         //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
                                       ),
                                       onPressed: () async {
-                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: await getMailPiece(item.mailPieceId));
+                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(await getMailPiece(item.mailPieceId)));
                                       },
                                   ),
                                   Spacer(),

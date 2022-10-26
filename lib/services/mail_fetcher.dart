@@ -134,6 +134,7 @@ class MailFetcher {
         .toString();
   }
 
+<<<<<<< HEAD
   /**
    * @param full = the full string you wish to parse
    * @param sub = the substring you are searching for
@@ -154,6 +155,8 @@ class MailFetcher {
     return startingPositions;
   }
 
+=======
+>>>>>>> origin/developer
   /// Process an individual mail image, converting it into a MailPiece
   Future<MailPiece> _processMailImage(MimeMessage email, Attachment attachment,
       DateTime timestamp, int index) async {

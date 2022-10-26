@@ -56,7 +56,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   static const kPrimaryColor = Color(0xFF6F35A5);
   static const kPrimaryLightColor = Color(0xFFF1E6FF);
   static const double defaultPadding = 16.0;
-  bool checked = false;
+  bool policyChecked = false;
 
   @override
   void initState() {
@@ -82,7 +82,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function) {
+  Future<void> processFunction(ApplicationFunction function) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -437,8 +437,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           maintainSize: true,
                           maintainAnimation: true,
                           maintainSemantics: true,
-                          child: Text("MailSpeak Application. Log in.")
-                      ),
+                          child: Text("MailSpeak Application. Log in.")),
                       Container(
                         alignment: Alignment.center,
                         child: Image.asset(
@@ -475,15 +474,63 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         ),
                       ),
                       Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "OR",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 35, right: 35),
+                                  child: SignInButton(
+                                    Buttons.Google,
+                                    onPressed: () async {
+                                      if (policyChecked != true) {
+                                        showTermsAndPrivacyAgreementErrorDialog();
+                                        //If check box is not ticked off, show error dialog
+                                      } else {
+                                        // To get oauth token
+                                        bool success = await UserAuthService()
+                                            .signInGoogleEmail();
+
+                                        if (success) {
+                                          await CacheService.updateMail();
+                                          Navigator.pushNamed(context, '/main');
+                                        } else {
+                                          showLoginErrorDialog();
+                                          context.loaderOverlay.hide();
+                                        }
+                                      }
+                                    },
+                                    text: 'Sign In with Google',
+                                  ),
+                                ))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Container(
                         padding: const EdgeInsets.all(15),
                         alignment: Alignment.center,
                         child: Row(
                           children: [
                             Checkbox(
-                              value: checked,
+                              value: policyChecked,
                               onChanged: (value) {
                                 setState(() {
-                                  checked = value ?? false;
+                                  policyChecked = value ?? false;
                                 });
                               },
                             ),
@@ -537,7 +584,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           alignment: Alignment.center,
                           child: OutlinedButton(
                             onPressed: () async {
-                              if (checked != true) {
+                              if (policyChecked != true) {
                                 showTermsAndPrivacyAgreementErrorDialog();
                                 //If check box is not ticked off, show error dialog
                               } else {
@@ -606,39 +653,6 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                 launchUrl(url4);
                               }),
                       ]))),
-                      Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 35, right: 35),
-                                  child: SignInButton(
-                                    Buttons.Google,
-                                    onPressed: () async {
-                                      // To get oauth token
-                                      bool success = await UserAuthService()
-                                          .signInGoogleEmail();
-
-                                      if (success) {
-                                        await CacheService.updateMail();
-                                        Navigator.pushNamed(context, '/main');
-                                      } else {
-                                        showLoginErrorDialog();
-                                        context.loaderOverlay.hide();
-                                      }
-                                    },
-                                    text: 'Sign In with Google',
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),

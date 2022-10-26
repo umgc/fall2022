@@ -12,8 +12,8 @@ void main() async {
   DateTime today = new DateTime(now.year, now.month, now.day);
 
   var mailPieces = <MailPiece>[
-    new MailPiece("", "", today, "sender", "test", "", ""),
-    new MailPiece("", "", today, "empty", "empty", "", "")
+    new MailPiece("1", "", today, "sender", "test", "", ""),
+    new MailPiece("2", "", today.add(Duration(days: 1)), "empty", "empty", "", "")
   ];
 
   setUpAll(() async {
@@ -62,7 +62,7 @@ void main() async {
   test("Search mail by keyword null", () async {
     var mailSearch = new MailSearchParameters();
     var test = await search.fetchMail(mailSearch);
-    expect(test.length, 1);
+    expect(test.length, 2);
   });
 
   test("Search mail by date range", () async {
@@ -82,7 +82,7 @@ void main() async {
     var mailSearch = new MailSearchParameters(
         startDate: today, endDate: today.add(Duration(days: 1)));
     var test = await search.fetchMail(mailSearch);
-    expect(test.length, 1);
+    expect(test.length, 2);
   });
 
   test("Search mail by date range none", () async {
@@ -96,19 +96,13 @@ void main() async {
   test("Search mail by date null start", () async {
     var mailSearch = new MailSearchParameters(endDate: today);
     var test = await search.fetchMail(mailSearch);
-    expect(test.length, 1);
+    expect(test.length, 2);
   });
 
   test("Search mail by date null end", () async {
     var mailSearch = new MailSearchParameters(startDate: today);
     var test = await search.fetchMail(mailSearch);
-    expect(test.length, 1);
-  });
-
-  test("Search mail exception", () async {
-    var mailSearch = new MailSearchParameters();
-    var test = await search.fetchMail(mailSearch);
-    expect(test.length, 1);
+    expect(test.length, 2);
   });
 
   test("Search mail sender", () async {
