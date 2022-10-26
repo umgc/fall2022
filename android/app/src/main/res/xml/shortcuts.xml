@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="Notifications"
+        android:shortcutShortLabel="@string/notification_short_label"
+        android:shortcutLongLabel="@string/notification_long_label">
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/notification_names" />
+        </capability-binding>
+    </shortcut>
     <capability android:name="actions.intent.GET_THING">
         <intent
             android:targetPackage="com.example.summer2022"
@@ -27,14 +37,4 @@
                 android:key="name"/>
         </intent>
     </capability>
-    <shortcut
-        android:shortcutId="Notifications"
-        android:shortcutShortLabel="@string/notification_short_label"
-        android:shortcutLongLabel="@string/notification_long_label">
-        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
-            <parameter-binding
-                android:value="featureParam"
-                android:key="name"/>
-        </capability-binding>
-    </shortcut>
 </shortcuts>

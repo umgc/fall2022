@@ -14,6 +14,9 @@ import 'package:summer2022/services/mailPiece_service.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -36,8 +39,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _buttonLabelTextSize = 26;
   final DateFormat _dateFormat = DateFormat("M/d/yyyy");
-  DateTime _start = DateTime.now();
-  DateTime _end = DateTime.now();
+  DateTime? _start;
+  DateTime? _end;
   String _advancedText = "Advanced Search";
   bool _isAdvanced = false;
   TextEditingController keywordInput = TextEditingController();
@@ -76,9 +79,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   @override
   Widget build(BuildContext context) {
     applyFilters();
-    int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
+    int _duration = _start != null && _end != null ? DateTimeRange(start: _start!, end: _end!).duration.inDays + 1 : 0;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       floatingActionButton: Visibility(
         visible: showHomeButton,
         child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -146,9 +150,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                 ),
                                 icon: Icon(Icons.calendar_month_outlined,
                                     size: _buttonIconSize, color: Colors.white),
-                                label: Text('${_dateFormat.format(_start)}',
+                                label: Text(_getDateDisplay(_start),
                                     semanticsLabel:
-                                        " ${DateFormat('MMM,d,yyyy').format(_start)}",
+                                        " ${_getDateDisplay(_start)}",
                                     style: TextStyle(
                                         fontWeight: _buttonFontWeight,
                                         fontSize: _buttonTextSize,
@@ -191,9 +195,8 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                 ),
                                 icon: Icon(Icons.calendar_month_outlined,
                                     size: 35, color: Colors.white),
-                                label: Text('${_dateFormat.format(_end)}',
-                                    semanticsLabel:
-                                        "${DateFormat('MMM,d,yyyy').format(_end)}",
+                                label: Text(_getDateDisplay(_end),
+                                    semanticsLabel: " ${_getDateDisplay(_end)}",
                                     style: TextStyle(
                                         fontWeight: _buttonFontWeight,
                                         fontSize: _buttonTextSize,
@@ -212,7 +215,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 20.0),
               child: Text(
-                'Duration: $_duration day(s)',
+                _duration > 0 ? 'Duration: $_duration day(s)' : 'Date range has not been selected',
                 style: TextStyle(
                   fontWeight: FontWeight.w300,
                   fontSize: 20,
@@ -231,6 +234,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: TypeAheadField(
+                            direction: AxisDirection.up,
                             textFieldConfiguration: TextFieldConfiguration(
                                 style: TextStyle(fontSize: 20),
                                 decoration: InputDecoration(
@@ -241,7 +245,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
                                   arguments: new MailPieceViewArguments(suggestion as MailPiece));
-                            },
+                              FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'keyword':keywordInput, 'itemId':suggestion.uspsMID});
+                              },
+
                             suggestionsCallback: (pattern) {
                               // Populate items from cache
                               MailSearchParameters searchParams =
@@ -275,6 +281,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: TypeAheadField(
+                            direction: AxisDirection.up,
                             textFieldConfiguration: TextFieldConfiguration(
                                 style: TextStyle(fontSize: 20),
                                 decoration: InputDecoration(
@@ -320,6 +327,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: TypeAheadField(
+                            direction: AxisDirection.up,
                             textFieldConfiguration: TextFieldConfiguration(
                                 style: TextStyle(fontSize: 20),
                                 decoration: InputDecoration(
@@ -398,6 +406,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                   endDate: _end);
                           Navigator.pushNamed(context, '/mail_view',
                               arguments: searchParams);
+                          if(_isAdvanced)
+                            FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'senderKeyword':keywordInput.text,'mailBodyKeyword':mailBodyInput.text});
+                          else
+                            FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'senderKeyword':keywordInput.text});
                         },
                         icon: const Icon(Icons.search,
                             size: 35, color: Colors.white),
@@ -414,5 +426,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
         ),
       ),
     );
+  }
+
+  String _getDateDisplay(DateTime? date) {
+    return date != null ? _dateFormat.format(date) : "None";
   }
 }

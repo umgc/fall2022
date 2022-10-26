@@ -85,8 +85,6 @@ class MailViewWidgetState extends State<MailViewWidget> {
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children:[
-                                  Text(DateFormat('EEE hh:mm a').format(mailPiece.timestamp)
-                                  ),
                                   Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
                                   ),
                                 ]),
@@ -155,7 +153,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children:[
-                                  Text('TIME & DATE:',
+                                  Text('DATE:',
                                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold) ),
                                 ]),
                           ),

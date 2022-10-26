@@ -63,8 +63,8 @@ void main() async {
 
   runApp(GlobalLoaderOverlay(
       child: MaterialApp(
-    //showSemanticsDebugger: true,
-    title: "MailSpeak", //title: "USPS Informed Delivery Visual Assistance App",
+    //setting "showSemanticsDebugger: true," in here will display the semantics debugger
+    title: "MailSpeak",
     initialRoute: emailAuthenticated == true ? "/main" : "/sign_in",
     onGenerateRoute: RouteGenerator.generateRoute,
     home: buildScreen(emailAuthenticated, function),

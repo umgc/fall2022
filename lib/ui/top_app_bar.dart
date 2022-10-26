@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/user_auth_service.dart';
 import 'package:summer2022/main.dart';
 
@@ -8,8 +9,11 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final Size preferredSize;
   final TabController? tabController;
 
-  TopBar(
-      {Key? key, required this.title, this.tabController = null}): this.preferredSize= ((title == "Notifications") ? Size.fromHeight(100.0) : Size.fromHeight(50.0)), super(key:key);
+  TopBar({Key? key, required this.title, this.tabController = null})
+      : this.preferredSize = ((title == "Notifications")
+            ? Size.fromHeight(100.0)
+            : Size.fromHeight(50.0)),
+        super(key: key);
 
   @override
   TopBarState createState() => TopBarState();
@@ -59,6 +63,7 @@ class TopBarState extends State<TopBar> {
                     if (isSignedGoogle) {
                       await UserAuthService().signOut();
                     }
+                    Keychain().deleteAll();
                     Navigator.pushNamedAndRemoveUntil(
                         context, '/sign_in', (Route<dynamic> route) => false);
                   }
@@ -83,15 +88,16 @@ class TopBarState extends State<TopBar> {
       centerTitle: true,
       title: Semantics(
         sortKey: OrdinalSortKey(1),
-        child:
-        Text("${this.widget.title}", style:
-        TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
+        child: Text(
+          "${this.widget.title}",
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
         ),
       ),
       automaticallyImplyLeading: false,
       backgroundColor: Color.fromRGBO(51, 51, 102, 1),
       bottom: (this.widget.title == "Notifications")
-          ? (TabBar(controller: this.widget.tabController,
+          ? (TabBar(
+              controller: this.widget.tabController,
               tabs: <Widget>[Tab(text: "Notifications"), Tab(text: "Manage")]))
           : null,
     );
