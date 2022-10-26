@@ -408,11 +408,11 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
       body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          height: 800.0,
+          height: MediaQuery.of(context).size.height,
           child: SafeArea(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
+                Container(
                 padding: const EdgeInsets.all(15.0),
                 width: 350,
                 decoration: BoxDecoration(
@@ -493,7 +493,11 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                     child: Container(
                                   padding: const EdgeInsets.only(
                                       left: 35, right: 35),
-                                  child: SignInButton(
+                                  child: Semantics(
+                                    excludeSemantics: true,
+                                    label: "Google Sign-in",
+                                    button: true,
+                                    child: SignInButton(
                                     Buttons.Google,
                                     onPressed: () async {
                                       if (policyChecked != true) {
@@ -514,7 +518,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                       }
                                     },
                                     text: 'Sign In with Google',
-                                  ),
+                                  ),),
                                 ))
                               ],
                             ),
@@ -537,15 +541,20 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                 });
                               },
                             ),),
-                            Expanded(
-                              child: Text.rich(
-                                TextSpan(
+                            Semantics(
+                              explicitChildNodes: true,
+                              child:
+                            Column (
+                              children: [
+                                Text.rich(
+                                  TextSpan(
                                     text: 'I have read and agree to the ',
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.black),
-                                    children: <TextSpan>[
-                                      TextSpan(
+                                        fontSize: 14, color: Colors.black),),),
+                                Text.rich(
+                                  TextSpan(
                                           text: 'Terms and Conditions',
+                                          semanticsLabel: "Terms and Conditions",
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.blue,
@@ -556,14 +565,15 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () {
                                               showTermsAndConditionsDialog();
-                                            }),
-                                      TextSpan(
+                                            }),),
+                                Text.rich(
+                                  TextSpan(
                                           text: ' and ',
                                           style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.black),
-                                          children: <TextSpan>[
-                                            TextSpan(
+                                              color: Colors.black),),),
+                                Text.rich(
+                                    TextSpan(
                                                 text: 'Privacy Policy',
                                                 style: TextStyle(
                                                     fontSize: 14,
@@ -576,13 +586,12 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                                       ..onTap = () {
                                                         showPrivacyPolicyDialog();
                                                       })
-                                          ])
-                                    ]),
+                                ),
+                              ])
+
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            ]),),
+
                       Container(
                           alignment: Alignment.center,
                           child: OutlinedButton(
