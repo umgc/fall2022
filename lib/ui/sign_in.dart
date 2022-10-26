@@ -474,6 +474,54 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         ),
                       ),
                       Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "OR",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 35, right: 35),
+                                  child: SignInButton(
+                                    Buttons.Google,
+                                    onPressed: () async {
+                                      if (policyChecked != true) {
+                                        showTermsAndPrivacyAgreementErrorDialog();
+                                        //If check box is not ticked off, show error dialog
+                                      } else {
+                                        // To get oauth token
+                                        bool success = await UserAuthService()
+                                            .signInGoogleEmail();
+
+                                        if (success) {
+                                          await CacheService.updateMail();
+                                          Navigator.pushNamed(context, '/main');
+                                        } else {
+                                          showLoginErrorDialog();
+                                          context.loaderOverlay.hide();
+                                        }
+                                      }
+                                    },
+                                    text: 'Sign In with Google',
+                                  ),
+                                ))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Container(
                         padding: const EdgeInsets.all(15),
                         alignment: Alignment.center,
                         child: Row(
@@ -605,44 +653,6 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                 launchUrl(url4);
                               }),
                       ]))),
-                      Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 35, right: 35),
-                                  child: SignInButton(
-                                    Buttons.Google,
-                                    onPressed: () async {
-                                      if (policyChecked != true) {
-                                        showTermsAndPrivacyAgreementErrorDialog();
-                                        //If check box is not ticked off, show error dialog
-                                      } else {
-                                        // To get oauth token
-                                        bool success = await UserAuthService()
-                                            .signInGoogleEmail();
-
-                                        if (success) {
-                                          await CacheService.updateMail();
-                                          Navigator.pushNamed(context, '/main');
-                                        } else {
-                                          showLoginErrorDialog();
-                                          context.loaderOverlay.hide();
-                                        }
-                                      }
-                                    },
-                                    text: 'Sign In with Google',
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
