@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/models/Notification.dart' as Notification;
@@ -11,6 +12,9 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 class NotificationsWidget extends StatefulWidget {
   final ApplicationFunction? function;
@@ -293,6 +297,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                           borderRadius: BorderRadius.circular(30)))),
                               onPressed: () {
                                 addSubscription(_keywordController.text);
+                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'itemId':_keywordController.text});
                                 _keywordController.clear();
                               },
                             ),
