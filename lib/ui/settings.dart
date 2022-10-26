@@ -523,13 +523,18 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.only(left: 25, right: 25),
-                          title: Text.rich(
-                            TextSpan(
-                              text: "Terms and Conditions",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
+                          title: Semantics(
+                            excludeSemantics: true,
+                            label: "Terms and Conditions",
+                            button: true,
+                            child: Text.rich(
+                              TextSpan(
+                                text: "Terms and Conditions",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ),
@@ -543,9 +548,14 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                         decoration: BoxDecoration(
                           border: Border(top: BorderSide(color: Colors.grey, width: 0.75)),
                         ),
+
                         child: ListTile(
                           contentPadding: const EdgeInsets.only(left: 25, right: 25),
-                          title: Text.rich(
+                          title: Semantics(
+                            excludeSemantics: true,
+                            label: "Privacy Policy",
+                            button: true,
+                            child:Text.rich(
                             TextSpan(
                               text: "Privacy Policy",
                               style: TextStyle(
@@ -554,7 +564,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                          ),
+                          ),),
                             trailing: Icon(Icons.keyboard_arrow_right_rounded),
                           onTap: () {
                             showPrivacyPolicyDialog();
@@ -581,6 +591,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                       child: const Text(
                         "Delete All Local Data",
                         style: TextStyle(color: Colors.white),
+                        semanticsLabel: "Delete Local Data",
                       ),
                     )
                 ),
