@@ -25,15 +25,17 @@ MailPieceStorage mailStorage = new MailPieceStorage();
 
 final time =  DateTime.now().subtract(Duration(days: 30));
 MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "","");
-class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
+class NotificationsWidgetState extends AssistantState<NotificationsWidget> with SingleTickerProviderStateMixin {
   final _notifier = MailNotifier();
   final _keywordController = TextEditingController();
 
   var _subscriptions = <NotificationSubscription>[];
   var _notifications = <Notification.Notification>[];
+  late TabController _tabController;
   @override
   void initState() {
     super.initState();
+    _tabController = new TabController(vsync: this, length: 2);
     updateSubscriptionList();
     updateNotificationList();
     removeAllNotification();
@@ -69,11 +71,13 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   @override
   void dispose() {
     _keywordController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   Future<void> processFunction(ApplicationFunction function) async {
     if (function.methodName == "addKeyword") {
+      _tabController.animateTo(1);
       addSubscription(function.parameters![0]);
     }
     else {
@@ -135,9 +139,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   @override
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    return new Scaffold(
         floatingActionButton: Visibility(
           visible: showHomeButton,
           child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -145,8 +147,9 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: const BottomBar(),
-        appBar: TopBar(title: "Notifications"),
+        appBar: TopBar(title: "Notifications", tabController: _tabController),
         body: TabBarView(
+            controller: _tabController,
             children: <Widget>[
               Container( //Notifications
                 padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -349,8 +352,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
               // This is the end of manager tab one
             ]
         ),
-      ),
-    );
+     );
   }
 
 
