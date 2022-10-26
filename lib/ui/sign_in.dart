@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/utility/Keychain.dart';
@@ -526,14 +527,16 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         alignment: Alignment.center,
                         child: Row(
                           children: [
-                            Checkbox(
+                            Semantics(
+                              label: "Conditions",
+                            child: Checkbox(
                               value: policyChecked,
                               onChanged: (value) {
                                 setState(() {
                                   policyChecked = value ?? false;
                                 });
                               },
-                            ),
+                            ),),
                             Expanded(
                               child: Text.rich(
                                 TextSpan(
@@ -601,6 +604,15 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                       await mail.getImapClient(email, password);
                                   //Store the credentials into the the secure storage only if validated
                                   if (loggedIn) {
+                                    //Loading circle indicator
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return Center(child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ));
+                                      },
+                                    );
                                     Keychain().addCredentials(email, password);
                                     await CacheService.updateMail();
                                     //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture

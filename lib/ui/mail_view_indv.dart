@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:enough_mail/codecs.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
@@ -10,9 +11,13 @@ import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:html/parser.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/utility/linkwell.dart';
-import 'package:summer2022/services/mail_fetcher.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
@@ -33,10 +38,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _commonFontSize = 30;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
-
   late Digest digest;
   late Image? mailImage = null;
-
   late String mailPieceId = '';
   late String originalText = widget.mailPiece.imageText;
   String mailPieceText = '';
@@ -47,7 +50,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   late bool hasDoMore = false;
   late Uri? learnMoreLinkUrl = null;
   late Uri? reminderLinkUrl = null;
-
 
   MailPieceViewWidgetState();
 
@@ -79,10 +81,22 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
     _getLinkHtmlFromEmail(m1);
+
+    if(Firebase.apps.length != 0){
+      var EventParams = ['screen_view,page_location, page_referrer'];
+      /*await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );*/
+      FirebaseAnalytics.instance
+          .setUserProperty(name: 'USPS_Email_MID', value: widget.mailPiece.uspsMID);
+     // FirebaseAnalytics.instance
+       //   .logEvent(name: 'AnalyticsParameterScreenName', parameters:;
+    };
+
   }
 
-  //sets state mailImage given the found email based on mailPiece
   void _getImgFromEmail(MimeMessage m) async {
+    //m = digest.message;
     for (int x = 0; x < m.mimeData!.parts!.length; x++) {
       if (m.mimeData!.parts!
               .elementAt(x)

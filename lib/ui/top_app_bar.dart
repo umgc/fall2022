@@ -92,7 +92,8 @@ class TopBarState extends State<TopBar> {
       backgroundColor: Color.fromRGBO(51, 51, 102, 1),
       bottom: (this.widget.title == "Notifications")
           ? (TabBar(controller: this.widget.tabController,
-              tabs: <Widget>[Tab(text: "Notifications"), Tab(text: "Manage")]))
+              tabs: <Widget>[Tab(text: "Notifications"), Tab(text: "Manage")])
+      )
           : null,
     );
   }

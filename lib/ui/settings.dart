@@ -240,265 +240,6 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                   color: Colors.white,
                   child: Column(
                     children: <Widget>[
-                      ListTile(
-                          leading: Icon(
-                            Icons.mail,
-                          ),
-                          title: Text.rich(
-                            TextSpan(
-                              text: "Envelope Details",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("sender"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Sender ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("sender", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.person_search,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("address"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Sender Address ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("address", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.place,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("recipient"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Recipient ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("recipient", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.person_pin_sharp,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("logos"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Logos ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("logos", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.image,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("links"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Links:",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("links", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.link,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10.0),
-                Card(
-                  elevation: 8.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(
-                          Icons.mark_email_unread,
-                        ),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Email Details",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("email_subject"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Subject: ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("email_subject", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.short_text_sharp,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("email_text"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Email Text: ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("email_text", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.text_snippet,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("email_sender"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Sender Address: ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("email_sender", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.alternate_email_sharp,
-                        ),
-                      ),
-                      SwitchListTile(
-                        value: cfg.getValue("email_recipients"),
-                        activeColor: Colors.indigo.shade400,
-                        contentPadding: const EdgeInsets.only(left: 17, right: 17),
-                        title: Text.rich(
-                          TextSpan(
-                            text: "Recipients: ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        onChanged: (bool value) {
-                          setState(() {
-                            cfg.updateValue("email_recipients", value);
-                          });
-                        },
-                        secondary: const Icon(
-                          Icons.person_pin_sharp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10.0),
-                Card(
-                  elevation: 8.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
                       Card(
                         elevation: 0,
                         child: ListTile(
@@ -523,13 +264,18 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.only(left: 25, right: 25),
-                          title: Text.rich(
-                            TextSpan(
-                              text: "Terms and Conditions",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
+                          title: Semantics(
+                            excludeSemantics: true,
+                            label: "Terms and Conditions",
+                            button: true,
+                            child: Text.rich(
+                              TextSpan(
+                                text: "Terms and Conditions",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ),
@@ -543,9 +289,14 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                         decoration: BoxDecoration(
                           border: Border(top: BorderSide(color: Colors.grey, width: 0.75)),
                         ),
+
                         child: ListTile(
                           contentPadding: const EdgeInsets.only(left: 25, right: 25),
-                          title: Text.rich(
+                          title: Semantics(
+                            excludeSemantics: true,
+                            label: "Privacy Policy",
+                            button: true,
+                            child:Text.rich(
                             TextSpan(
                               text: "Privacy Policy",
                               style: TextStyle(
@@ -554,7 +305,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                          ),
+                          ),),
                             trailing: Icon(Icons.keyboard_arrow_right_rounded),
                           onTap: () {
                             showPrivacyPolicyDialog();
@@ -581,6 +332,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                       child: const Text(
                         "Delete All Local Data",
                         style: TextStyle(color: Colors.white),
+                        semanticsLabel: "Delete Local Data",
                       ),
                     )
                 ),
