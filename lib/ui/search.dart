@@ -79,6 +79,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     int _duration = DateTimeRange(start: _start, end: _end).duration.inDays + 1;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       floatingActionButton: Visibility(
         visible: showHomeButton,
         child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -231,6 +232,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: TypeAheadField(
+                            direction: AxisDirection.up,
                             textFieldConfiguration: TextFieldConfiguration(
                                 style: TextStyle(fontSize: 20),
                                 decoration: InputDecoration(
@@ -275,6 +277,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: TypeAheadField(
+                            direction: AxisDirection.up,
                             textFieldConfiguration: TextFieldConfiguration(
                                 style: TextStyle(fontSize: 20),
                                 decoration: InputDecoration(
@@ -320,6 +323,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                       child: Padding(
                           padding: EdgeInsets.all(10),
                           child: TypeAheadField(
+                            direction: AxisDirection.up,
                             textFieldConfiguration: TextFieldConfiguration(
                                 style: TextStyle(fontSize: 20),
                                 decoration: InputDecoration(
