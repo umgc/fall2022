@@ -28,7 +28,7 @@
     </queries>
 
    <application
-        android:label="USPS Visual Assistance App"
+        android:label="MailSpeak"
 
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"

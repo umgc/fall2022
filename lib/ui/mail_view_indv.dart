@@ -71,12 +71,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         loading = false;
       });
     }
-    /*
-    setState(() {
-      loading = false;
-    });
-
-     */
   }
 
   Future<void> _getMailPieceEmail() async {
@@ -310,7 +304,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
           Container(
           alignment: Alignment.topCenter,
           margin: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
-          //padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Center(
             widthFactor: .85,
             child: Column(children: [
