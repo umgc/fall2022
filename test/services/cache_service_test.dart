@@ -13,13 +13,12 @@ import 'package:summer2022/services/mailPiece_storage.dart';
   MockSpec<MailNotifier>(),
   MockSpec<MailPieceStorage>()
 ])
-
 import 'cache_service_test.mocks.dart';
 
 void main() {
   final fetcher = MockMailFetcher();
   final notifier = MockMailNotifier();
-  final storage = MockMailStorage();
+  final storage = MockStorage();
 
   final subject = CacheService(fetcher, storage, notifier);
 
@@ -27,9 +26,9 @@ void main() {
 
   test('it processes mail', () async {
     final mailPieces = [
-      MailPiece("1", "test-1", now, "test", "some text", "test"),
-      MailPiece("2", "test-2", now, "test", "some text", "test"),
-      MailPiece("3", "test-3", now, "test", "some text", "test"),
+      MailPiece("1", "test-1", now, "test", "some text", "test", "test"),
+      MailPiece("2", "test-2", now, "test", "some text", "test", "test"),
+      MailPiece("3", "test-3", now, "test", "some text", "test", "test"),
     ];
 
     when(fetcher.fetchMail(any)).thenAnswer((_) => Future.value(mailPieces));
@@ -50,11 +49,18 @@ void main() {
         .thenAnswer((_) => Future.value(null));
     when(notifier.clearAllSubscriptions())
         .thenAnswer((_) => Future.value(null));
-        
+
     await subject.clearAllCachedData();
 
     verify(storage.deleteAllMailPieces());
     verify(notifier.clearAllNotifications());
     verify(notifier.clearAllSubscriptions());
   });
+}
+
+class MockStorage extends MockMailPieceStorage {
+  @override
+  Future<bool> saveMailPiece(MailPiece? piece) {
+    return super.saveMailPiece(piece);
+  }
 }

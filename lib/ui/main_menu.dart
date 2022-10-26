@@ -12,10 +12,9 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
-
-import '../services/mail_loader.dart';
-import '../models/ApplicationFunction.dart';
-import 'assistant_state.dart';
+import 'package:summer2022/services/mail_loader.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
+import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 
 class MainWidget extends StatefulWidget {
@@ -115,14 +114,7 @@ class MainWidgetState extends AssistantState<MainWidget> {
           controller: new ScrollController(keepScrollOffset: false),
           shrinkWrap: true,
           children: <Widget>[
-            Semantics(
-              excludeSemantics: true,
-              button: true,
-              label: "Search Mail",
-            onTap: () async {
-              Navigator.pushNamed(context, '/search');
-            },
-            child: ElevatedButton(
+            ElevatedButton(
               onPressed: () async {
 
                 Navigator.pushNamed(context, '/search');
@@ -135,18 +127,13 @@ class MainWidgetState extends AssistantState<MainWidget> {
                     "assets/icon/search_mail_icon_lg.png",
                     width: aspectRatio * 125,
                     height: aspectRatio * 125,
+                    excludeFromSemantics: true,
                   ),
                 ],
               ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
-          ),
-          Semantics(
-            excludeSemantics: true,
-            button: true,
-            label: "Daily Digest",
-            onTap: _getDailyDigest,
-            child: ElevatedButton(
+            ElevatedButton(
               onPressed: _getDailyDigest,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -156,20 +143,13 @@ class MainWidgetState extends AssistantState<MainWidget> {
                     "assets/icon/daily_digest_icon_lg.png",
                     width: aspectRatio * 125,
                     height: aspectRatio * 125,
+                    excludeFromSemantics: true,
                   ),
                 ],
               ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
-          ),
-          Semantics(
-            excludeSemantics: true,
-            button: true,
-            label: "Upload Mail",
-            onTap: () {
-              mailLoader.uploadMail(ImageSource.gallery);
-            },
-            child: ElevatedButton(
+            ElevatedButton(
               onPressed: () {
                 mailLoader.uploadMail(ImageSource.gallery);
               },
@@ -181,20 +161,13 @@ class MainWidgetState extends AssistantState<MainWidget> {
                     "assets/icon/upload_image_lg.png",
                     width: aspectRatio * 125,
                     height: aspectRatio * 125,
+                    excludeFromSemantics: true,
                   ),
                 ],
               ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
-          ),
-          Semantics(
-            excludeSemantics: true,
-            button: true,
-            label: "Scan Mail",
-            onTap: () {
-              mailLoader.uploadMail(ImageSource.camera);
-            },
-            child: ElevatedButton(
+            ElevatedButton(
               onPressed: () {
                 mailLoader.uploadMail(ImageSource.camera);
               },
@@ -206,20 +179,13 @@ class MainWidgetState extends AssistantState<MainWidget> {
                     "assets/icon/scan_mail_icon_lg.png",
                     width: aspectRatio * 125,
                     height: aspectRatio * 125,
+                    excludeFromSemantics: true,
                   ),
                 ],
               ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
-          ),
-          Semantics(
-            excludeSemantics: true,
-            button: true,
-            label: "Settings",
-            onTap: () {
-              Navigator.pushNamed(context, '/settings');
-            },
-            child: ElevatedButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/settings');
               },
@@ -231,21 +197,13 @@ class MainWidgetState extends AssistantState<MainWidget> {
                     "assets/icon/settings_icon_lg.png",
                     width: aspectRatio * 125,
                     height: aspectRatio * 125,
+                    excludeFromSemantics: true,
                   ),
                 ],
               ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
-          ),
-          Semantics(
-            excludeSemantics: true,
-            button: true,
-            label: "Notifications",
-            onTap: () {
-              Navigator.pushNamed(context, '/notifications');
-            },
-              child:
-                  ElevatedButton(
+            ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/notifications');
                     },
@@ -257,29 +215,18 @@ class MainWidgetState extends AssistantState<MainWidget> {
                           "assets/icon/notification_icon_lg.png",
                           width: aspectRatio * 125,
                           height: aspectRatio * 125,
+                          excludeFromSemantics: true,
                         ),
                       ],
                     ),
               style: commonButtonStyleElevated(Colors.grey, Colors.grey),
             ),
-          ),
         ],
       ),
     );
   }
 
   void _getDailyDigest() async {
-    if (mailType == "Email") {
-      context.loaderOverlay.show();
-      await getEmails(false, DateTime.now());
-      if (emails.isNotEmpty) {
-        Navigator.pushNamed(context, '/other_mail',
-            arguments: EmailWidgetArguments(emails));
-      } else {
-        showNoEmailsDialog();
-      }
-      context.loaderOverlay.hide();
-    } else {
       context.loaderOverlay.show();
       await getDigest();
       if (!digest.isNull()) {
@@ -289,43 +236,8 @@ class MainWidgetState extends AssistantState<MainWidget> {
         showNoDigestDialog();
       }
       context.loaderOverlay.hide();
-    }
   }
 
-  Future<void> selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime.now());
-    if ((picked != null) && (picked != selectedDate)) {
-      if (mailType == "Email") {
-        context.loaderOverlay.show();
-        await getEmails(false, picked);
-        if ((emails.isNotEmpty)) {
-          Navigator.pushNamed(context, '/other_mail',
-              arguments: EmailWidgetArguments(emails));
-        } else {
-          showNoEmailsDialog();
-        }
-        context.loaderOverlay.hide();
-      } else {
-        context.loaderOverlay.show();
-        await getDigest(picked);
-        if (!digest.isNull()) {
-          Navigator.pushNamed(context, '/digest_mail',
-              arguments: MailWidgetArguments(digest));
-        } else {
-          showNoDigestDialog();
-        }
-        context.loaderOverlay.hide();
-      }
-
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
     void showNoDigestDialog() {
       showDialog(
         context: context,
@@ -475,11 +387,11 @@ class MainWidgetState extends AssistantState<MainWidget> {
   late Digest digest;
   late List<Digest> emails;
 
-  Future<void> getDigest([DateTime? pickedDate]) async {
+  Future<void> getDigest() async {
     try {
       await DigestEmailParser()
           .createDigest(await Keychain().getUsername(),
-              await Keychain().getPassword(), pickedDate ?? selectedDate)
+              await Keychain().getPassword())
           .then((value) => digest = value);
     } catch (e) {
       showErrorDialog();

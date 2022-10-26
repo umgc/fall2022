@@ -6,13 +6,13 @@ class MailPiece {
   final DateTime timestamp;
   final String sender;
   final String imageText;
-  final String midId;
   final String? imageBytes;
   final String? featuredHtml;
+  final String scanImgCID;
+  final String uspsMID;
 
   MailPiece(this.id, this.emailId, this.timestamp, this.sender, this.imageText,
-      this.midId,
-      {this.imageBytes = null, this.featuredHtml = null});
+      this.scanImgCID, this.uspsMID, {this.imageBytes = null, this.featuredHtml = null});
 
   factory MailPiece.fromJson(dynamic json) {
     return MailPiece(
@@ -21,7 +21,9 @@ class MailPiece {
         json['timestamp'] as DateTime,
         json['sender'] as String,
         json['imageText'] as String,
-        json['midId'] as String);
+        json['scanImgCID'] as String,
+        json['uspsMID'] as String
+        );
   }
 
   bool operator ==(Object other) =>
@@ -32,5 +34,6 @@ class MailPiece {
           this.timestamp.millisecondsSinceEpoch &&
       other.sender == this.sender &&
       other.imageText == this.imageText &&
-      other.midId == this.midId;
+      other.scanImgCID == this.scanImgCID &&
+      other.uspsMID == this.uspsMID;
 }

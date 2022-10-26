@@ -3,8 +3,6 @@ import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/services/bases/chat_bot.dart';
 import 'package:summer2022/utility/RouteGenerator.dart';
 
-import '../models/SearchCriteria.dart';
-
 class ChatBotService implements ChatBot {
   // This list of functions should be available on all pages
   static const availableOnAllPages = <String>[
@@ -64,15 +62,14 @@ class ChatBotService implements ChatBot {
     switch (command) {
       case "digest":
         // Perform navigate to digest function
-        // TODO: May need to be action that gets digest and navigates
-        result = ApplicationFunction(messages: <String>["Digest is currently unsupported from the chatbot."]);
+        result = ApplicationFunction(methodName: 'digest');
         usage.add("'digest': Navigates to Daily Digest Page");
         break;
       case "help":
         // Return list of available commands
         var commands = ChatFunctions[currentArea]?.toList().join(", ");
-        result =  ApplicationFunction(messages: <String>["Available commands on this page: ${commands!}. Note: If you need help with "
-            "a specific command, enter <command> help to view any extra command options." + commands!]);
+        result =  ApplicationFunction(messages: <String>["Available commands on this page: ${commands!}.", "Note: If you need help with "
+            "a specific command, enter '<command> help' to view any extra command options."]);
         usage.add("'help': Displays list of commands available");
         break;
       case "home":

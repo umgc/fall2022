@@ -12,7 +12,7 @@ class MailPieceStorage {
     final result = await db.query(MAIL_PIECE_TABLE,
         orderBy: "timestamp DESC", limit: 1, columns: ["timestamp"]);
     if (result.isEmpty) {
-      return DateTime.now().subtract(Duration(days: 30));
+      return DateTime.now().subtract(Duration(days: 90));
     } else {
       final timestamp = result[0]["timestamp"] as int;
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
@@ -37,9 +37,10 @@ class MailPieceStorage {
       "sender": piece.sender,
       "image_text": piece.imageText,
       "timestamp": piece.timestamp.millisecondsSinceEpoch,
-      "midId": piece.midId,
+      "scanImgCID": piece.scanImgCID,
+      "uspsMID": piece.uspsMID,
       "image_bytes": piece.featuredHtml,
-      "featured_html": piece.featuredHtml,
+      "featured_html": piece.featuredHtml
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);
@@ -61,7 +62,8 @@ class MailPieceStorage {
       DateTime.fromMillisecondsSinceEpoch(result[0]["timestamp"] as int),
       result[0]["sender"]?.toString() ?? "",
       result[0]["image_text"]?.toString() ?? "",
-      result[0]["midId"]?.toString() ?? "",
+      result[0]["scanImgCID"]?.toString() ?? "",
+      result[0]["uspsMID"]?.toString() ?? "",
       imageBytes: result[0]["image_bytes"]?.toString(),
       featuredHtml: result[0]["featured_html"]?.toString(),
     );
@@ -77,9 +79,10 @@ class MailPieceStorage {
       'timestamp': updated.timestamp.millisecondsSinceEpoch,
       'sender': updated.sender,
       'image_text': updated.imageText,
-      'midId': updated.midId,
+      'scanImgCID': updated.scanImgCID,
+      'uspsMID': updated.uspsMID,
       "image_bytes": updated.featuredHtml,
-      "featured_html": updated.featuredHtml,
+      "featured_html": updated.featuredHtml
     };
     final result = await db.update(MAIL_PIECE_TABLE, updatedValues,
         where: "id = ?", whereArgs: [id]);
@@ -116,9 +119,10 @@ class MailPieceStorage {
               DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
               row["sender"]?.toString() ?? "",
               row["image_text"]?.toString() ?? "",
-              row["midId"]?.toString() ?? "",
+              row["scanImgCID"]?.toString() ?? "",
+              row["uspsMID"]?.toString() ?? "",
               imageBytes: result[0]["image_bytes"]?.toString(),
-              featuredHtml: result[0]["featured_html"]?.toString(),
+              featuredHtml: result[0]["featured_html"]?.toString()
             ))
         .toList();
   }

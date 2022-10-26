@@ -1,13 +1,13 @@
 import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
-import '../models/MailSearchParameters.dart';
-import '../services/mailPiece_service.dart';
+import 'package:summer2022/models/MailSearchParameters.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class MailViewWidget extends StatefulWidget {
 
@@ -31,13 +31,13 @@ class MailViewWidgetState extends State<MailViewWidget> {
         10,
             (index) => new MailPiece(
             "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
-            ""),
+            "", ""),
         growable: true
     );
 
     MailPiece m = new MailPiece(
         "id", "emailId", DateTime(2022, 10, 3), "sender",
-        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'");
+        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'", "");
 
     _mailPieces.add(m);
 
@@ -66,7 +66,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                     contentPadding: EdgeInsets.all(5),
                     dense: true,
                     onTap: () {
-                      Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
+                      Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(mailPiece));
                     },
                     //leading: mailPiece.mailImage,
                     title:
@@ -85,8 +85,6 @@ class MailViewWidgetState extends State<MailViewWidget> {
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children:[
-                                  Text(DateFormat('EEE hh:mm a').format(mailPiece.timestamp)
-                                  ),
                                   Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
                                   ),
                                 ]),
@@ -155,7 +153,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children:[
-                                  Text('TIME & DATE:',
+                                  Text('DATE:',
                                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold) ),
                                 ]),
                           ),
