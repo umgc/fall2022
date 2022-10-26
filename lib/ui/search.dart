@@ -14,6 +14,9 @@ import 'package:summer2022/services/mailPiece_service.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -242,7 +245,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
                                   arguments: new MailPieceViewArguments(suggestion as MailPiece));
-                            },
+                              FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'keyword':keywordInput, 'itemId':suggestion.uspsMID});
+                              },
+
                             suggestionsCallback: (pattern) {
                               // Populate items from cache
                               MailSearchParameters searchParams =
@@ -401,6 +406,10 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                                   endDate: _end);
                           Navigator.pushNamed(context, '/mail_view',
                               arguments: searchParams);
+                          if(_isAdvanced)
+                            FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'senderKeyword':keywordInput.text,'mailBodyKeyword':mailBodyInput.text});
+                          else
+                            FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'senderKeyword':keywordInput.text});
                         },
                         icon: const Icon(Icons.search,
                             size: 35, color: Colors.white),
