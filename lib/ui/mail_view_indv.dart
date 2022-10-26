@@ -281,7 +281,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     final originalSplit = x.split('\n');
     for(int i=0; i< originalSplit.length; i++) {
         if(originalSplit[i].length < 50)
-          originalSplit[i] += '\n';
+          originalSplit[i] += ' ';
     };
     return originalSplit.join(' ');
   }

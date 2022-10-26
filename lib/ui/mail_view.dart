@@ -72,8 +72,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                     title:
                     Row(
                         children:[
-                          Container(
-                            padding: EdgeInsets.only(right: 10.0),
+                          Expanded(
                             child:
                             Text(
                               mailPiece.sender,
