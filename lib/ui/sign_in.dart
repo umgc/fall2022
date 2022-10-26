@@ -269,11 +269,120 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                       ),
                       Text.rich(
                         TextSpan(
-                            text:
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                            text: 'These terms and conditions outline the rules and regulations for the use of Mailspeak.'
+                                '\n\nBy using this app we assume you accept these terms and conditions. Do not continue to use MailSpeak if you do not agree to take all of the terms and conditions stated on this page.'
+                                '\n\nThe following terminology applied to these Terms and Conditions, Privacy Statement, Disclaimer Notice, and all Agreements: "Client", "You" and "Your" refers to you, the person logged onto this app and compliant to the terms and conditions outlined by United Global Master Coders. "UGMC", "Ourselves", "We", "Our" and "Us", refers to United Global Master Coders. "Party", "Parties", or "Us", refers to both the Client and ourselves. All terms refer to the offer, acceptance and consideration of payment necessary to undertake the process of our assistance to the Client in the most appropriate manner for the express purpose of meeting the Client’s needs in respect of provision of UGMC’s stated services, in accordance with and subject to, prevailing law of the United States. Any use of the above terminology or other words in the singular, plural, capitalization and/or he/she or they, are taken as interchangeable and therefore as referring to same.',
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: '\n\nLicense',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                  text: '\n\nUnless otherwise stated, MailSpeak and/or its licensors own the intellectual property rights for all material on MailSpeak. All intellectual property rights are reserved. You may access this from MailSpeak for your own personal use subjected to restrictions set in these terms and conditions. '
+                                      '\n\nYou must not:'
+                                      '\n\n- Replenish material from MailSpeak'
+                                      '\n- Sell, rent, or sub-license material from MailSpeak'
+                                      '\n- Reproduce, duplicate, or copy material from MailSpeak'
+                                      '\n\nThis agreement shall begin on the date hereof.'
+                              ),
+                              TextSpan(
+                                  text: '\n\nHyperlinking to our App',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                text: '\n\nThe following organizations may link to our App without prior written approval:'
+                                    '\n\n- Government agencies;'
+                                    '\n- Search Engines;'
+                                    '\n- New organizations'
+                                    '\n- Online directory distributors may link to our App in the same manner as they hyperlink to the Websites of other listed business; and'
+                                    '\n- System wide Accredited Businesses except soliciting non-profit organizations, charity shopping malls, and charity fundraising groups which may not hyperlink to our App.'
+                                    '\n\nThese organizations may link to our App, to publications, or to other app information so long as the link: (a) is not in any way deceptive; (b) does not falsely imply sponsorship, endorsement or approval of the linking party and its products and/or services; and (c) fits within the context of the linking party’s website.'
+                                    '\n\nWe may consider and approve other link requests from the following types of organizations:'
+                                    '\n\n- commonly-known consumer and/or business information sources;'
+                                    '\n- dot.com community sites;'
+                                    '\n- associations or other groups representing charities;'
+                                    '\n- online directory distributors;'
+                                    '\n- internet portals;'
+                                    '\n- accounting, law and consulting firms; and'
+                                    '\n- educational institutions and trade associations.'
+                                    '\n\nWe will approve link requests from these organizations if we decide that: (a) the link would not make us look unfavorably to ourselves or to our accredited businesses; (b) the organization does not have any negative records with us; (c) the benefit to us from the visibility of the hyperlink compensates the absence of MailSpeak; and (d) the link is in the context of general resource information.'
+                                    '\n\nThese organizations may link to our App so long as the link: (a) is not in any way deceptive; (b) does not falsely imply sponsorship, endorsement or approval of the linking party and its products or services; and (c) fits within the context of the linking party’s site.'
+                                    '\n\nIf you are one of the organizations listed in paragraph 2 above and are interested in linking to our App, you must inform us by sending an e-mail to MailSpeak. Please include your name, your organization name, contact information as well as the URL of your site, a list of any URLs from which you intend to link to our App, and a list of the URLs on our site to which you would like to link. Wait 2-3 weeks for a response.'
+                                    '\n\nApproved organizations may hyperlink to our App as follows:'
+                                    '\n\n- By use of our corporate name; or;'
+                                    '\n- By use of the uniform resource locator being linked to; or;'
+                                    '\n- By use of any other description of our App being linked to that makes sense within the context and format of content on the linked site of the party.'
+                                    '\n\nNo use of the MailSpeak logo or other artwork will be allowed for linking absent a trademark license agreement.',
+                              ),
+                              TextSpan(
+                                  text: '\n\niFrames',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                  text: '\n\nWithout prior approval and written permission, you may not create frames that alter in any way the visual presentation or appearance of our App.'
+                              ),
+                              TextSpan(
+                                  text: '\n\nContent Liability',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                text: '\n\nWe shall not be hold responsible for any content that appears on your App. You agree to protect and defend us against all claims that is rising on our App. No link(s) should appear on any Website that may be interpreted as libelous, obscene or criminal, or which infringes, otherwise violates, or advocates the infringement or other violation of, any third party rights.',
+                              ),
+                              TextSpan(
+                                  text: '\n\nYour Privacy',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                text: '\n\nPlease read the Privacy Policy.',
+                              ),
+                              TextSpan(
+                                  text: '\n\nReservation of Rights',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                text: '\n\nWe reserve the right to request that you remove all links or any particular link to our App. You approve to immediately remove all links to our App upon request. We also reserve the right to amen these terms and conditions and it’s linking policy at any time. By continuously linking to our App, you agree to be bound to and follow these linking terms and conditions.',
+                              ),
+                              TextSpan(
+                                  text: '\n\nRemoval of links from our App',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                text: '\n\nIf you find any link on our App that is offensive for any reason, you are free to contact and inform us any moment. We will consider requests to remove links but we are not obligated to or so or to respond to you directly. We do not ensure that the information on this App is correct, we do not warrant its completeness or accuracy; nor do we promise to ensure that the App remains available or that the material on the App is kept up to date.',
+                              ),
+                              TextSpan(
+                                  text: '\n\nDisclaimer',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  )
+                              ),
+                              TextSpan(
+                                text: '\n\nTo the maximum extent permitted by applicable law, we exclude all representations, warranties, and conditions to our App and its usage. Nothing in this disclaimer will:'
+                                    '\n\n- limit or exclude our or your liability for death or personal injury;'
+                                    '\n- limit or exclude our or your liability for fraud or fraudulent misrepresentation;'
+                                    '\n- limit any of our or your liabilities in any way that is not permitted under applicable law; or'
+                                    '\n- exclude any of our or your liabilities that may not be excluded under applicable law.'
+                                    '\n\nThe limitations and prohibitions of liability set in this Section and elsewhere in this disclaimer: (a) are subject to the preceding paragraph; and (b) govern all liabilities arising under the disclaimer, including liabilities arising in contract, in tort and for breach of statutory duty.'
+                                    '\n\nAs long as the App and the information and services on the App are provided free of charge, we will not be liable for any loss or damage of any nature.',
+                              ),
+                            ],
                             style: TextStyle(
                               fontSize: 14,
-                            )),
+                            )
+                        ),
                       ),
                     ],
                   ),
@@ -341,7 +450,13 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           text: TextSpan(children: [
                         TextSpan(
                           text:
-                              'Privacy Policy\n\n[Our Name] has created a free app called MailSpeak. This Mobile Application is provided at no cost and is intended for use as is. \n\nThis page is used to inform app users of our policies regarding the collection, use, and disclosure of Personal Information should they decide to use our Service.\n\nIf you choose to use our Service, then you agree to the collection and use of information in relation to this policy. The Personal Information that we collect is used for providing and improving the Service. We will not use or share your information with anyone except as described in this Privacy Policy.\n\nInformation Collection and Use\n\nFor a better experience, while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to email, email password. The information that we request will be retained by us and used as described in this privacy policy. \n\nThe app does use third party services that may collect information used to identify you.\n\nLink to privacy policy of third-party service providers used by the app',
+                              'United Global Master Coders has created a free app called MailSpeak. This Mobile Application is provided at no cost and is intended for use as is. '
+                                  '\n\nThis page is used to inform app users of our policies regarding the collection, use, and disclosure of Personal Information should they decide to use our Service.'
+                                  '\n\nIf you choose to use our Service, then you agree to the collection and use of information in relation to this policy. The Personal Information that we collect is used for providing and improving the Service. We will not use or share your information with anyone except as described in this Privacy Policy.'
+                                  '\n\nInformation Collection and Use'
+                                  '\n\nFor a better experience, while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to email, email password. The information that we request will be retained by us and used as described in this privacy policy. '
+                                  '\n\nThe app does use third party services that may collect information used to identify you.'
+                                  '\n\nLink to privacy policy of third-party service providers used by the app',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.black,
@@ -560,7 +675,8 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                       builder: (context) {
                                         return Center(child: CircularProgressIndicator(
                                           color: Colors.white,
-                                        ));
+                                          )
+                                        );
                                       },
                                     );
                                     Keychain().addCredentials(email, password);
