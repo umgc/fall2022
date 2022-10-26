@@ -34,7 +34,7 @@
         <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
             <parameter-binding
                 android:value="feature"
-                android:key="name"/>
+                android:key="Notifications"/>
         </capability-binding>
     </shortcut>
 </shortcuts>
