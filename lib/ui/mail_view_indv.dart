@@ -297,7 +297,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
-        title: 'Search Result: ${widget.mailPiece.id}',
+        title: 'Mail Piece',
       ),
       body:  //in the main page, if loading is false, load container, if loading is true, run circ prog indicator
           loading == true ? Center(
@@ -305,7 +305,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children:[ CircularProgressIndicator(),
                                     Text(
-                                      '\nLOADING MAILPIECE...',
+                                      '\nLOADING MAIL PIECE...',
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -345,9 +345,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, )),
                                 Text(
                                     DateFormat('yyyy/MM/dd')
-                                        .format(widget.mailPiece.timestamp) +
-                                    ' ' +
-                                    DateFormat('EEE hh:mm a')
                                         .format(widget.mailPiece.timestamp),
                                 style: TextStyle(fontSize: 15)),
                               ],
