@@ -32,7 +32,7 @@ class MailFetcher {
         try {
           debugPrint("Attempting to process email from " +
               email.decodeDate()!.toString());
-          mailPieces.addAll(await _processEmail(email));
+          mailPieces.addAll(await processEmail(email));
         } catch (e) {
           print("Unable to process individual email.");
         }
@@ -55,7 +55,7 @@ class MailFetcher {
   }
 
   /// Process an individual email, converting it into a list of MailPieces
-  Future<List<MailPiece>> _processEmail(MimeMessage email) async {
+  Future<List<MailPiece>> processEmail(MimeMessage email) async {
     List<MailPiece> mailPieces = <MailPiece>[];
 
     // Get attachments with metadata and convert them to MailPieces
@@ -75,11 +75,11 @@ class MailFetcher {
     return mailPieces;
   }
 
-  Attachment _grabImage(MimeData data, String sender) {
+  Attachment _grabImage(MimeData data) {
     var attachment = Attachment()
       ..contentID =
           _getHeader(data, "Content-ID").replaceAll('<', '').replaceAll('>', '')
-      ..sender = sender
+      ..sender = '' //Sender gets set in _processMailImage
       ..attachment = data
           .decodeMessageData()
           .toString() //These are base64 encoded images with formatting
@@ -92,25 +92,7 @@ class MailFetcher {
   /// Retrieve a list of the mail image "attachments" with accompanying metadata
   Future<List<Attachment>> _getAttachments(MimeMessage email) async {
     var mimeParts = email.mimeData!.parts!;
-    String sender = "";
     List<Attachment> attachments = [];
-
-    if (email.sender == null) {
-      String metaData = email.mimeData!.parts!.first.toString();
-
-      if (metaData.contains('<sender>')) {
-        sender = metaData.substring(
-            metaData.indexOf('<sender>'), metaData.indexOf('</sender>'));
-      }
-    } else {
-      if (email.sender!.hasPersonalName) {
-        sender = email.sender!.personalName.toString();
-      } else {
-        sender = email.sender!.email;
-      }
-    }
-
-    //print("Read in sender: " + sender);
 
     for (var i = 0; i < mimeParts.length; i++) {
       var mimeTopType = mimeParts[i].contentType!.mediaType.top;
@@ -118,7 +100,7 @@ class MailFetcher {
       switch (mimeTopType) {
         case MediaToptype.image:
           //grab the image
-          attachments.add(_grabImage(mimeParts[i], sender));
+          attachments.add(_grabImage(mimeParts[i]));
           break;
         case MediaToptype.multipart:
           // there might be more subparts
@@ -127,7 +109,7 @@ class MailFetcher {
                 mimeParts[i].parts![j].contentType!.mediaType.top;
             switch (subPartTopType) {
               case MediaToptype.image:
-                attachments.add(_grabImage(mimeParts[i].parts![j], sender));
+                attachments.add(_grabImage(mimeParts[i].parts![j]));
                 break;
               default:
                 // only go two parts deep
@@ -152,31 +134,86 @@ class MailFetcher {
         .toString();
   }
 
+  /**
+   * @param full = the full string you wish to parse
+   * @param sub = the substring you are searching for
+   * @retval = list of starting indicies of all sub matches
+   */
+  List<int> _parseForAllStartingPoints(String full, String sub) {
+    List<int> startingPositions = [];
+    int index = 0;
+
+    while (index != -1) {
+      index = full.indexOf(sub, index);
+
+      if (index != -1) {
+        startingPositions.add(index);
+        index += sub.length;
+      }
+    }
+    return startingPositions;
+  }
+
   /// Process an individual mail image, converting it into a MailPiece
   Future<MailPiece> _processMailImage(MimeMessage email, Attachment attachment,
       DateTime timestamp, int index) async {
     MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
-    // Sender text is actually sometimes included in the Email body as text for "partners".
-    // We prefer to use this rather than try and deduce it using the image itself.
+    // If sender is not stored in metadata
+    if (email.sender == null) {
+      //get full html string of the email
+      String fullHtml = email.mimeData!.parts!.first.toString();
+      List<int> matchIndicies =
+          _parseForAllStartingPoints(fullHtml, 'From</strong>');
 
-    /**
-     * NEED HELP DEVELOPING THIS LOGIC
-     * I want to check if attachment.sender.isEmpty && ocrScanResult.addresses.first.name != null then assign first.name
-     * then if no match, check and see if the logo has a name, if so assign the name
-     * Else assign "Unknown sender"
-     * I get an error on the null check stating that it cannot possibly be null
-     * Switching the commented lines shows only one result in the search results since it was the only one that was successfully parsed
-     */
+      if (matchIndicies.isNotEmpty) {
+        // Find all potential cid's in html, try to match one to the attachment
+        // TODO: A more efficient solution where you cache so you only search each html string once
+        for (int i in matchIndicies) {
+          int cidStart = fullHtml.indexOf('cid', i) + 4;
+          String parsedCid =
+              fullHtml.substring(cidStart, fullHtml.indexOf("\"", cidStart));
+
+          //Parsing the html gives us some delimiters, so must get rid of
+          var parts = parsedCid.split("=");
+          var getRidOfStrangeWhiteSpace = parts[1].trim();
+          parsedCid = parts[0] + getRidOfStrangeWhiteSpace;
+
+          if (attachment.contentID == parsedCid) {
+            attachment.sender = fullHtml
+                .substring(i + 13, fullHtml.indexOf('</td>', i + 13))
+                .trim();
+            break;
+          }
+        }
+      }
+    } else {
+      if (email.sender!.hasPersonalName) {
+        attachment.sender = email.sender!.personalName.toString();
+      } else {
+        attachment.sender = email.sender!.email;
+      }
+    }
+
+    // If no sender text included in email, use OCR results
+    // This code is a bit messy because there's no way to check if those objects = null
     if (attachment.sender.isEmpty) {
-      // if (ocrScanResult.addresses.first.name != null) {
-      //   attachment.sender = ocrScanResult.addresses.first.name;
-      // }
-      // if (ocrScanResult.logos.first.getName != null) {
-      //   attachment.sender = ocrScanResult.logos.first.getName;
-      // }
-      // else
-      attachment.sender = "Unknown Sender";
+      try {
+        if (ocrScanResult.addresses.first.name.isNotEmpty) {
+          attachment.sender = ocrScanResult.addresses.first.name;
+        }
+      } catch (e) {
+        debugPrint("No addresses detected for this attachment");
+
+        try {
+          if (ocrScanResult.logos.first.getName.isNotEmpty) {
+            attachment.sender = ocrScanResult.logos.first.getName;
+          }
+        } catch (e) {
+          debugPrint("No logos detected for this attachment");
+          attachment.sender = "Unknown Sender";
+        }
+      }
     }
 
     final id = "${attachment.sender}-$timestamp-$index";
