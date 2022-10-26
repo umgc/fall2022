@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/utility/Keychain.dart';
@@ -56,7 +57,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   static const kPrimaryColor = Color(0xFF6F35A5);
   static const kPrimaryLightColor = Color(0xFFF1E6FF);
   static const double defaultPadding = 16.0;
-  bool checked = false;
+  bool policyChecked = false;
 
   @override
   void initState() {
@@ -82,7 +83,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
   }
 
   @override
-  void processFunction(ApplicationFunction function) {
+  Future<void> processFunction(ApplicationFunction function) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -522,11 +523,11 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
       body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          height: 800.0,
+          height: MediaQuery.of(context).size.height,
           child: SafeArea(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
+                Container(
                 padding: const EdgeInsets.all(15.0),
                 width: 350,
                 decoration: BoxDecoration(
@@ -552,8 +553,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                           maintainSize: true,
                           maintainAnimation: true,
                           maintainSemantics: true,
-                          child: Text("MailSpeak Application. Log in.")
-                      ),
+                          child: Text("MailSpeak Application. Log in.")),
                       Container(
                         alignment: Alignment.center,
                         child: Image.asset(
@@ -590,27 +590,86 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         ),
                       ),
                       Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "OR",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 35, right: 35),
+                                  child: Semantics(
+                                    excludeSemantics: true,
+                                    label: "Google Sign-in",
+                                    button: true,
+                                    child: SignInButton(
+                                    Buttons.Google,
+                                    onPressed: () async {
+                                      if (policyChecked != true) {
+                                        showTermsAndPrivacyAgreementErrorDialog();
+                                        //If check box is not ticked off, show error dialog
+                                      } else {
+                                        // To get oauth token
+                                        bool success = await UserAuthService()
+                                            .signInGoogleEmail();
+
+                                        if (success) {
+                                          await CacheService.updateMail();
+                                          Navigator.pushNamed(context, '/main');
+                                        } else {
+                                          showLoginErrorDialog();
+                                          context.loaderOverlay.hide();
+                                        }
+                                      }
+                                    },
+                                    text: 'Sign In with Google',
+                                  ),),
+                                ))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Container(
                         padding: const EdgeInsets.all(15),
                         alignment: Alignment.center,
                         child: Row(
                           children: [
-                            Checkbox(
-                              value: checked,
+                            Semantics(
+                              label: "Conditions",
+                            child: Checkbox(
+                              value: policyChecked,
                               onChanged: (value) {
                                 setState(() {
-                                  checked = value ?? false;
+                                  policyChecked = value ?? false;
                                 });
                               },
-                            ),
-                            Expanded(
-                              child: Text.rich(
-                                TextSpan(
+                            ),),
+                            Semantics(
+                              explicitChildNodes: true,
+                              child:
+                            Column (
+                              children: [
+                                Text.rich(
+                                  TextSpan(
                                     text: 'I have read and agree to the ',
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.black),
-                                    children: <TextSpan>[
-                                      TextSpan(
+                                        fontSize: 14, color: Colors.black),),),
+                                Text.rich(
+                                  TextSpan(
                                           text: 'Terms and Conditions',
+                                          semanticsLabel: "Terms and Conditions",
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.blue,
@@ -621,14 +680,15 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () {
                                               showTermsAndConditionsDialog();
-                                            }),
-                                      TextSpan(
+                                            }),),
+                                Text.rich(
+                                  TextSpan(
                                           text: ' and ',
                                           style: TextStyle(
                                               fontSize: 14,
-                                              color: Colors.black),
-                                          children: <TextSpan>[
-                                            TextSpan(
+                                              color: Colors.black),),),
+                                Text.rich(
+                                    TextSpan(
                                                 text: 'Privacy Policy',
                                                 style: TextStyle(
                                                     fontSize: 14,
@@ -641,18 +701,17 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                                       ..onTap = () {
                                                         showPrivacyPolicyDialog();
                                                       })
-                                          ])
-                                    ]),
+                                ),
+                              ])
+
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            ]),),
+
                       Container(
                           alignment: Alignment.center,
                           child: OutlinedButton(
                             onPressed: () async {
-                              if (checked != true) {
+                              if (policyChecked != true) {
                                 showTermsAndPrivacyAgreementErrorDialog();
                                 //If check box is not ticked off, show error dialog
                               } else {
@@ -685,7 +744,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                     Navigator.pushNamedAndRemoveUntil(
                                         context,
                                         '/main',
-                                        (Route<dynamic> route) => false);
+                                        (Route<dynamic> route) => false, arguments: widget.function);
                                   } else {
                                     showLoginErrorDialog();
                                     context.loaderOverlay.hide();
@@ -731,39 +790,6 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                 launchUrl(url4);
                               }),
                       ]))),
-                      Container(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 35, right: 35),
-                                  child: SignInButton(
-                                    Buttons.Google,
-                                    onPressed: () async {
-                                      // To get oauth token
-                                      bool success = await UserAuthService()
-                                          .signInGoogleEmail();
-
-                                      if (success) {
-                                        await CacheService.updateMail();
-                                        Navigator.pushNamed(context, '/main');
-                                      } else {
-                                        showLoginErrorDialog();
-                                        context.loaderOverlay.hide();
-                                      }
-                                    },
-                                    text: 'Sign In with Google',
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),

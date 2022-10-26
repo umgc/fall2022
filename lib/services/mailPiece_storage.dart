@@ -12,7 +12,7 @@ class MailPieceStorage {
     final result = await db.query(MAIL_PIECE_TABLE,
         orderBy: "timestamp DESC", limit: 1, columns: ["timestamp"]);
     if (result.isEmpty) {
-      return DateTime.now().subtract(Duration(days: 30));
+      return DateTime.now().subtract(Duration(days: 90));
     } else {
       final timestamp = result[0]["timestamp"] as int;
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
@@ -38,7 +38,9 @@ class MailPieceStorage {
       "image_text": piece.imageText,
       "timestamp": piece.timestamp.millisecondsSinceEpoch,
       "scanImgCID": piece.scanImgCID,
-      "uspsMID": piece.uspsMID
+      "uspsMID": piece.uspsMID,
+      "image_bytes": piece.featuredHtml,
+      "featured_html": piece.featuredHtml
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);
@@ -55,13 +57,16 @@ class MailPieceStorage {
         await db.query(MAIL_PIECE_TABLE, where: "id = ?", whereArgs: [id]);
     if (result.isEmpty) return null;
     return MailPiece(
-        result[0]["id"]?.toString() ?? "",
-        result[0]["email_id"]?.toString() ?? "",
-        DateTime.fromMillisecondsSinceEpoch(result[0]["timestamp"] as int),
-        result[0]["sender"]?.toString() ?? "",
-        result[0]["image_text"]?.toString() ?? "",
-        result[0]["scanImgCID"]?.toString() ?? "",
-        result[0]["uspsMID"]?.toString() ?? "" );
+      result[0]["id"]?.toString() ?? "",
+      result[0]["email_id"]?.toString() ?? "",
+      DateTime.fromMillisecondsSinceEpoch(result[0]["timestamp"] as int),
+      result[0]["sender"]?.toString() ?? "",
+      result[0]["image_text"]?.toString() ?? "",
+      result[0]["scanImgCID"]?.toString() ?? "",
+      result[0]["uspsMID"]?.toString() ?? "",
+      imageBytes: result[0]["image_bytes"]?.toString(),
+      featuredHtml: result[0]["featured_html"]?.toString(),
+    );
   }
 
   /// Updates a single mail piece that matches the provided id
@@ -75,7 +80,9 @@ class MailPieceStorage {
       'sender': updated.sender,
       'image_text': updated.imageText,
       'scanImgCID': updated.scanImgCID,
-      'uspsMID': updated.uspsMID
+      'uspsMID': updated.uspsMID,
+      "image_bytes": updated.featuredHtml,
+      "featured_html": updated.featuredHtml
     };
     final result = await db.update(MAIL_PIECE_TABLE, updatedValues,
         where: "id = ?", whereArgs: [id]);
@@ -107,13 +114,16 @@ class MailPieceStorage {
         where: "image_text LIKE '%' || ? || '%'", whereArgs: [query ?? ""]);
     return result
         .map((row) => MailPiece(
-            row["id"].toString() ?? "",
-            row["email_id"]?.toString() ?? "",
-            DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
-            row["sender"]?.toString() ?? "",
-            row["image_text"]?.toString() ?? "",
-            row["scanImgCID"]?.toString() ?? "",
-            row["uspsMID"]?.toString() ?? "" ))
+              row["id"].toString() ?? "",
+              row["email_id"]?.toString() ?? "",
+              DateTime.fromMillisecondsSinceEpoch(row["timestamp"] as int),
+              row["sender"]?.toString() ?? "",
+              row["image_text"]?.toString() ?? "",
+              row["scanImgCID"]?.toString() ?? "",
+              row["uspsMID"]?.toString() ?? "",
+              imageBytes: result[0]["image_bytes"]?.toString(),
+              featuredHtml: result[0]["featured_html"]?.toString()
+            ))
         .toList();
   }
 }

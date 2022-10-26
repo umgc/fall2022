@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:summer2022/models/Notification.dart' as Notification;
@@ -8,10 +9,16 @@ import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/services/mailPiece_storage.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 class NotificationsWidget extends StatefulWidget {
-  const NotificationsWidget({Key? key}) : super(key: key);
+  final ApplicationFunction? function;
+  const NotificationsWidget({Key? key, this.function}) : super(key: key);
   @override
   NotificationsWidgetState createState() => NotificationsWidgetState();
 }
@@ -22,23 +29,33 @@ MailPieceStorage mailStorage = new MailPieceStorage();
 
 final time =  DateTime.now().subtract(Duration(days: 30));
 MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "","");
-class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
+class NotificationsWidgetState extends AssistantState<NotificationsWidget> with SingleTickerProviderStateMixin {
   final _notifier = MailNotifier();
   final _keywordController = TextEditingController();
 
   var _subscriptions = <NotificationSubscription>[];
   var _notifications = <Notification.Notification>[];
+  late TabController _tabController;
   @override
   void initState() {
     super.initState();
+    _tabController = new TabController(vsync: this, length: 2);
     updateSubscriptionList();
     updateNotificationList();
     removeAllNotification();
 
     this.fetch();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkPassedInFunction());
+
     setState(() {});
 
+  }
+
+  void checkPassedInFunction() {
+    if (this.widget.function != null) {
+      processFunction(widget.function!);
+    }
   }
 
   Future<MailPiece> getMailPiece(String mailPieceId) async {
@@ -58,7 +75,18 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   @override
   void dispose() {
     _keywordController.dispose();
+    _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> processFunction(ApplicationFunction function) async {
+    if (function.methodName == "addKeyword") {
+      _tabController.animateTo(1);
+      addSubscription(function.parameters![0]);
+    }
+    else {
+      await super.processFunction(function);
+    }
   }
 
   Future<void> updateSubscriptionList() async {
@@ -115,9 +143,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   @override
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    return new Scaffold(
         floatingActionButton: Visibility(
           visible: showHomeButton,
           child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
@@ -125,8 +151,10 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: const BottomBar(),
-        appBar: TopBar(title: "Notifications"),
-        body: TabBarView(
+        appBar: TopBar(title: "Notifications", tabController: _tabController),
+        body:
+        TabBarView(
+            controller: _tabController,
             children: <Widget>[
               Container( //Notifications
                 padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -136,15 +164,23 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                          Semantics(
+                            explicitChildNodes: true,
+                            child:
+                            SizedBox(
+                              child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                    fontSize: 18), textAlign: TextAlign.center,),
+                              width: MediaQuery.of(context).size.width/6,
+                                ),
+                          ),
+                          Semantics(
+                            explicitChildNodes: true,
+                            child:
+                            SizedBox(
+                              child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                   fontSize: 18), textAlign: TextAlign.center),
-                            width: MediaQuery.of(context).size.width/6,
-                              ),
-                          SizedBox(
-                            child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
-                                fontSize: 18), textAlign: TextAlign.center),
-                              width: MediaQuery.of(context).size.width/4,
+                                width: MediaQuery.of(context).size.width/4,
+                            ),
                           ),
                           Spacer(),
                           SizedBox(
@@ -192,18 +228,22 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                      child: Text('Go to Message', style: TextStyle(color: Colors.white),),
+                                      child: Text('Go to Message',
+                                        semanticsLabel: "Go to " + item.subscriptionKeyword + " Message",
+                                        style: TextStyle(color: Colors.white),),
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateColor.resolveWith((states) => Colors.black45),
                                         //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
                                       ),
                                       onPressed: () async {
-                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: await getMailPiece(item.mailPieceId));
+                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(await getMailPiece(item.mailPieceId)));
                                       },
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                      child: Text('Clear', style: TextStyle(color: Colors.white),),
+                                      child: Text('Clear',
+                                        semanticsLabel: "Clear " + item.subscriptionKeyword,
+                                        style: TextStyle(color: Colors.white),),
                                       style: ButtonStyle(
                                         backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
                                         //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
@@ -221,22 +261,27 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                   ],
                 ),
               ),
-              Container(  //Manager1
+              Container(
+               //Manager1
                 padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: Column(
                   children: [
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child:
-                            Semantics(
-                              excludeSemantics: true,
-                              textField: true,
-                              focusable: true,
-                              label: "Keyword",
-                              hint: "Enter notification keyword to add",
-                              child:
-                                Padding(padding:EdgeInsets.only(right:20), child:
+                          Semantics(
+                            explicitChildNodes: true,
+                            child:
+                          Container(
+                            width: MediaQuery.of(context).size.width/1.5,
+                            alignment: Alignment.center,
+                            child:
+                                Semantics(
+                                  excludeSemantics: true,
+                                  label: "Keyword",
+                                  textField: true,
+                                  hint: "Enter notification keyword to add",
+                                  child:
                                   TextField(
                                       controller: _keywordController,
                                       onSubmitted: (keywords) {
@@ -252,10 +297,8 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                           labelStyle: TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
                                               fontSize: 18),
                                           isDense: true),
-                                    ),
-                                ),
-                            ),
-                          ),
+                                    ),),
+                          ),),
                           Container(
                             child: OutlinedButton(
                               child: Text(
@@ -270,6 +313,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                           borderRadius: BorderRadius.circular(30)))),
                               onPressed: () {
                                 addSubscription(_keywordController.text);
+                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'itemId':_keywordController.text});
                                 _keywordController.clear();
                               },
                             ),
@@ -302,6 +346,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                     child: OutlinedButton(
                                       child: Text(
                                         'Delete',
+                                        semanticsLabel: "Delete " + item.keyword,
                                         style: TextStyle(color: Colors.white,fontSize: 18),
                                       ),
                                       style: ButtonStyle(
@@ -329,8 +374,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
               // This is the end of manager tab one
             ]
         ),
-      ),
-    );
+     );
   }
 
 

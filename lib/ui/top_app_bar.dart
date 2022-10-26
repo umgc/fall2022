@@ -6,9 +6,10 @@ import 'package:summer2022/main.dart';
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final Size preferredSize;
+  final TabController? tabController;
 
   TopBar(
-      {Key? key, required this.title}): this.preferredSize= ((title == "Notifications") ? Size.fromHeight(100.0) : Size.fromHeight(50.0)), super(key:key);
+      {Key? key, required this.title, this.tabController = null}): this.preferredSize= ((title == "Notifications") ? Size.fromHeight(100.0) : Size.fromHeight(50.0)), super(key:key);
 
   @override
   TopBarState createState() => TopBarState();
@@ -90,8 +91,9 @@ class TopBarState extends State<TopBar> {
       automaticallyImplyLeading: false,
       backgroundColor: Color.fromRGBO(51, 51, 102, 1),
       bottom: (this.widget.title == "Notifications")
-          ? (const TabBar(
-              tabs: <Widget>[Tab(text: "Notifications"), Tab(text: "Manage")]))
+          ? (TabBar(controller: this.widget.tabController,
+              tabs: <Widget>[Tab(text: "Notifications"), Tab(text: "Manage")])
+      )
           : null,
     );
   }

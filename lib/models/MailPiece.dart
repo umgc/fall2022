@@ -6,11 +6,13 @@ class MailPiece {
   final DateTime timestamp;
   final String sender;
   final String imageText;
+  final String? imageBytes;
+  final String? featuredHtml;
   final String scanImgCID;
   final String uspsMID;
 
   MailPiece(this.id, this.emailId, this.timestamp, this.sender, this.imageText,
-      this.scanImgCID, this.uspsMID);
+      this.scanImgCID, this.uspsMID, {this.imageBytes = null, this.featuredHtml = null});
 
   factory MailPiece.fromJson(dynamic json) {
     return MailPiece(
@@ -20,7 +22,7 @@ class MailPiece {
         json['sender'] as String,
         json['imageText'] as String,
         json['scanImgCID'] as String,
-        json['uspsMID'] as String,
+        json['uspsMID'] as String
         );
   }
 

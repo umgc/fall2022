@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
+import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/models/Digest.dart';
@@ -8,6 +10,7 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:summer2022/ui/assistant_state.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
 
 class MailWidget extends StatefulWidget {
   final Digest digest;
@@ -39,6 +42,13 @@ class MailWidgetState extends AssistantState<MailWidget> {
           borderRadius: BorderRadius.all(Radius.circular(commonCornerRadius))),
       side: BorderSide(width: commonBorderWidth, color: Colors.black),
     );
+  }
+
+  @override
+  Future<void> processFunction(ApplicationFunction function) async{
+    if (function.methodName != "digest") {
+      await super.processFunction(function);
+    }
   }
 
   @override
@@ -90,12 +100,15 @@ class MailWidgetState extends AssistantState<MailWidget> {
   Widget build(BuildContext context) {
     // Figma Flutter Generator MailWidget - FRAME
 
-    return GestureDetector(
-      onHorizontalDragEnd: swipeLeftRight,
-      child: Scaffold(
+    return Scaffold(
+        floatingActionButton: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const BottomBar(),
         appBar: TopBar(title: "Mail"),
-        body: SafeArea(
+        body: GestureDetector(
+          excludeFromSemantics: true,
+          onHorizontalDragEnd: swipeLeftRight,
+          child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -138,29 +151,41 @@ class MailWidgetState extends AssistantState<MailWidget> {
                     // LATEST and UNREAD Buttons
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        height: commonButtonHeight, // LATEST Button
-                        child: OutlinedButton(
-                          onPressed: () {
-                            showLinkDialog();
-                          },
-                          style: commonButtonStyleElevated(
-                              Colors.white, Colors.grey),
-                          child: const Text("Links",
-                              style: TextStyle(color: Colors.black)),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                          MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                          padding: MaterialStateProperty.all(
+                              EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                          textStyle: MaterialStateProperty.all(
+                            TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
+                        onPressed: () {
+                          showLinkDialog();
+                        },
+                        child: Text('Links'),
                       ),
-                      SizedBox(
-                        height: commonButtonHeight, // UNREAD Button
-                        child: OutlinedButton(
-                          onPressed: () {
-                            //readMailPiece();
-                          },
-                          style: commonButtonStyleElevated(
-                              Colors.white, Colors.grey),
-                          child: const Text("All Details",
-                              style: TextStyle(color: Colors.black)),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                          MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                          padding: MaterialStateProperty.all(
+                              EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                          textStyle: MaterialStateProperty.all(
+                            TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(widget.digest.mailPieces[attachmentIndex], widget.digest));;
+                        },
+                        child: Text('All Details'),
                       ),
                     ]),
               ),
@@ -177,11 +202,13 @@ class MailWidgetState extends AssistantState<MailWidget> {
                             seekBack();
                           });
                         },
-                        child: const Icon(Icons.skip_previous),
+                        child: const Icon(Icons.skip_previous, semanticLabel: "Backward",),
                       ),
                       Text(widget.digest.attachments.isNotEmpty
                           ? "${attachmentIndex + 1}/${widget.digest.attachments.length}"
-                          : "0/0"),
+                          : "0/0", semanticsLabel: "Mail piece " + (widget.digest.attachments.isNotEmpty
+                          ? "${attachmentIndex + 1} of ${widget.digest.attachments.length}"
+                          : "0 of 0"),),
                       FloatingActionButton(
                         backgroundColor: Colors.grey,
                         heroTag: "f2",
@@ -190,7 +217,7 @@ class MailWidgetState extends AssistantState<MailWidget> {
                             seekForward();
                           });
                         },
-                        child: const Icon(Icons.skip_next),
+                        child: const Icon(Icons.skip_next, semanticLabel: "Forward",),
                       ),
                     ]),
               )
@@ -248,6 +275,28 @@ class MailWidgetState extends AssistantState<MailWidget> {
               },
             ),
           ),
+          // Added for accessibility purposes
+          actions: [
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor:
+                MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                padding: MaterialStateProperty.all(
+                    EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                textStyle: MaterialStateProperty.all(
+                  TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.center,
         );
       },
     );
@@ -277,17 +326,5 @@ class MailWidgetState extends AssistantState<MailWidget> {
       }
     }
     links = newLinks;
-
   }
-
-  // Future<void> readMailPiece() async {
-  //   try {
-  //     if (reader != null) {
-  //       await reader!.readDigestInfo();
-  //       //Future.wait([reader!.readDigestInfo()]);
-  //     }
-  //   } catch (e) {
-  //     debugPrint("ERROR: Read digest piece: ${e.toString()}");
-  //   }
-  // }
 }

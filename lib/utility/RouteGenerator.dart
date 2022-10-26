@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/chat_widget.dart';
 import 'package:summer2022/ui/mail_widget.dart';
 import 'package:summer2022/ui/main_menu.dart';
@@ -13,9 +12,10 @@ import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/EmailArguments.dart';
 import 'package:summer2022/ui/search.dart';
 import 'package:summer2022/ui/mail_view.dart';
-
-import '../models/MailSearchParameters.dart';
-import '../ui/mail_view_indv.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:summer2022/models/MailSearchParameters.dart';
+import 'package:summer2022/ui/mail_view_indv.dart';
+import 'package:summer2022/models/ApplicationFunction.dart';
 
 // Enum defining all areas of the application
 enum SiteAreas { Home, Settings, Search, SearchResults, MailView, NotificationManage, NotificationView }
@@ -27,7 +27,8 @@ class RouteGenerator {
     _updatePreviousRoute(settings.name!);
     switch (settings.name) {
       case '/main':
-        return CupertinoPageRoute(builder: (_) => const MainWidget());
+        var parameters = settings.arguments != null ? settings.arguments as ApplicationFunction : null;
+        return CupertinoPageRoute(builder: (_) => MainWidget(function: parameters));
       case '/settings':
         return CupertinoPageRoute(builder: (_) => const SettingsWidget());
       case '/digest_mail':
@@ -57,12 +58,13 @@ class RouteGenerator {
         return CupertinoPageRoute(
             builder: (_) => MailViewWidget(query: parameters));
       case '/mail_piece_view':
-        var parameters =  settings.arguments as MailPiece;
+        var parameters =  settings.arguments as MailPieceViewArguments;
         return CupertinoPageRoute(
-            builder: (_) => MailPieceViewWidget(mailPiece: parameters));
+            builder: (_) => MailPieceViewWidget(mailPiece: parameters.mailPiece, digest: parameters.digest));
       case '/notifications':
+        var parameters = settings.arguments != null ? settings.arguments as ApplicationFunction : null;
         return CupertinoPageRoute(
-            builder: (_) => NotificationsWidget());
+            builder: (_) => NotificationsWidget(function: parameters));
       default:
         return CupertinoPageRoute(builder: (_) {
           return Scaffold(
