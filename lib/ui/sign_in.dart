@@ -554,6 +554,15 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                                       await mail.getImapClient(email, password);
                                   //Store the credentials into the the secure storage only if validated
                                   if (loggedIn) {
+                                    //Loading circle indicator
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return Center(child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ));
+                                      },
+                                    );
                                     Keychain().addCredentials(email, password);
                                     await CacheService.updateMail();
                                     //Navigates to Main Menu and clears navigation stack to prevent login screen access with back gesture
