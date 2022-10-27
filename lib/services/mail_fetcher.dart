@@ -161,6 +161,70 @@ class MailFetcher {
 
     // If sender is not stored in metadata
     if (email.sender == null) {
+
+      for (int x = 0; x < email.mimeData!.parts!.length; x++) {
+        if (email.mimeData!.parts!
+            .elementAt(x)
+            .contentType
+            ?.value
+            .toString()
+            .contains("multipart") ??
+            false) {
+          for (int y = 0;
+          y < email.mimeData!.parts!.elementAt(x).parts!.length;
+          y++) {
+            if (email.mimeData!.parts!
+                .elementAt(x)
+                .parts!
+                .elementAt(y)
+                .contentType
+                ?.value
+                .toString()
+                .contains("text/html") ??
+                false) {
+              //get the parts into an html document to make it searchable.
+              //need to decode Text into 'quoted-printable' type to see all the link text values
+              var doc = parse(email.mimeData!.parts!
+                  .elementAt(x)
+                  .parts!
+                  .elementAt(y)
+                  .decodeText(
+                  ContentTypeHeader('text/html'), 'quoted-printable'));
+              //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
+              var scannedMailPieceItems = doc.querySelectorAll(
+                  'img[src*=\'${attachment.contentID}\']');
+
+              int scanImgPos = doc.querySelectorAll('*').indexOf(
+                  scannedMailPieceItems![0]);
+
+              var fromItems = doc.querySelectorAll('strong');
+
+              for (int z = 0; z < fromItems.length; z++) {
+                int fromSenderPos = doc.querySelectorAll('*')
+                    .indexOf(fromItems[z]);
+                if ((scanImgPos < (fromSenderPos + 15)) &&
+                    (scanImgPos > fromSenderPos)) {
+                  String? sender = parse(doc
+                      .querySelectorAll('*')
+                      .elementAt(fromSenderPos)
+                      .parent
+                      ?.text).documentElement?.text.toString().substring(
+                      5); //remove "From "
+                  debugPrint("Mailpiece: " + attachment.contentID + " has this sender: " + sender!);
+
+                  attachment.sender = sender;
+                  break;
+                }
+              }
+            } //end if "text/html"
+            break;
+          } //end elements y looop
+
+        } //end if "multipart
+        break;
+      } //end element x loop
+
+      /* skip this code, has errors
       //get full html string of the email
       String fullHtml = email.mimeData!.parts!.first.toString();
       List<int> matchIndicies =
@@ -187,6 +251,8 @@ class MailFetcher {
           }
         }
       }
+      */
+
     } else {
       if (email.sender!.hasPersonalName) {
         attachment.sender = email.sender!.personalName.toString();
