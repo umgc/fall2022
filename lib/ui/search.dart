@@ -57,6 +57,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     final filters = SearchCriteria.withList(this.widget.parameters);
 
     // Update local variables
+    if (filters.keyword.isNotEmpty) {
+      keywordInput.text = filters.keyword;
+    }
     _start = filters.startDate ?? _start;
     _end = filters.endDate ?? _end;
   }
