@@ -59,7 +59,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     setState(() {
       loading = true;
     });
-    
+
     debugPrint("Loading data for mailpiece:"
         "\nid: " + widget.mailPiece.id.toString() +
         "\nscanImgCID: " + widget.mailPiece.scanImgCID.toString() +

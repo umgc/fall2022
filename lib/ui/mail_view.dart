@@ -67,9 +67,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                                   Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
                                   ),
                                 ]),
-                          ),
-                        ]
-                    ),
+                        ]  ),
                     subtitle: Text(mailPiece.imageText.toString().replaceAll("\n", " "),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,),
