@@ -30,15 +30,7 @@ class OtherMailWidgetState extends AssistantState<OtherMailWidget> {
     // index must be initialed before build or emails won't iterate
     super.initState();
     index = widget.emails.length - 1;
-    locator<AnalyticsService>().logScreens(name: "Email");
-    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Email");
-    /*FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'screenName': 'Email',
-        'screenClass': 'other_mail.dart',
-      },
-    );*/
+    locator<AnalyticsService>().logScreens(name: "Other Email");
   }
 
   MimeMessage getCurrentEmailMessage() {
