@@ -18,6 +18,8 @@ import 'package:summer2022/utility/linkwell.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:summer2022/firebase_options.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
@@ -73,6 +75,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         loading = false;
       });
     }
+    locator<AnalyticsService>().logScreens(name: 'Email View: '+ widget.mailPiece.uspsMID);
   }
 
   Future<void> _getMailPieceEmail() async {

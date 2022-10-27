@@ -8,6 +8,8 @@ import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/MailSearchParameters.dart';
 import 'package:summer2022/services/mailPiece_service.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class MailViewWidget extends StatefulWidget {
 
@@ -48,6 +50,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
   Widget build(BuildContext context) {
 
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
+      locator<AnalyticsService>().logScreens(name: "Search Results");
       return Container(
         color: Colors.white10,
         child:

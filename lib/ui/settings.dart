@@ -33,14 +33,6 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
   void initState() {
     super.initState();
     locator<AnalyticsService>().logScreens(name: "Settings");
-    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
-    /*FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'screenName': 'Settings',
-        'screenClass': 'settings.dart',
-      },
-    );*/
   }
 
   void showTermsAndConditionsDialog(){

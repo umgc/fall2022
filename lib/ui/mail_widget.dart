@@ -62,7 +62,7 @@ class MailWidgetState extends AssistantState<MailWidget> {
     if (widget.digest.attachments.isNotEmpty) {
       buildLinks();
     }
-    locator<AnalyticsService>().logScreens(name: "Mail");
+    locator<AnalyticsService>().logScreens(name: "Digest Mail");
     //
     //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Mail");
     //FirebaseAnalytics.instance.logScreenView(screenName: "Mail");

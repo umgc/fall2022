@@ -17,6 +17,8 @@ import 'package:summer2022/models/MailPieceViewArguments.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:summer2022/firebase_options.dart';
+import 'package:summer2022/utility/locator.dart';
+import 'package:summer2022/services/analytics_service.dart';
 
 class SearchWidget extends StatefulWidget {
   final List<String> parameters;
@@ -78,6 +80,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
 
   @override
   Widget build(BuildContext context) {
+    locator<AnalyticsService>().logScreens(name: "Mail Search");
     applyFilters();
     int _duration = _start != null && _end != null ? DateTimeRange(start: _start!, end: _end!).duration.inDays + 1 : 0;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
