@@ -12,9 +12,13 @@ import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:summer2022/firebase_options.dart';
+
+
 
 class NotificationsWidget extends StatefulWidget {
   final ApplicationFunction? function;
@@ -40,6 +44,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: 2);
+    locator<AnalyticsService>().logScreens(name: "Notifications");
     updateSubscriptionList();
     updateNotificationList();
     removeAllNotification();

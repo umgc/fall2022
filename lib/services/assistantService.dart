@@ -1,10 +1,12 @@
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:receive_intent/receive_intent.dart';
+import 'dart:developer';
 
 class AssistantService
 {
   static ApplicationFunction? ParseIntent(Intent intent)
   {
+      log(intent.action ?? "");
       // Try to get our action from the intent
       if (intent.action == "actions.intent.GET_THING")
       {

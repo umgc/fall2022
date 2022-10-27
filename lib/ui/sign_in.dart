@@ -528,7 +528,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(10.0),
                 width: 350,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueAccent),
@@ -565,7 +565,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         child: Text("USPS Informed Delivery Registered Email"),
                       ),
                       Container(
-                        padding: const EdgeInsets.only(top: 15),
+                        padding: const EdgeInsets.only(top: 10),
                         alignment: Alignment.center,
                         child: TextField(
                           decoration: const InputDecoration(
@@ -576,7 +576,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.only(top: 15),
+                        padding: const EdgeInsets.only(top: 10),
                         alignment: Alignment.center,
                         child: TextField(
                           obscureText: true,
