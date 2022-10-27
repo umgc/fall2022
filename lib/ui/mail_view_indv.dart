@@ -59,7 +59,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     setState(() {
       loading = true;
     });
-
+    
     debugPrint("Loading data for mailpiece:"
         "\nid: " + widget.mailPiece.id.toString() +
         "\nscanImgCID: " + widget.mailPiece.scanImgCID.toString() +
@@ -303,7 +303,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         if(originalSplit[i].length < 50)
           originalSplit[i] += ' ';
     };
-    return originalSplit.join(' ');
+    return originalSplit.join('\n');
   }
 
   @override
