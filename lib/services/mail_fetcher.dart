@@ -197,7 +197,7 @@ class MailFetcher {
               int scanImgPos = doc.querySelectorAll('*').indexOf(
                   scannedMailPieceItems![0]);
 
-              var fromItems = doc.querySelectorAll('strong');
+              var fromItems = doc.querySelectorAll("strong");
 
               for (int z = 0; z < fromItems.length; z++) {
                 int fromSenderPos = doc.querySelectorAll('*')
