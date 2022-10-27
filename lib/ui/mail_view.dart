@@ -41,6 +41,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
             Container(
               child:
                 ListTile(
+                    isThreeLine: true,
                     horizontalTitleGap: 10.0,
                     contentPadding: EdgeInsets.all(5),
                     dense: true,
@@ -52,9 +53,6 @@ class MailViewWidgetState extends State<MailViewWidget> {
                         Row(
                         children:[
                           Expanded(
-                            child:
-                          Container(
-                            padding: EdgeInsets.only(right: 10.0),
                             child:
                             Text(
                               mailPiece.sender,
@@ -70,13 +68,11 @@ class MailViewWidgetState extends State<MailViewWidget> {
                                   Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
                                   ),
                                 ]),
-                        ]
-                        ),
-                        subtitle: Text(mailPiece.imageText.toString(),
-                                  maxLines: 5,
-                                  overflow: TextOverflow.fade,
-                                ),
-                        ),
+                        ]),
+                    subtitle: Text(mailPiece.imageText.toString(),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,),
+                ),
             ),
           ),
         ),

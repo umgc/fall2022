@@ -301,7 +301,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     final originalSplit = x.split('\n');
     for(int i=0; i< originalSplit.length; i++) {
         if(originalSplit[i].length < 50)
-          originalSplit[i] += '\n';
+          originalSplit[i] += ' ';
     };
     return originalSplit.join(' ');
   }
@@ -397,6 +397,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                             onPressed: () async {
                                               if (await canLaunchUrl(learnMoreLinkUrl!)) {
                                                 await launchUrl(learnMoreLinkUrl!);
+                                                FirebaseAnalytics.instance.logEvent(name: 'LearnMore_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
                                               } else {
                                                 throw 'Could not launch $learnMoreLinkUrl';
                                               }
@@ -416,6 +417,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                         onPressed: () async {
                                           if (await canLaunchUrl(reminderLinkUrl!)) {
                                             await launchUrl(reminderLinkUrl!);
+                                            FirebaseAnalytics.instance.logEvent(name: 'SetAReminder_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
                                           } else {
                                             throw 'Could not launch $reminderLinkUrl';
                                           }

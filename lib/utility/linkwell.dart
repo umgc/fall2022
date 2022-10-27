@@ -13,6 +13,9 @@ library linkwell;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'src/source.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 /// LinkWell depends on url_launcher plugin
 /// it help lauches the links and emails when user taps
@@ -222,8 +225,11 @@ class LinkWell extends StatelessWidget {
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = () => launch(url));
-
+            recognizer: new TapGestureRecognizer()..onTap = (){
+              launch(url);
+              FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':url});
+            }
+            );
         /// added
         textSpanWidget.add(link);
       } else {
@@ -246,7 +252,11 @@ class LinkWell extends StatelessWidget {
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = () => launch(l));
+            recognizer: new TapGestureRecognizer()..onTap = () {
+              launch(l);
+              FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':l});
+            }
+        );
 
         /// added
         textSpanWidget.add(link);
