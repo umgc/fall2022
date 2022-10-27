@@ -59,9 +59,11 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     setState(() {
       loading = true;
     });
+
+    mailPieceText = _reformatMailPieceString(originalText);
+
     if(widget.mailPiece.scanImgCID != "") {
       _getMailPieceEmail();
-      mailPieceText = _reformatMailPieceString(originalText);
     } else {
       // scanImgCID = "" means no image or links will be found. dont check email and remove do more section
       setState(() {
@@ -283,7 +285,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         if(originalSplit[i].length < 50)
           originalSplit[i] += ' ';
     };
-    return originalSplit.join(' ');
+    return originalSplit.join('\n');
   }
 
   @override

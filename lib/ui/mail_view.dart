@@ -91,7 +91,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
                           ),
                         ]
                     ),
-                    subtitle: Text(mailPiece.imageText.toString(),
+                    subtitle: Text(mailPiece.imageText.toString().replaceAll("\n", " "),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,),
                 ),
