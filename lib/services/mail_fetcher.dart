@@ -109,7 +109,9 @@ class MailFetcher {
                 mimeParts[i].parts![j].contentType!.mediaType.top;
             switch (subPartTopType) {
               case MediaToptype.image:
-                attachments.add(_grabImage(mimeParts[i].parts![j]));
+                if( !mimeParts[i].parts![j].headersList.toString().contains("name=\"ra_0") ) {
+                  attachments.add(_grabImage(mimeParts[i].parts![j]));
+                } //only add if if it not a ride along image
                 break;
               default:
                 // only go two parts deep
@@ -321,15 +323,18 @@ class MailFetcher {
                 }
                 reminderCount++;
               }
-            }
-          }
-        }
-      }
-    }
+            } //end for loop for reminderItems
+            break;
+          } //end if 'text/html'
+        } //end for loop for element y parts
+        break;
+      } //end if multipart
+    } //end for loop for element x parts
 
     return new MailPiece(id, emailId, timestamp, attachment.sender, text!,
         scanImgCID, mailPieceId);
-  }
+
+  } //end _processMailImage
 
   /// Perform OCR scan once on the mail image to get the results for further processing
   Future<MailResponse> _getOcrScan(String mailImage) async {
