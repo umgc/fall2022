@@ -23,27 +23,6 @@ class MailViewWidget extends StatefulWidget {
 
 class MailViewWidgetState extends State<MailViewWidget> {
 
-  //this is temporary for list view display, need to eventually delete when search results are achieved
-  List<MailPiece> mailPieces = _createMailPieces();
-
-  static List<MailPiece> _createMailPieces() {
-    List<MailPiece> _mailPieces = List.generate(
-        10,
-            (index) => new MailPiece(
-            "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
-            "", ""),
-        growable: true
-    );
-
-    MailPiece m = new MailPiece(
-        "id", "emailId", DateTime(2022, 10, 3), "sender",
-        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'", "");
-
-    _mailPieces.add(m);
-
-    return _mailPieces;
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -71,26 +50,24 @@ class MailViewWidgetState extends State<MailViewWidget> {
                     },
                     //leading: mailPiece.mailImage,
                     title:
-                    Row(
+                        Row(
                         children:[
                           Expanded(
                             child:
                             Text(
                               mailPiece.sender,
                               style: TextStyle(fontSize: 20),
+                              maxLines: 1,
+                              overflow: TextOverflow.fade,
                             ),
                           ),
-                          Expanded(
-                            child:
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children:[
                                   Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
                                   ),
                                 ]),
-                          ),
-                        ]
-                    ),
+                        ]  ),
                     subtitle: Text(mailPiece.imageText.toString().replaceAll("\n", " "),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,),
@@ -134,7 +111,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
         child:
           Container(
             padding: EdgeInsets.all(15.0),
-            child:
+                  child:
               Column(
                 children: [
                   SizedBox(
@@ -161,15 +138,14 @@ class MailViewWidgetState extends State<MailViewWidget> {
                           ),
                         ]),
                   ),
-                  Expanded(
+                  Flexible(
                     child:
                     mailPieceListViewWidget,
                   ),
                 ]),
-            ),
+              ),
       ),
     );
-
 
   }
 }

@@ -60,6 +60,12 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       loading = true;
     });
 
+    debugPrint("Loading data for mailpiece:"
+        "\nid: " + widget.mailPiece.id.toString() +
+        "\nscanImgCID: " + widget.mailPiece.scanImgCID.toString() +
+        "\nuspsMID: " + widget.mailPiece.uspsMID.toString() +
+        "\ndate: " + widget.mailPiece.timestamp.toString()  );
+
     mailPieceText = _reformatMailPieceString(originalText);
 
     if(widget.mailPiece.scanImgCID != "") {
@@ -82,7 +88,19 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     digest = widget.digest ?? await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
-    _getLinkHtmlFromEmail(m1);
+
+    if (widget.mailPiece.uspsMID != "") {
+      _getLinkHtmlFromEmail(m1);
+    } else {
+      // uspsMID = "" means it was not a correctly loaded mailPiece.  No links
+      setState(() {
+        reminderLinkUrl = null;
+        learnMoreLinkUrl = null;
+        hasDoMore = false;
+        hasLearnMore = false;
+        loading = false;
+      });
+    }
 
     if(Firebase.apps.length != 0){
       var EventParams = ['screen_view,page_location, page_referrer'];
