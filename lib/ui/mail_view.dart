@@ -61,7 +61,6 @@ class MailViewWidgetState extends State<MailViewWidget> {
                               overflow: TextOverflow.fade,
                             ),
                           ),
-                          ),
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children:[
@@ -147,7 +146,6 @@ class MailViewWidgetState extends State<MailViewWidget> {
               ),
       ),
     );
-
 
   }
 }
