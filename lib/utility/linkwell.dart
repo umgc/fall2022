@@ -10,6 +10,7 @@
 
 library linkwell;
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'src/source.dart';
@@ -234,7 +235,9 @@ class LinkWell extends StatelessWidget {
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = () => launch(url));
+            recognizer: new TapGestureRecognizer()..onTap = () {
+              FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':url});
+              launch(url);});
 
         /// added
 
@@ -259,8 +262,9 @@ class LinkWell extends StatelessWidget {
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = () => launch(l));
-        FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':l});
+            recognizer: new TapGestureRecognizer()..onTap = () {
+              FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':l});
+              launch(l);});
         /// added
         /// send link to my method
         textSpanWidget.add(link);
