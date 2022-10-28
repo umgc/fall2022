@@ -92,19 +92,7 @@ class CacheService {
       print(phone.toString());
       phoneList.add(phone);
     }
-
-    /*final phonePattern = r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$";
-    final regEx = RegExp(phonePattern, multiLine: true);
-    final obtainedPhone = regEx.allMatches(text.toString()).map((m) => m.group(0)).join(' ');
-    print("doo doo brain");
-    print(obtainedPhone);
-    phone.add(obtainedPhone.toString());*/
-
-   /* String pattern = r'^(?:[+0][1-9])?[0-9]{10,12}$';
-    RegExp regExp = new RegExp(pattern);
-    final obtainedPhone = regExp.hasMatch(text.toString());
-    phone.add(obtainedPhone.toString()); */
-
+    
     final piece = MailPiece(id, "", timestamp, sender, text, "", "",  links, email, phoneList);
     await MailPieceStorage().saveMailPiece(piece);
 
