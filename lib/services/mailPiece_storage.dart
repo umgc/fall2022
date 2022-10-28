@@ -38,7 +38,10 @@ class MailPieceStorage {
       "image_text": piece.imageText,
       "timestamp": piece.timestamp.millisecondsSinceEpoch,
       "scanImgCID": piece.scanImgCID,
-      "uspsMID": piece.uspsMID
+      "uspsMID": piece.uspsMID,
+      "links": piece.links.toString(),
+      "emails": piece.emailList.toString(),
+      "phones": piece.phoneNumbersList.toString()
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);
@@ -61,7 +64,9 @@ class MailPieceStorage {
         result[0]["sender"]?.toString() ?? "",
         result[0]["image_text"]?.toString() ?? "",
         result[0]["scanImgCID"]?.toString() ?? "",
-        result[0]["uspsMID"]?.toString() ?? "" );
+        result[0]["uspsMID"]?.toString() ?? "",
+        result[0]["links"]?.toString().split(',') ?? null,
+        result[0]["emails"]?.toString().split(',') ?? null);
   }
 
   /// Updates a single mail piece that matches the provided id
@@ -113,7 +118,9 @@ class MailPieceStorage {
             row["sender"]?.toString() ?? "",
             row["image_text"]?.toString() ?? "",
             row["scanImgCID"]?.toString() ?? "",
-            row["uspsMID"]?.toString() ?? "" ))
+            row["uspsMID"]?.toString() ?? "",
+            row["links"]?.toString().split(',') ?? null ,
+            row["emails"]?.toString().split(',') ?? null))
         .toList();
   }
 }

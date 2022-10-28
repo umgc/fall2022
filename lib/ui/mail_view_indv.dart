@@ -295,12 +295,10 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                       alignment: WrapAlignment.start,
                       spacing: 15,
                       children: [
-                        Row(
-                          children:[
+                        //Row(
+                          //children: [
                                 Text(
-                                'RECEIVED: ',
-                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, )),
-                                Text(
+                                'RECEIVED: ' +
                                     DateFormat('yyyy/MM/dd')
                                         .format(widget.mailPiece.timestamp) +
                                     ' ' +
@@ -309,8 +307,10 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                 style: TextStyle(fontSize: 15)),
                               ],
                         ),
-                        if (widget.mailPiece.links != null && widget.mailPiece.links!.isNotEmpty) Container(
-                            padding: EdgeInsets.all(15),
+                ),
+              ),
+                      if (widget.mailPiece.links != null && widget.mailPiece.links!.isNotEmpty) Container(
+                            padding: EdgeInsets.all(10),
                             child: Align(
                                 alignment: Alignment.topLeft,
                                 child: ListView.builder(
@@ -319,16 +319,21 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                     itemCount: widget.mailPiece.links!.length,
                                     itemBuilder: (BuildContext context, int index) {
                                       return Container(
-                                          height: widget.mailPiece.links!.length*20,
-                                          //color: Colors.blue,
                                           child: RichText(
                                             text: TextSpan(
-                                                text: widget.mailPiece.links![index],
+                                                text: "Link " + widget.mailPiece.links![index],
                                                 style: TextStyle(color: Colors.blue, fontSize: 15),
                                                 recognizer: TapGestureRecognizer()
                                                   ..onTap = () async {
                                                     //Code to launch your URL
-                                                    Uri uri = Uri.parse(widget.mailPiece.links![index]);
+                                                    String text = widget.mailPiece.links![index];
+                                                    if (text.isNotEmpty) {
+                                                      text = text.replaceAll(']', "");
+                                                      text = text.replaceAll('[', "");
+                                                      text = text.replaceAll(' ', "");
+                                                    }
+                                                    Uri uri = Uri.parse(text);
+                                                    print(uri.toString());
                                                     if (await launchUrl(uri)) {
                                                       await launchUrl(uri);
                                                     } else {
@@ -340,7 +345,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                     }
                                 ))),
                         if (widget.mailPiece.emailList != null && widget.mailPiece.emailList!.isNotEmpty) Container(
-                            padding: EdgeInsets.all(15),
+                            padding: EdgeInsets.all(10),
                             child: Align(
                                 alignment: Alignment.topLeft,
                                 child: ListView.builder(
@@ -349,11 +354,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                     itemCount: widget.mailPiece.emailList!.length,
                                     itemBuilder: (BuildContext context, int index) {
                                       return Container(
-                                          height: widget.mailPiece.emailList!.length*20,
-                                          //color: Colors.blue,
                                           child: RichText(
                                             text: TextSpan(
-                                                text: widget.mailPiece.emailList![index],
+                                                text: "Email: " + widget.mailPiece.emailList![index],
                                                 style: TextStyle(color: Colors.blue, fontSize: 15),
                                                 recognizer: TapGestureRecognizer()
                                                   ..onTap = () async {
@@ -370,7 +373,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                     }
                                 ))),
                         if (widget.mailPiece.phoneNumbersList != null && widget.mailPiece.phoneNumbersList!.isNotEmpty) Container(
-                            padding: EdgeInsets.all(15),
+                            padding: EdgeInsets.all(10),
                             child: Align(
                                 alignment: Alignment.topLeft,
                                 child: ListView.builder(
@@ -379,11 +382,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                     itemCount: widget.mailPiece.phoneNumbersList!.length,
                                     itemBuilder: (BuildContext context, int index) {
                                       return Container(
-                                          height: widget.mailPiece.phoneNumbersList!.length*20,
-                                          //color: Colors.blue,
                                           child: RichText(
                                             text: TextSpan(
-                                                text: "tel:" + widget.mailPiece.phoneNumbersList![index],
+                                                text: "Phone Numbers: " + widget.mailPiece.phoneNumbersList![index],
                                                 style: TextStyle(color: Colors.blue, fontSize: 15),
                                                 recognizer: TapGestureRecognizer()
                                                   ..onTap = () async {
@@ -474,10 +475,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                       ]),
                 ),
               ),
-            ]),
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 }

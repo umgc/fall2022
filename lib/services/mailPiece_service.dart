@@ -68,7 +68,10 @@ class MailPieceService {
               row["sender"]?.toString() ?? "",
               row["image_text"]?.toString() ?? "",
               row["scanImgCID"]?.toString() ?? "",
-              row["uspsMID"]?.toString() ?? ""))
+              row["uspsMID"]?.toString() ?? "",
+              row["links"]?.toString().split(',') ?? null ,
+              row["emails"]?.toString().split(',') ?? null,
+              row["phones"]?.toString().split(',') ?? null))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/models/MailResponse.dart';
+import 'package:summer2022/utility/linkwell.dart';
 
 import 'mail_fetcher.dart';
 import 'mail_notifier.dart';
@@ -58,7 +61,51 @@ class CacheService {
     final text = mail.textAnnotations.isNotEmpty
         ? mail.textAnnotations.first.text ?? ""
         : "";
-    final piece = MailPiece(id, "", timestamp, sender, text, "", "");
+    var links = <String>[];
+    var phoneList = <String>[];
+    var email = <String>[];
+
+    for (final code in mail.codes) {
+      if (code.getType == 'qr') {
+        links.add(code.getInfo);
+      } else if (code.getType == 'phone') {
+        phoneList.add(code.getInfo);
+      } else if (code.getType == 'email') {
+        email.add(code.getType );
+      }
+    }
+
+   // String bs = "https://www.google.com hello world 3019990000 or 301-123-1234 and (212)-999-9999";
+    LinkWell linkWell = LinkWell(text);
+
+    List<dynamic> linkWellLinks = linkWell.links;
+    List<dynamic> linkWellPhone = linkWell.phone;
+    for (final link in linkWellLinks) {
+      if (link.toString().contains('@')) {
+        email.add(link);
+      } else {
+        links.add(link);
+      }
+    }
+
+    for (final phone in linkWellPhone) {
+      print(phone.toString());
+      phoneList.add(phone);
+    }
+
+    /*final phonePattern = r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$";
+    final regEx = RegExp(phonePattern, multiLine: true);
+    final obtainedPhone = regEx.allMatches(text.toString()).map((m) => m.group(0)).join(' ');
+    print("doo doo brain");
+    print(obtainedPhone);
+    phone.add(obtainedPhone.toString());*/
+
+   /* String pattern = r'^(?:[+0][1-9])?[0-9]{10,12}$';
+    RegExp regExp = new RegExp(pattern);
+    final obtainedPhone = regExp.hasMatch(text.toString());
+    phone.add(obtainedPhone.toString()); */
+
+    final piece = MailPiece(id, "", timestamp, sender, text, "", "", links, email, phoneList);
     await MailPieceStorage().saveMailPiece(piece);
 
   }

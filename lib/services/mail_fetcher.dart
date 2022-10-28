@@ -12,6 +12,8 @@ import '../models/Digest.dart';
 import 'package:intl/intl.dart';
 import 'package:html/parser.dart';
 
+import '../utility/linkwell.dart';
+
 /// The `MailFetcher` class requests new mail from a mail server.
 class MailFetcher {
   MailFetcher();
@@ -157,11 +159,30 @@ class MailFetcher {
 
     List<CodeObject> codeObj = ocrScanResult.codes;
     var links = <String>[];
+    var emailList = <String>[];
+    var phoneList = <String>[];
 
     for (int i = 0; i < codeObj.length; i++) {
       if (codeObj[i].getType == 'qr') {
         links.add(codeObj[i].getInfo.toString());
       }
+    }
+
+
+    LinkWell linkWell = LinkWell(text!);
+
+    List<dynamic> linkWellLinks = linkWell.links;
+    List<dynamic> linkWellPhone = linkWell.phone;    for (final link in linkWellLinks) {
+      if (link.toString().contains('@')) {
+        emailList.add(link);
+      } else {
+        links.add(link);
+      }
+    }
+
+    for (final phone in linkWellPhone) {
+      print(phone.toString());
+      phoneList.add(phone);
     }
 
     //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
@@ -268,7 +289,7 @@ class MailFetcher {
     }
 
     return new MailPiece(id, emailId, timestamp, attachment.sender, text!,
-      scanImgCID, mailPieceId, links);
+      scanImgCID, mailPieceId, links, emailList, phoneList );
   }
 
   /// Perform OCR scan once on the mail image to get the results for further processing

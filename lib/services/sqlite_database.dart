@@ -74,6 +74,39 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
     }
   }
 
+  if (prev <= 1) {
+    try {
+      await db.execute("""
+      ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN links TEXT;
+    """);
+    }
+    catch (e) {
+      // Do nothing, prevent duplicate column from being added
+    }
+  }
+
+  if (prev <= 1) {
+    try {
+      await db.execute("""
+      ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN emails TEXT;
+    """);
+    }
+    catch (e) {
+      // Do nothing, prevent duplicate column from being added
+    }
+  }
+
+  if (prev <= 1) {
+    try {
+      await db.execute("""
+      ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN phones TEXT;
+    """);
+    }
+    catch (e) {
+      // Do nothing, prevent duplicate column from being added
+    }
+  }
+
 }
 
 Future<void> setUpTestDatabase() async {
