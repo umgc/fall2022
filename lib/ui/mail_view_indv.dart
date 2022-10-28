@@ -385,7 +385,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                       return Container(
                                           child: RichText(
                                             text: TextSpan(
-                                                text: "Link " + widget.mailPiece.links![index],
+                                                text: "View " + widget.mailPiece.links![index],
                                                 style: TextStyle(color: Colors.blue, fontSize: 15),
                                                 recognizer: TapGestureRecognizer()
                                                   ..onTap = () async {
@@ -420,7 +420,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                       return Container(
                                           child: RichText(
                                             text: TextSpan(
-                                                text: "Email: " + widget.mailPiece.emailList![index],
+                                                text: "Email " + widget.mailPiece.emailList![index],
                                                 style: TextStyle(color: Colors.blue, fontSize: 15),
                                                 recognizer: TapGestureRecognizer()
                                                   ..onTap = () async {
@@ -448,7 +448,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                       return Container(
                                           child: RichText(
                                             text: TextSpan(
-                                                text: "Phone Numbers: " + widget.mailPiece.phoneNumbersList![index],
+                                                text: "Contact " + widget.mailPiece.phoneNumbersList![index],
                                                 style: TextStyle(color: Colors.blue, fontSize: 15),
                                                 recognizer: TapGestureRecognizer()
                                                   ..onTap = () async {
