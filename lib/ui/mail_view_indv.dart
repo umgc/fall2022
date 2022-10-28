@@ -1,24 +1,32 @@
 import 'dart:convert';
 import 'package:enough_mail/codecs.dart';
 import 'package:flutter/gestures.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:html/parser.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/utility/linkwell.dart';
-import 'package:summer2022/services/mail_fetcher.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class MailPieceViewWidget extends StatefulWidget {
   final MailPiece mailPiece;
+  final Digest? digest;
 
-
-  const MailPieceViewWidget({Key? key, required this.mailPiece})
+  const MailPieceViewWidget({Key? key, required this.mailPiece, this.digest})
       : super(key: key);
 
   @override
@@ -33,45 +41,86 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   final FontWeight _commonFontWeight = FontWeight.w500;
   final double _commonFontSize = 30;
   final Color _buttonColor = Color.fromRGBO(51, 51, 102, 1.0);
-
   late Digest digest;
   late Image? mailImage = null;
-
   late String mailPieceId = '';
   late String originalText = widget.mailPiece.imageText;
   String mailPieceText = '';
 
+  bool loading = true;
+
   late bool hasLearnMore = false;
-  late Uri learnMoreLinkUrl = Uri.parse("https://www.google.com");
-  late Uri reminderLinkUrl = Uri.parse("https://www.google.com");
-
-
-  //these Html links really aren't used - delete eventually.  URL launcher works better
-  late String learnMoreLinkHtml = '';
-  late String reminderLinkHtml = '';
-
+  late bool hasDoMore = false;
+  late Uri? learnMoreLinkUrl = null;
+  late Uri? reminderLinkUrl = null;
 
   MailPieceViewWidgetState();
 
   @override
   void initState() {
     super.initState();
-    _getMailPieceEmail();
+    setState(() {
+      loading = true;
+    });
+
+    debugPrint("Loading data for mailpiece:"
+        "\nid: " + widget.mailPiece.id.toString() +
+        "\nscanImgCID: " + widget.mailPiece.scanImgCID.toString() +
+        "\nuspsMID: " + widget.mailPiece.uspsMID.toString() +
+        "\ndate: " + widget.mailPiece.timestamp.toString()  );
+
     mailPieceText = _reformatMailPieceString(originalText);
+
+    if(widget.mailPiece.scanImgCID != "") {
+      _getMailPieceEmail();
+    } else {
+      // scanImgCID = "" means no image or links will be found. dont check email and remove do more section
+      setState(() {
+        mailImage = null;
+        reminderLinkUrl = null;
+        learnMoreLinkUrl = null;
+        hasDoMore = false;
+        hasLearnMore = false;
+        loading = false;
+      });
+    }
+    locator<AnalyticsService>().logScreens(name: 'Email View: '+ widget.mailPiece.uspsMID);
   }
 
   Future<void> _getMailPieceEmail() async {
-
     MailFetcher mf1 = new MailFetcher();
-    digest = await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
+    digest = widget.digest ?? await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
     MimeMessage m1 = digest.message;
     _getImgFromEmail(m1);
-    _getLinkHtmlFromEmail(m1);
+
+    if (widget.mailPiece.uspsMID != "") {
+      _getLinkHtmlFromEmail(m1);
+    } else {
+      // uspsMID = "" means it was not a correctly loaded mailPiece.  No links
+      setState(() {
+        reminderLinkUrl = null;
+        learnMoreLinkUrl = null;
+        hasDoMore = false;
+        hasLearnMore = false;
+        loading = false;
+      });
+    }
+
+    if(Firebase.apps.length != 0){
+      var EventParams = ['screen_view,page_location, page_referrer'];
+      /*await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );*/
+      FirebaseAnalytics.instance
+          .setUserProperty(name: 'USPS_Email_MID', value: widget.mailPiece.uspsMID);
+     // FirebaseAnalytics.instance
+       //   .logEvent(name: 'AnalyticsParameterScreenName', parameters:;
+    };
 
   }
 
-  //sets state mailImage given the found email based on mailPiece
   void _getImgFromEmail(MimeMessage m) async {
+    //m = digest.message;
     for (int x = 0; x < m.mimeData!.parts!.length; x++) {
       if (m.mimeData!.parts!
               .elementAt(x)
@@ -110,9 +159,11 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
               setState(() {
                 mailImage = Image.memory(base64Decode(picture));
               });
-            } //end if y element contains midId
+              break; //break when image is found
+            } //end if y element contains scanImgCID
           } //end if y element contains image
         } //end element(y) for loop
+        break; //break if found multipart, don't need to run anymore
       } //end if contains multipart
     } //end element(x) for loop
   } //end _getImgFromEmail
@@ -191,12 +242,14 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
             //finally, set the state of the links to the matched element
             setState(() {
+              hasDoMore = true;
               //get the number out of the matched text
               reminderLinkUrl = Uri.parse(reminderLinkList[0]);
               if(trackingMatch == true ) {
                 learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
                 hasLearnMore = true;
               }
+              loading = false;
             });
           } //end if contains text/html
         } //end element(y) for loop
@@ -252,9 +305,9 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     final originalSplit = x.split('\n');
     for(int i=0; i< originalSplit.length; i++) {
         if(originalSplit[i].length < 50)
-          originalSplit[i] += '\n';
+          originalSplit[i] += ' ';
     };
-    return originalSplit.join(' ');
+    return originalSplit.join('\n');
   }
 
   @override
@@ -268,13 +321,27 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomBar(),
       appBar: TopBar(
-        title: 'Search Result: ${widget.mailPiece.id}',
+        title: 'Mail Piece',
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body:  //in the main page, if loading is false, load container, if loading is true, run circ prog indicator
+          loading == true ? Center(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children:[ CircularProgressIndicator(),
+                                    Text(
+                                      '\nLOADING MAIL PIECE...',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color.fromRGBO(51, 51, 102, 1.0)),
+                                    )
+                                  ])
+                              ):
+        SingleChildScrollView(
+          child:
+          Container(
           alignment: Alignment.topCenter,
           margin: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
-          //padding: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
           child: Center(
             widthFactor: .85,
             child: Column(children: [
@@ -300,9 +367,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                 Text(
                                 'RECEIVED: ' +
                                     DateFormat('yyyy/MM/dd')
-                                        .format(widget.mailPiece.timestamp) +
-                                    ' ' +
-                                    DateFormat('EEE hh:mm a')
                                         .format(widget.mailPiece.timestamp),
                                 style: TextStyle(fontSize: 15)),
                               ],
@@ -402,63 +466,69 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                 ))),
                         Row(
                           children:[
-                            Container(
-                              width: MediaQuery.of(context).size.width/1.15,
-                              padding: EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black),
-                                  borderRadius: new BorderRadius.circular(16.0),
-                                  color: _buttonColor),
-                              child: Column(children: [
-                                Text(
-                                  'Do more with your mail\n',
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                      color: Colors.white),
-                                ),
-                                Visibility(
-                                  visible: hasLearnMore,
-                                  child:
-                                  TextButton.icon(
-                                    onPressed: () async {
-                                      if (await canLaunchUrl(learnMoreLinkUrl)) {
-                                        await launchUrl(learnMoreLinkUrl!);
-                                      } else {
-                                        throw 'Could not launch $learnMoreLinkUrl';
-                                      }
-                                    },
-                                    icon: Icon(Icons.language, size: 40.0),
-                                    label: Text('Learn More'),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      textStyle : const TextStyle(
-                                        fontSize: 25.0,
-                                        fontWeight: FontWeight.bold,
+                            Visibility(
+                              visible: hasDoMore,
+                              child:
+                              Container(
+                                width: MediaQuery.of(context).size.width/1.15,
+                                padding: EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: new BorderRadius.circular(16.0),
+                                    color: _buttonColor),
+                                child: Column(children: [
+                                        Text(
+                                          'Do more with your mail\n',
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.underline,
+                                              color: Colors.white),
+                                        ),
+                                        Visibility(
+                                          visible: hasLearnMore,
+                                          child:
+                                          TextButton.icon(
+                                            onPressed: () async {
+                                              if (await canLaunchUrl(learnMoreLinkUrl!)) {
+                                                await launchUrl(learnMoreLinkUrl!);
+                                                FirebaseAnalytics.instance.logEvent(name: 'LearnMore_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
+                                              } else {
+                                                throw 'Could not launch $learnMoreLinkUrl';
+                                              }
+                                            },
+                                            icon: Icon(Icons.language, size: 40.0),
+                                            label: Text('Learn More'),
+                                            style: TextButton.styleFrom(
+                                              foregroundColor: Colors.white,
+                                              textStyle : const TextStyle(
+                                                fontSize: 25.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      TextButton.icon(
+                                        onPressed: () async {
+                                          if (await canLaunchUrl(reminderLinkUrl!)) {
+                                            await launchUrl(reminderLinkUrl!);
+                                            FirebaseAnalytics.instance.logEvent(name: 'SetAReminder_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
+                                          } else {
+                                            throw 'Could not launch $reminderLinkUrl';
+                                          }
+                                        },
+                                        icon: Icon(Icons.calendar_month, size: 40.0),
+                                        label: Text('Set a Reminder'),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          textStyle : const TextStyle(
+                                            fontSize: 25.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                TextButton.icon(
-                                  onPressed: () async {
-                                    if (await canLaunchUrl(reminderLinkUrl)) {
-                                      await launchUrl(reminderLinkUrl!);
-                                    } else {
-                                      throw 'Could not launch $reminderLinkUrl';
-                                    }
-                                  },
-                                  icon: Icon(Icons.calendar_month, size: 40.0),
-                                  label: Text('Set a Reminder'),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    textStyle : const TextStyle(
-                                      fontSize: 25.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ]),
+                                ]),
+                              ),
                             )
                           ]
                         ),
@@ -478,4 +548,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             ),
           );
   }
-}
+
+
+} //end of class MailPieceViewWidget
