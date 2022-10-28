@@ -69,7 +69,7 @@ class MailPieceService {
               row["image_text"]?.toString() ?? "",
               row["scanImgCID"]?.toString() ?? "",
               row["uspsMID"]?.toString() ?? "",
-              row["links"]?.toString().split(',') ?? null ,
+              row["links"]?.toString().split(',') ?? null,
               row["emails"]?.toString().split(',') ?? null,
               row["phones"]?.toString().split(',') ?? null))
           .toList();

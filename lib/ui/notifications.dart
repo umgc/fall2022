@@ -32,7 +32,7 @@ MailNotifier mn = new MailNotifier();
 MailPieceStorage mailStorage = new MailPieceStorage();
 
 final time =  DateTime.now().subtract(Duration(days: 30));
-MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "","");
+MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "","", null, null, null);
 class NotificationsWidgetState extends AssistantState<NotificationsWidget> with SingleTickerProviderStateMixin {
   final _notifier = MailNotifier();
   final _keywordController = TextEditingController();

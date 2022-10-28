@@ -105,7 +105,7 @@ class CacheService {
     final obtainedPhone = regExp.hasMatch(text.toString());
     phone.add(obtainedPhone.toString()); */
 
-    final piece = MailPiece(id, "", timestamp, sender, text, "", "", links, email, phoneList);
+    final piece = MailPiece(id, "", timestamp, sender, text, "", "",  links, email, phoneList);
     await MailPieceStorage().saveMailPiece(piece);
 
   }
