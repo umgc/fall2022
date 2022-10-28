@@ -33,7 +33,7 @@ void main() {
 
   test("it can saveMailPiece a new mail piece", () async {
     final piece =
-        MailPiece("test", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test", "test", now, "someone", "some text", "test", "test", [], [], []);
 
     expect(await subject.saveMailPiece(piece), true);
 
@@ -43,18 +43,18 @@ void main() {
 
   test("can delete a mail piece", () async {
     final piece =
-        MailPiece("test", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test", "test", now, "someone", "some text", "test", "test", [], [], []);
     await subject.saveMailPiece(piece);
     expect(await subject.deleteMailPiece("test"), true);
   });
 
   test("can delete all mail pieces", () async {
     final pieceOne =
-        MailPiece("test-one", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test-one", "test", now, "someone", "some text", "test", "test", [], [], []);
     final pieceTwo = MailPiece(
-        "test-two", "test", now, "someone", "some other text", "test", "test", null, null, null);
+        "test-two", "test", now, "someone", "some other text", "test", "test", [], [], []);
     final pieceThree =
-        MailPiece("test-three", "test", now, "someone", "bananas", "fruit", "test", null, null, null);
+        MailPiece("test-three", "test", now, "someone", "bananas", "fruit", "test", [], [], []);
 
     await subject.saveMailPiece(pieceOne);
     await subject.saveMailPiece(pieceTwo);
@@ -66,7 +66,7 @@ void main() {
 
   test("can update a mail piece", () async {
     final piece =
-        MailPiece("test", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test", "test", now, "someone", "some text", "test", "test", [], [], []);
     final updated = MailPiece(
         "test", "test2", now.add(Duration(days: 7)),
         "someone2", "some text2", "test2", "test2", null, null, null);
@@ -77,9 +77,9 @@ void main() {
 
   test("it can fetch the latest timestamp", () async {
     final pieceOne =
-        MailPiece("test-one", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test-one", "test", now, "someone", "some text", "test", "test", [], [], []);
     final pieceTwo =
-        MailPiece("test-two", "test", future, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test-two", "test", future, "someone", "some text", "test", "test", [], [], []);
 
     expect(await subject.saveMailPiece(pieceOne), true);
     expect(await subject.saveMailPiece(pieceTwo), true);
@@ -90,7 +90,7 @@ void main() {
 
   test("it does not saveMailPiece duplicate mail pieces", () async {
     final piece =
-        MailPiece("test", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test", "test", now, "someone", "some text", "test", "test", [], [], []);
 
     expect(await subject.saveMailPiece(piece), true);
     expect(await subject.saveMailPiece(piece), false);
@@ -101,20 +101,21 @@ void main() {
 
   test("it can retrieve a mail piece by its id", () async {
     final piece =
-        MailPiece("test", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test", "test", now, "someone", "some text", "test", "test", [], [], []);
     expect(await subject.saveMailPiece(piece), true);
 
+    var result = await subject.getMailPiece(piece.id);
     expect(await subject.getMailPiece(piece.id), piece);
     expect(await subject.getMailPiece("some-other-id"), null);
   });
 
   group("when searching for mail pieces", () {
     final pieceOne =
-        MailPiece("test-one", "test", now, "someone", "some text", "test", "test", null, null, null);
+        MailPiece("test-one", "test", now, "someone", "some text", "test", "test", [], [], []);
     final pieceTwo = MailPiece(
-        "test-two", "test", now, "someone", "some other text", "test", "test", null, null, null);
+        "test-two", "test", now, "someone", "some other text", "test", "test", [], [], []);
     final pieceThree =
-        MailPiece("test-three", "test", now, "someone", "bananas", "fruit", "test", null, null, null);
+        MailPiece("test-three", "test", now, "someone", "bananas", "fruit", "test", [], [], []);
 
     setUp(() async {
       expect(await subject.saveMailPiece(pieceOne), true);

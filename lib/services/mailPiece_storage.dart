@@ -41,9 +41,9 @@ class MailPieceStorage {
       "uspsMID": piece.uspsMID,
       "image_bytes": piece.featuredHtml,
       "featured_html": piece.featuredHtml,
-      "links": piece.links.toString(),
-      "emails": piece.emailList.toString(),
-      "phones": piece.phoneNumbersList.toString()
+      "links": piece.links!.join(","),
+      "emails": piece.emailList!.join(","),
+      "phones": piece.phoneNumbersList!.join(",")
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);
@@ -67,12 +67,23 @@ class MailPieceStorage {
       result[0]["image_text"]?.toString() ?? "",
       result[0]["scanImgCID"]?.toString() ?? "",
       result[0]["uspsMID"]?.toString() ?? "",
-      result[0]["links"]?.toString().split(',') ?? null,
-      result[0]["emails"]?.toString().split(',') ?? null,
-      null,
+      getList(result[0]["links"]?.toString() ?? ""),
+      getList(result[0]["emails"]?.toString() ?? ""),
+      getList(result[0]["phones"]?.toString() ?? ""),
       imageBytes: result[0]["image_bytes"]?.toString(),
       featuredHtml: result[0]["featured_html"]?.toString()
     );
+  }
+
+  List<String> getList(String from) {
+    if (from.startsWith("[") && from.endsWith(("]"))) {
+      from = from.substring(1, from.length - 1);
+    }
+    var list = from.split(',');
+    if (list.length == 1 && list[0].isEmpty) {
+      list.removeAt(0);
+    }
+    return list;
   }
 
   /// Updates a single mail piece that matches the provided id
@@ -127,9 +138,9 @@ class MailPieceStorage {
               row["image_text"]?.toString() ?? "",
               row["scanImgCID"]?.toString() ?? "",
               row["uspsMID"]?.toString() ?? "",
-              row["links"]?.toString().split(',') ?? null,
-              row["emails"]?.toString().split(',') ?? null,
-              null,
+              getList(result[0]["links"]?.toString() ?? ""),
+              getList(result[0]["emails"]?.toString() ?? ""),
+              getList(result[0]["phones"]?.toString() ?? ""),
               imageBytes: result[0]["image_bytes"]?.toString(),
               featuredHtml: result[0]["featured_html"]?.toString(),
             ))
