@@ -80,9 +80,9 @@ class MailPieceService {
               row["image_text"]?.toString() ?? "",
               row["scanImgCID"]?.toString() ?? "",
               row["uspsMID"]?.toString() ?? "",
-              getList(result[0]["links"]?.toString() ?? ""),
-              getList(result[0]["emails"]?.toString() ?? ""),
-              getList(result[0]["phones"]?.toString() ?? "")))
+              getList(row["links"]?.toString() ?? ""),
+              getList(row["emails"]?.toString() ?? ""),
+              getList(row["phones"]?.toString() ?? "")))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());
