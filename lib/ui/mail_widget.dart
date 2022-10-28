@@ -63,16 +63,6 @@ class MailWidgetState extends AssistantState<MailWidget> {
       buildLinks();
     }
     locator<AnalyticsService>().logScreens(name: "Digest Mail");
-    //
-    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Mail");
-    //FirebaseAnalytics.instance.logScreenView(screenName: "Mail");
-    /*FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'screenName': 'Mail',
-        'screenClass': 'mail.dart',
-      },
-    );*/
   }
 
   void swipeLeftRight(DragEndDetails details) {

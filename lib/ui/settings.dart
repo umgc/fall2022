@@ -10,6 +10,9 @@ import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/utility/locator.dart';
 import 'package:summer2022/ui/assistant_state.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({Key? key}) : super(key: key);
@@ -440,6 +443,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                           trailing: Icon(Icons.keyboard_arrow_right_rounded),
                           onTap: () {
                             showTermsAndConditionsDialog();
+                            FirebaseAnalytics.instance.logEvent(name: 'TermsAndConditions',parameters:{'RequestedDialog':'Yes'});
                           },
                         ),
                       ),
@@ -467,6 +471,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                             trailing: Icon(Icons.keyboard_arrow_right_rounded),
                           onTap: () {
                             showPrivacyPolicyDialog();
+                            FirebaseAnalytics.instance.logEvent(name: 'PrivacyPolicy',parameters:{'RequestedDialog':'Yes'});
                           },
                         ),
                       ),
