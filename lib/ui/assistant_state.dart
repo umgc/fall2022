@@ -5,7 +5,7 @@ import 'package:summer2022/utility/Keychain.dart';
 import 'package:summer2022/email_processing/digest_email_parser.dart';
 import 'package:summer2022/models/Arguments.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
-import 'package:summer2022/services/assistantService.dart';
+import 'package:summer2022/services/assistant_Service.dart';
 
 abstract class AssistantState<T extends StatefulWidget> extends State<T>
 {
