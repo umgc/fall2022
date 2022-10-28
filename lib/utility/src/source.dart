@@ -17,7 +17,7 @@ class Helper {
   static var regex = new RegExp(
       r"((https?:www\.)|(https?:\/\/)|(www\.))?[\w/\-?=%.][-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z]{1,6}(\/[-a-zA-Z()@:%_\+.~#?&\/=]*)?");
 
-  static var phoneRegex = new RegExp(r"(^(?:[+0]9)?[0-9]{10,12}$)");
+  static var phoneRegex = new RegExp(r"((\(?\d{3}\)?)([ .-])(\d{3})([ .-])(\d{4}))");
 
   static var defaultTextStyle = TextStyle(
     fontSize: 17,
