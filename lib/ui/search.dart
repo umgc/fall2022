@@ -251,7 +251,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
                                   arguments: new MailPieceViewArguments(suggestion as MailPiece));
-                              FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'keyword':keywordInput, 'itemId':suggestion.uspsMID});
+                              FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'keyword':keywordInput, 'uspsMID':suggestion.uspsMID});
                               },
 
                             suggestionsCallback: (pattern) {

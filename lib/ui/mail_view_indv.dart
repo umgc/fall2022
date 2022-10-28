@@ -83,7 +83,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         loading = false;
       });
     }
-    locator<AnalyticsService>().logScreens(name: 'Email View: '+ widget.mailPiece.uspsMID);
+    locator<AnalyticsService>().logScreens(name: 'Email');
+    FirebaseAnalytics.instance.logEvent(name: 'EMail',parameters:{'uspsMID':widget.mailPiece.uspsMID});
   }
 
   Future<void> _getMailPieceEmail() async {

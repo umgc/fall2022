@@ -318,7 +318,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                           borderRadius: BorderRadius.circular(30)))),
                               onPressed: () {
                                 addSubscription(_keywordController.text);
-                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'itemId':_keywordController.text});
+                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Add_Keyword':_keywordController.text});
                                 _keywordController.clear();
                               },
                             ),
@@ -364,6 +364,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                                   BorderRadius.circular(30)))),
                                       onPressed: () {
                                         removeSubscription(item.keyword);
+                                        FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Delete_Keyword':item.keyword});
                                       },
                                     ),
                                   )
