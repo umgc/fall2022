@@ -41,9 +41,9 @@ class MailPieceStorage {
       "uspsMID": piece.uspsMID,
       "image_bytes": piece.featuredHtml,
       "featured_html": piece.featuredHtml,
-      "links": piece.links.toString(),
-      "emails": piece.emailList.toString(),
-      "phones": piece.phoneNumbersList.toString()
+      "links": piece.links?.toString(),
+      "emails": piece.emailList?.toString(),
+      "phones": piece.phoneNumbersList?.toString()
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);

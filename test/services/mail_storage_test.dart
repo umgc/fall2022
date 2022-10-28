@@ -9,7 +9,7 @@ void main() {
   MailPieceStorage subject = MailPieceStorage();
 
   DateTime now = DateTime.now();
-  DateTime future = DateTime.now().add(Duration(days: 1));
+  DateTime future = now.add(Duration(days: 1));
 
   setUpAll(() async {
     await setUpTestDatabase();
@@ -103,7 +103,6 @@ void main() {
     final piece =
         MailPiece("test", "test", now, "someone", "some text", "test", "test", null, null, null);
     expect(await subject.saveMailPiece(piece), true);
-
     expect(await subject.getMailPiece(piece.id), piece);
     expect(await subject.getMailPiece("some-other-id"), null);
   });
