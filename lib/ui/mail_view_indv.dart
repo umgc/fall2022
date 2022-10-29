@@ -396,9 +396,10 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                                       text = text.replaceAll(']', "");
                                                       text = text.replaceAll('[', "");
                                                       text = text.replaceAll(' ', "");
-                                                      //if(text.startsWith('www'))
-                                                      text = 'https://'+ text;
-                                                    }
+                                                      if(!text.startsWith('http') && !text.startsWith('https')) {
+                                                        text = 'https://' + text;
+                                                         }
+                                                      }
                                                     Uri uri = Uri.parse(text);
                                                     print(uri.toString());
                                                     FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':text});
