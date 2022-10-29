@@ -396,11 +396,14 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                                                       text = text.replaceAll(']', "");
                                                       text = text.replaceAll('[', "");
                                                       text = text.replaceAll(' ', "");
+                                                      //if(text.startsWith('www'))
+                                                      text = 'https://'+ text;
                                                     }
                                                     Uri uri = Uri.parse(text);
                                                     print(uri.toString());
+                                                    FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':text});
                                                     if (await launchUrl(uri)) {
-                                                      await launchUrl(uri);
+                                                      //await launchUrl(uri);
                                                     } else {
                                                       throw 'Could not launch ';
                                                     }
