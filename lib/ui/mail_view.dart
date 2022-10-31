@@ -1,19 +1,21 @@
 import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
-import '../models/MailSearchParameters.dart';
-import '../services/mail_service.dart';
+import 'package:summer2022/models/MailSearchParameters.dart';
+import 'package:summer2022/services/mailPiece_service.dart';
+import 'package:summer2022/models/MailPieceViewArguments.dart';
+import 'package:summer2022/services/analytics_service.dart';
+import 'package:summer2022/utility/locator.dart';
 
 class MailViewWidget extends StatefulWidget {
 
   final MailSearchParameters query;
 
-  final MailService _mailService = MailService();
+  final MailPieceService _mailService = MailPieceService();
 
   MailViewWidget({required this.query});
 
@@ -23,31 +25,11 @@ class MailViewWidget extends StatefulWidget {
 
 class MailViewWidgetState extends State<MailViewWidget> {
 
-  //this is temporary for list view display, need to eventually delete when search results are achieved
-  List<MailPiece> mailPieces = _createMailPieces();
-
-  static List<MailPiece> _createMailPieces() {
-    List<MailPiece> _mailPieces = List.generate(
-        10,
-            (index) => new MailPiece(
-            "", "", DateTime.now(), "John Doe", "Lorem ipsum dolor sit amet, ",
-            ""),
-        growable: true
-    );
-
-    MailPiece m = new MailPiece(
-        "id", "emailId", DateTime(2022, 10, 3), "sender",
-        "## ImageText Contents ##", "mail ID content do not need to include 'cid:'");
-
-    _mailPieces.add(m);
-
-    return _mailPieces;
-  }
-
   @override
   Widget build(BuildContext context) {
 
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
+      locator<AnalyticsService>().logScreens(name: "Email Search Results");
       return Container(
         color: Colors.white10,
         child:
@@ -62,38 +44,36 @@ class MailViewWidgetState extends State<MailViewWidget> {
             Container(
               child:
                 ListTile(
+                    isThreeLine: true,
                     horizontalTitleGap: 10.0,
                     contentPadding: EdgeInsets.all(5),
                     dense: true,
                     onTap: () {
-                      Navigator.pushNamed(context, '/mail_piece_view', arguments: mailPiece);
+                      Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(mailPiece));
                     },
                     //leading: mailPiece.mailImage,
                     title:
-                    Row(
+                        Row(
                         children:[
-                          Container(
-                            padding: EdgeInsets.only(right: 10.0),
+                          Expanded(
                             child:
                             Text(
                               mailPiece.sender,
                               style: TextStyle(fontSize: 20),
+                              maxLines: 1,
+                              overflow: TextOverflow.fade,
                             ),
                           ),
-                          Expanded(
-                            child:
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children:[
-                                  Text(DateFormat('EEE hh:mm a').format(mailPiece.timestamp)
-                                  ),
                                   Text(DateFormat('MM/dd/yyyy').format(mailPiece.timestamp)
                                   ),
                                 ]),
-                          ),
-                        ]
-                    ),
-                    subtitle: Text(mailPiece.imageText.toString()),
+                        ]  ),
+                    subtitle: Text(mailPiece.imageText.toString().replaceAll("\n", " "),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,),
                 ),
             ),
           ),
@@ -134,7 +114,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
         child:
           Container(
             padding: EdgeInsets.all(15.0),
-            child:
+                  child:
               Column(
                 children: [
                   SizedBox(
@@ -155,21 +135,20 @@ class MailViewWidgetState extends State<MailViewWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children:[
-                                  Text('TIME & DATE:',
+                                  Text('DATE:',
                                       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold) ),
                                 ]),
                           ),
                         ]),
                   ),
-                  Expanded(
+                  Flexible(
                     child:
                     mailPieceListViewWidget,
                   ),
                 ]),
-            ),
+              ),
       ),
     );
-
 
   }
 }

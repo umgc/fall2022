@@ -1,3 +1,4 @@
+import 'package:summer2022/services/notification_service.dart';
 import 'package:summer2022/services/sqlite_database.dart';
 import '../models/Notification.dart';
 import '../models/NotificationSubscription.dart';
@@ -86,7 +87,7 @@ class MailNotifier {
   /// Checks all mail received after the provided timestamp against the list of
   /// notification subscriptions. If there are any matches, new notification
   /// objects are created and stored.
-  Future<void> updateNotifications(DateTime lastTimestamp) async {
+  Future<int> updateNotifications(DateTime lastTimestamp) async {
     final db = await database;
     var test = db.query(MAIL_PIECE_TABLE);
     print(test);
@@ -106,5 +107,16 @@ class MailNotifier {
                                               WHERE t1.mail_piece_id=mail_piece.id)
       AND mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch} limit 10 
 ''');
+      WHERE mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch};
+    """);
+
+    final result = await db.rawQuery("""
+      SELECT COUNT(*) as count
+      FROM $NOTIFICATION_TABLE
+      JOIN $MAIL_PIECE_TABLE ON mail_piece_id = id
+      WHERE timestamp > ${lastTimestamp.millisecondsSinceEpoch};
+    """);
+
+    return result[0]["count"] as int;
   }
 }

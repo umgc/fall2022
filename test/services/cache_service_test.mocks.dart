@@ -3,15 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:summer2022/models/MailPiece.dart' as _i4;
-import 'package:summer2022/models/Notification.dart' as _i7;
-import 'package:summer2022/models/NotificationSubscription.dart' as _i6;
-import 'package:summer2022/services/mail_fetcher.dart' as _i2;
-import 'package:summer2022/services/mail_notifier.dart' as _i5;
-import 'package:summer2022/services/mail_storage.dart' as _i8;
+import 'package:summer2022/models/Digest.dart' as _i2;
+import 'package:summer2022/models/MailPiece.dart' as _i5;
+import 'package:summer2022/models/Notification.dart' as _i8;
+import 'package:summer2022/models/NotificationSubscription.dart' as _i7;
+import 'package:summer2022/services/mail_fetcher.dart' as _i3;
+import 'package:summer2022/services/mail_notifier.dart' as _i6;
+import 'package:summer2022/services/mailPiece_storage.dart' as _i9;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -24,8 +25,18 @@ import 'package:summer2022/services/mail_storage.dart' as _i8;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeDateTime_0 extends _i1.SmartFake implements DateTime {
-  _FakeDateTime_0(
+class _FakeDigest_0 extends _i1.SmartFake implements _i2.Digest {
+  _FakeDigest_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeDateTime_1 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -37,148 +48,170 @@ class _FakeDateTime_0 extends _i1.SmartFake implements DateTime {
 /// A class which mocks [MailFetcher].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMailFetcher extends _i1.Mock implements _i2.MailFetcher {
+class MockMailFetcher extends _i1.Mock implements _i3.MailFetcher {
   @override
-  _i3.Future<List<_i4.MailPiece>> fetchMail(DateTime? lastTimestamp) =>
+  _i4.Future<List<_i5.MailPiece>> fetchMail(DateTime? lastTimestamp) =>
       (super.noSuchMethod(
         Invocation.method(
           #fetchMail,
           [lastTimestamp],
         ),
-        returnValue: _i3.Future<List<_i4.MailPiece>>.value(<_i4.MailPiece>[]),
+        returnValue: _i4.Future<List<_i5.MailPiece>>.value(<_i5.MailPiece>[]),
         returnValueForMissingStub:
-            _i3.Future<List<_i4.MailPiece>>.value(<_i4.MailPiece>[]),
-      ) as _i3.Future<List<_i4.MailPiece>>);
+            _i4.Future<List<_i5.MailPiece>>.value(<_i5.MailPiece>[]),
+      ) as _i4.Future<List<_i5.MailPiece>>);
+  @override
+  _i4.Future<_i2.Digest> getMailPieceDigest(DateTime? timeStamp) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getMailPieceDigest,
+          [timeStamp],
+        ),
+        returnValue: _i4.Future<_i2.Digest>.value(_FakeDigest_0(
+          this,
+          Invocation.method(
+            #getMailPieceDigest,
+            [timeStamp],
+          ),
+        )),
+        returnValueForMissingStub: _i4.Future<_i2.Digest>.value(_FakeDigest_0(
+          this,
+          Invocation.method(
+            #getMailPieceDigest,
+            [timeStamp],
+          ),
+        )),
+      ) as _i4.Future<_i2.Digest>);
 }
 
 /// A class which mocks [MailNotifier].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMailNotifier extends _i1.Mock implements _i5.MailNotifier {
+class MockMailNotifier extends _i1.Mock implements _i6.MailNotifier {
   @override
-  _i3.Future<bool> createSubscription(
-          _i6.NotificationSubscription? subscription) =>
+  _i4.Future<bool> createSubscription(
+          _i7.NotificationSubscription? subscription) =>
       (super.noSuchMethod(
         Invocation.method(
           #createSubscription,
           [subscription],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
   @override
-  _i3.Future<void> removeSubscription(
-          _i6.NotificationSubscription? subscription) =>
+  _i4.Future<void> removeSubscription(
+          _i7.NotificationSubscription? subscription) =>
       (super.noSuchMethod(
         Invocation.method(
           #removeSubscription,
           [subscription],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i3.Future<List<_i6.NotificationSubscription>> getSubscriptions() =>
+  _i4.Future<List<_i7.NotificationSubscription>> getSubscriptions() =>
       (super.noSuchMethod(
         Invocation.method(
           #getSubscriptions,
           [],
         ),
-        returnValue: _i3.Future<List<_i6.NotificationSubscription>>.value(
-            <_i6.NotificationSubscription>[]),
+        returnValue: _i4.Future<List<_i7.NotificationSubscription>>.value(
+            <_i7.NotificationSubscription>[]),
         returnValueForMissingStub:
-            _i3.Future<List<_i6.NotificationSubscription>>.value(
-                <_i6.NotificationSubscription>[]),
-      ) as _i3.Future<List<_i6.NotificationSubscription>>);
+            _i4.Future<List<_i7.NotificationSubscription>>.value(
+                <_i7.NotificationSubscription>[]),
+      ) as _i4.Future<List<_i7.NotificationSubscription>>);
   @override
-  _i3.Future<List<_i7.Notification>> getNotifications() => (super.noSuchMethod(
+  _i4.Future<List<_i8.Notification>> getNotifications() => (super.noSuchMethod(
         Invocation.method(
           #getNotifications,
           [],
         ),
         returnValue:
-            _i3.Future<List<_i7.Notification>>.value(<_i7.Notification>[]),
+            _i4.Future<List<_i8.Notification>>.value(<_i8.Notification>[]),
         returnValueForMissingStub:
-            _i3.Future<List<_i7.Notification>>.value(<_i7.Notification>[]),
-      ) as _i3.Future<List<_i7.Notification>>);
+            _i4.Future<List<_i8.Notification>>.value(<_i8.Notification>[]),
+      ) as _i4.Future<List<_i8.Notification>>);
   @override
-  _i3.Future<void> clearNotification(_i7.Notification? notification) =>
+  _i4.Future<void> clearNotification(_i8.Notification? notification) =>
       (super.noSuchMethod(
         Invocation.method(
           #clearNotification,
           [notification],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i3.Future<void> clearAllNotifications() => (super.noSuchMethod(
+  _i4.Future<void> clearAllNotifications() => (super.noSuchMethod(
         Invocation.method(
           #clearAllNotifications,
           [],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i3.Future<void> clearAllSubscriptions() => (super.noSuchMethod(
+  _i4.Future<void> clearAllSubscriptions() => (super.noSuchMethod(
         Invocation.method(
           #clearAllSubscriptions,
           [],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i3.Future<void> updateNotifications(DateTime? lastTimestamp) =>
+  _i4.Future<int> updateNotifications(DateTime? lastTimestamp) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateNotifications,
           [lastTimestamp],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<int>.value(0),
+        returnValueForMissingStub: _i4.Future<int>.value(0),
+      ) as _i4.Future<int>);
 }
 
-/// A class which mocks [MailStorage].
+/// A class which mocks [MailPieceStorage].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMailStorage extends _i1.Mock implements _i8.MailStorage {
+class MockMailPieceStorage extends _i1.Mock implements _i9.MailPieceStorage {
   @override
-  _i3.Future<DateTime> get lastTimestamp => (super.noSuchMethod(
+  _i4.Future<DateTime> get lastTimestamp => (super.noSuchMethod(
         Invocation.getter(#lastTimestamp),
-        returnValue: _i3.Future<DateTime>.value(_FakeDateTime_0(
+        returnValue: _i4.Future<DateTime>.value(_FakeDateTime_1(
           this,
           Invocation.getter(#lastTimestamp),
         )),
-        returnValueForMissingStub: _i3.Future<DateTime>.value(_FakeDateTime_0(
+        returnValueForMissingStub: _i4.Future<DateTime>.value(_FakeDateTime_1(
           this,
           Invocation.getter(#lastTimestamp),
         )),
-      ) as _i3.Future<DateTime>);
+      ) as _i4.Future<DateTime>);
   @override
-  _i3.Future<bool> saveMailPiece(_i4.MailPiece? piece) => (super.noSuchMethod(
+  _i4.Future<bool> saveMailPiece(_i5.MailPiece? piece) => (super.noSuchMethod(
         Invocation.method(
           #saveMailPiece,
           [piece],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
   @override
-  _i3.Future<_i4.MailPiece?> getMailPiece(String? id) => (super.noSuchMethod(
+  _i4.Future<_i5.MailPiece?> getMailPiece(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getMailPiece,
           [id],
         ),
-        returnValue: _i3.Future<_i4.MailPiece?>.value(),
-        returnValueForMissingStub: _i3.Future<_i4.MailPiece?>.value(),
-      ) as _i3.Future<_i4.MailPiece?>);
+        returnValue: _i4.Future<_i5.MailPiece?>.value(),
+        returnValueForMissingStub: _i4.Future<_i5.MailPiece?>.value(),
+      ) as _i4.Future<_i5.MailPiece?>);
   @override
-  _i3.Future<bool> updateMailPiece(
+  _i4.Future<bool> updateMailPiece(
     String? id,
-    _i4.MailPiece? updated,
+    _i5.MailPiece? updated,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -188,36 +221,36 @@ class MockMailStorage extends _i1.Mock implements _i8.MailStorage {
             updated,
           ],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
   @override
-  _i3.Future<bool> deleteMailPiece(String? id) => (super.noSuchMethod(
+  _i4.Future<bool> deleteMailPiece(String? id) => (super.noSuchMethod(
         Invocation.method(
           #deleteMailPiece,
           [id],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
   @override
-  _i3.Future<bool> deleteAllMailPieces() => (super.noSuchMethod(
+  _i4.Future<bool> deleteAllMailPieces() => (super.noSuchMethod(
         Invocation.method(
           #deleteAllMailPieces,
           [],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
   @override
-  _i3.Future<List<_i4.MailPiece>> searchMailsPieces(String? query) =>
+  _i4.Future<List<_i5.MailPiece>> searchMailsPieces(String? query) =>
       (super.noSuchMethod(
         Invocation.method(
           #searchMailsPieces,
           [query],
         ),
-        returnValue: _i3.Future<List<_i4.MailPiece>>.value(<_i4.MailPiece>[]),
+        returnValue: _i4.Future<List<_i5.MailPiece>>.value(<_i5.MailPiece>[]),
         returnValueForMissingStub:
-            _i3.Future<List<_i4.MailPiece>>.value(<_i4.MailPiece>[]),
-      ) as _i3.Future<List<_i4.MailPiece>>);
+            _i4.Future<List<_i5.MailPiece>>.value(<_i5.MailPiece>[]),
+      ) as _i4.Future<List<_i5.MailPiece>>);
 }

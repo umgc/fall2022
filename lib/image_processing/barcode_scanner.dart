@@ -66,10 +66,14 @@ class BarcodeScannerApi {
             case BarcodeType.isbn:
               type = "bar";
               break;
+            case BarcodeType.email:
+              type = "email";
+              break;
+            case BarcodeType.phone:
+              type = "phone";
+              break;
             case BarcodeType.unknown:
             case BarcodeType.contactInfo:
-            case BarcodeType.email:
-            case BarcodeType.phone:
             case BarcodeType.sms:
             case BarcodeType.text:
             case BarcodeType.wifi:
