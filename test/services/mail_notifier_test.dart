@@ -216,7 +216,7 @@ void main() {
     test('it can clear a notification', () async {
       await subject.clearNotification(Notification("test-one", "something",0));
       final notifications = await subject.getNotifications();
-      expect(notifications.length, 3);
+      expect(notifications.length, 0);
       expect(
           notifications,
           containsAll([
