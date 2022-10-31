@@ -29,7 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.872576625259-h9l5shh21q8cccq2lbovc8e8eq9k4l7c</string>
+				<string>com.googleusercontent.apps.872576625259-fk23dbk9p1vgn414dbvfc46416dskfi3</string>
 			</array>
 		</dict>
 	</array>
@@ -75,17 +75,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.googleusercontent.apps.872576625259-fk23dbk9p1vgn414dbvfc46416dskfi3</string>
-            </array>
-        </dict>
-    </array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
