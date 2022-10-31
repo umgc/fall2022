@@ -21,7 +21,7 @@ MailStorage mailStorage = new MailStorage();
 final time =  DateTime.now().subtract(Duration(days: 30));
 MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "");
 class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
-  final _notifier = MailNotifier();
+  final sender_notifier = MailNotifier();
   final _keywordController = TextEditingController();
 
   var _subscriptions = <NotificationSubscription>[];
@@ -29,14 +29,10 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   @override
   void initState() {
     super.initState();
+    mn.updateNotifications(time);
+    this.fetch();
     updateSubscriptionList();
     updateNotificationList();
-    removeAllNotification();
-
-    this.fetch();
-
-    setState(() {});
-
   }
 
   Future<MailPiece> getMailPiece(String mailPieceId) async {
@@ -45,11 +41,8 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   }
 
   void fetch() async{
-    mn.updateNotifications(time);
-    // print("before");
     for (final notification in await mn.getNotifications()) {
       addNotification(notification.mailPieceId);
-      //  print('after');
     }
   }
 
@@ -60,14 +53,14 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
   }
 
   Future<void> updateSubscriptionList() async {
-    final subscriptions = await _notifier.getSubscriptions();
+    final subscriptions = await sender_notifier.getSubscriptions();
     setState(() {
       _subscriptions = subscriptions;
     });
   }
 
   Future<void> updateNotificationList() async {
-    final notifications = await _notifier.getNotifications();
+    final notifications = await sender_notifier.getNotifications();
     setState(() {
       _notifications = notifications;
     });
@@ -78,7 +71,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
       final keyword = text.trim();
       if (keyword.isEmpty) continue;
       final subscription = NotificationSubscription(keyword);
-      await _notifier.createSubscription(subscription);
+      await sender_notifier.createSubscription(subscription);
     }
     await updateSubscriptionList();
   }
@@ -87,25 +80,24 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
     for (final text in keywords.split(',')) {
       final keyword = text.trim();
       if (keyword.isEmpty) continue;
-      //final notification = Notification.Notification(keyword,keyword);
     }
     await updateNotificationList();
   }
 
   void removeSubscription(String keyword) async {
     final subscription = NotificationSubscription(keyword);
-    await _notifier.removeSubscription(subscription);
+    await sender_notifier.removeSubscription(subscription);
     await updateSubscriptionList();
   }
 
-  void removeNotification(String mailPieceId, String keyword) async {
-    final notification =  Notification.Notification(mailPieceId,keyword);
-    await _notifier.clearNotification(notification);
+  void removeNotification(String mailPieceId, String keyword, int isCleared) async {
+    final notification =  Notification.Notification(mailPieceId,keyword,isCleared);
+    await sender_notifier.clearNotification(notification);
     await updateNotificationList();
   }
 
   void removeAllNotification() async {
-    await _notifier.clearAllNotifications();
+    await sender_notifier.clearAllNotifications();
     await updateNotificationList();
   }
 
@@ -237,7 +229,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> {
                                     //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
                                   ),
                                   onPressed: () {
-                                    removeNotification(item.mailPieceId,item.subscriptionKeyword);
+                                    removeNotification(item.mailPieceId,item.subscriptionKeyword, 0);
                                   },
                                 ),
                               )

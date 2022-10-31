@@ -1,5 +1,4 @@
 import 'package:summer2022/services/sqlite_database.dart';
-
 import '../models/Notification.dart';
 import '../models/NotificationSubscription.dart';
 
@@ -41,44 +40,47 @@ class MailNotifier {
   /// Retrieve all notifications from the database.
   Future<List<Notification>> getNotifications() async {
     final db = await database;
-    final result = await db.query(NOTIFICATION_TABLE);
-    final query =  await db.rawQuery("""
-      SELECT
-       * 
-      FROM notification_subscription
-    """);
-    print(query);
+    final result = await db.query(
+        NOTIFICATION_TABLE,
+        columns: ['mail_piece_id', 'subscription_keyword', 'isCleared'],
+        where: 'isCleared = 0',
+        );
     return result
         .map((row) => Notification(row["mail_piece_id"] as String,
-            row["subscription_keyword"] as String))
+            row["subscription_keyword"] as String,
+          row["isCleared"] as int))
         .toList();
   }
 
-  /// Clears a specific notification from the list.
+  /// Clears the notification from the list.
   Future<void> clearNotification(Notification notification) async {
     final db = await database;
-
-    await db.delete(NOTIFICATION_TABLE,
-        where: "mail_piece_id = ?",
-        whereArgs: [
-          notification.mailPieceId
-        ]);
-    await db.delete(MAIL_PIECE_TABLE, where: "id = '${notification.mailPieceId}'",
-        );
+    await db.update(
+      NOTIFICATION_TABLE,
+      {
+        'isCleared': 1
+      },
+      where: 'mail_piece_id = ?',
+      whereArgs: [notification.mailPieceId],
+    );
+    final result = await db.query(NOTIFICATION_TABLE);
+   print('Result after isCleared is set: $result');
   }
 
   /// Clears all notifications.
   Future<void> clearAllNotifications() async {
     final db = await database;
 
-    await db.delete(NOTIFICATION_TABLE);
+    final updatedValue = {
+      'isCleared': 1
+    };
+    await db.update(NOTIFICATION_TABLE, updatedValue);
   }
 
   /// Clears all notification subscriptions
   Future<void> clearAllSubscriptions() async {
     final db = await database;
     await db.delete(NOTIFICATION_SUBSCRIPTION_TABLE);
-    await db.delete(MAIL_PIECE_TABLE);
   }
 
   /// Checks all mail received after the provided timestamp against the list of
@@ -86,17 +88,23 @@ class MailNotifier {
   /// objects are created and stored.
   Future<void> updateNotifications(DateTime lastTimestamp) async {
     final db = await database;
+    var test = db.query(MAIL_PIECE_TABLE);
+    print(test);
     print("query section");
-    await db.execute("""
-      INSERT INTO $NOTIFICATION_TABLE
+    await db.execute('''
+      INSERT INTO $NOTIFICATION_TABLE 
       SELECT
+      DISTINCT
         mail_piece.id as mail_piece_id,
-        subscription.keyword as subscription_keyword
+        subscription.keyword as subscription_keyword,
+        0 as isCleared
       FROM $MAIL_PIECE_TABLE as mail_piece
       JOIN $NOTIFICATION_SUBSCRIPTION_TABLE as subscription ON 
         mail_piece.image_text LIKE '%' || subscription.keyword || '%'
         OR mail_piece.sender LIKE '%' || subscription.keyword || '%'
-      WHERE mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch} limit 5;
-    """);
+      WHERE NOT EXISTS (SELECT mail_piece_id FROM $NOTIFICATION_TABLE t1
+                                              WHERE t1.mail_piece_id=mail_piece.id)
+      AND mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch} limit 10 
+''');
   }
 }

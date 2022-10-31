@@ -44,11 +44,12 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
       keyword STRING UNIQUE NOT NULL
     );
   """);
-
-  await db.execute("""
+  
+   await db.execute("""
     CREATE TABLE IF NOT EXISTS $NOTIFICATION_TABLE (
       mail_piece_id STRING  NOT NULL REFERENCES $MAIL_PIECE_TABLE(id),
-      subscription_keyword STRING  NOT NULL REFERENCES $NOTIFICATION_SUBSCRIPTION_TABLE(keyword) ON DELETE CASCADE
+      subscription_keyword STRING  NOT NULL REFERENCES $NOTIFICATION_SUBSCRIPTION_TABLE(keyword) ON DELETE CASCADE,
+      isCleared BIT DEFAULT 0 NOT NULL
     );
   """);
 

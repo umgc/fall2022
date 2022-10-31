@@ -206,23 +206,23 @@ void main() {
       expect(
           notifications,
           containsAll([
-            Notification("test-one", "test"),
-            Notification("test-one", "something"),
-            Notification("test-two", "test"),
-            Notification("test-two", "something"),
+            Notification("test-one", "test",0),
+            Notification("test-one", "something",0),
+            Notification("test-two", "test",0),
+            Notification("test-two", "something",0),
           ]));
     });
 
     test('it can clear a notification', () async {
-      await subject.clearNotification(Notification("test-one", "something"));
+      await subject.clearNotification(Notification("test-one", "something",0));
       final notifications = await subject.getNotifications();
       expect(notifications.length, 3);
       expect(
           notifications,
           containsAll([
-            Notification("test-one", "test"),
-            Notification("test-two", "test"),
-            Notification("test-two", "something"),
+            Notification("test-one", "test",0),
+            Notification("test-two", "test",0),
+            Notification("test-two", "something",0),
           ]));
     });
 

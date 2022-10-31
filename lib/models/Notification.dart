@@ -4,7 +4,8 @@
 class Notification {
   final String mailPieceId;
   final String subscriptionKeyword;
-  Notification(this.mailPieceId, this.subscriptionKeyword);
+  final int isCleared;
+  Notification(this.mailPieceId, this.subscriptionKeyword, this.isCleared);
 
   bool operator ==(Object other) =>
       other is Notification &&
