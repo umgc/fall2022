@@ -107,9 +107,7 @@ class MailNotifier {
                                               WHERE t1.mail_piece_id=mail_piece.id)
       AND mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch} limit 10 
 ''');
-      WHERE mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch};
-    """);
-
+   
     final result = await db.rawQuery("""
       SELECT COUNT(*) as count
       FROM $NOTIFICATION_TABLE
