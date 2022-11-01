@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,6 +32,7 @@ class MailWidgetState extends AssistantState<MailWidget> {
   double commonBorderWidth = 2;
   double commonButtonHeight = 60;
   double commonCornerRadius = 8;
+  DateFormat format = new DateFormat("MM-dd-yyyy");
 
   ButtonStyle commonButtonStyleElevated(Color? primary, Color? shadow) {
     return ElevatedButton.styleFrom(
@@ -103,19 +105,17 @@ class MailWidgetState extends AssistantState<MailWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                children: const [
+                children: [
                   Expanded(
                     child: Center(
+                      child: Padding(
+                      padding: EdgeInsets.all(15),
                       child: Text(
-                        style: TextStyle(fontSize: 20),
-                        "",
+                        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                        widget.digest.message.decodeDate() != null ? format.format(widget.digest.message.decodeDate()!) : "",
+                      ),
                       ),
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_back,
-                    size: 50,
-                    color: Color.fromARGB(0, 255, 255, 1),
                   ),
                 ],
               ),

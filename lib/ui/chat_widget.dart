@@ -1,9 +1,11 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:summer2022/models/ApplicationFunction.dart';
 import 'package:summer2022/models/NotificationSubscription.dart';
+import 'package:summer2022/models/SearchCriteria.dart';
 import 'package:summer2022/services/chat_bot_service.dart';
 import 'package:summer2022/services/mail_notifier.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
@@ -19,6 +21,7 @@ import '../email_processing/digest_email_parser.dart';
 import '../email_processing/other_mail_parser.dart';
 import '../models/Arguments.dart';
 import '../models/Digest.dart';
+import '../models/MailSearchParameters.dart';
 import '../utility/Keychain.dart';
 
 class ChatWidget extends StatefulWidget {
@@ -116,7 +119,17 @@ class _ChatWidgetState extends State<ChatWidget> {
         Navigator.pushNamed(context, chatFunction.parameters![0]);
         break;
       case 'performSearch':
-        Navigator.pushNamed(context, '/search', arguments: chatFunction.parameters);
+        final filters = SearchCriteria.withList(chatFunction.parameters!);
+
+        // Navigate to search results
+        var searchParams = new MailSearchParameters(
+            keyword: filters.keyword,
+            startDate: filters.startDate,
+            endDate: filters.endDate);
+        Navigator.pushNamed(context, '/mail_view',
+            arguments: searchParams);
+
+        FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'senderKeyword':searchParams.keyword});
         break;
       case 'scanMail':
         mailLoader.uploadMail(ImageSource.camera);
