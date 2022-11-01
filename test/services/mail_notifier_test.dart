@@ -220,9 +220,9 @@ void main() {
       expect(
           notifications,
           containsAll([
-            Notification("test-one", "test",0),
-            Notification("test-two", "test",0),
-            Notification("test-two", "something",0),
+            Notification("test-one", "something",1),
+            Notification("test-two", "test2",0),
+            Notification("test-three", "something",0),
           ]));
     });
 
