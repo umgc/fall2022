@@ -56,7 +56,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
   @override
   void initState() {
-
     //initial page loading state
     super.initState();
     setState(() {
@@ -224,70 +223,103 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             var docMailIDItems = doc.querySelectorAll(
                 'a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
 
-            String reminderItem = "";
-            String trackingItem = "";
-            bool reminderMatch = false;
-            bool trackingMatch = false;
-
-            for (int j = 0; j < docMailIDItems.length; j++) {
-              //find the element that contains "Set a Reminder"
-              if (reminderMatch == false) {
-                if (docMailIDItems[j]
-                    .outerHtml
-                    .toString()
-                    .contains("pages/reminder")) {
-                  reminderItem = docMailIDItems[j].outerHtml.toString();
-                  reminderMatch = true;
-                }
-              }
-
-              //find the element that contains "Learn More"
-              if (trackingMatch == false) {
-                if (docMailIDItems[j]
-                    .innerHtml
-                    .toString()
-                    .contains("alt=\"Learn More\"")) {
-                  trackingItem = docMailIDItems[j].outerHtml.toString();
-                  trackingMatch = true;
-                }
-              }
-              //stop searching after finding the correct matches
-              if (trackingMatch == true && reminderMatch == true) {
-                break;
-              }
-            }
-
-            //get a list of links, only the first link should matter
-            List<String> reminderLinkList = await _getUrlLinks(reminderItem);
-
-            //get a list of links, if tracking match is not found it wont load a tracking link in set state below
-            List<String> trackingLinkList = await _getUrlLinks(trackingItem);
             Duration diff =
                 DateTime.now().difference(widget.mailPiece.timestamp);
+            if (diff.inDays >= 30) {
+              hasSetReminder = false;
+            } else {
+              hasSetReminder = true;
+            }
 
-            //finally, set the state of the links to the matched element
-            setState(() {
-              if (diff.inDays >= 30) {
-                hasLearnMore = false;
-              } else {
-                hasSetReminder = true;
+            String trackingItem = "";
+            bool trackingMatch = false;
+
+            bool reminderMatch = false;
+            String reminderItem = "";
+
+            if (hasSetReminder == true) {
+              for (int j = 0; j < docMailIDItems.length; j++) {
+                //find the element that contains "Set a Reminder"
+                if (reminderMatch == false) {
+                  if (docMailIDItems[j]
+                      .outerHtml
+                      .toString()
+                      .contains("pages/reminder")) {
+                    reminderItem = docMailIDItems[j].outerHtml.toString();
+                    reminderMatch = true;
+                  }
+                }
+
+                //find the element that contains "Learn More"
+                if (trackingMatch == false) {
+                  if (docMailIDItems[j]
+                      .innerHtml
+                      .toString()
+                      .contains("alt=\"Learn More\"")) {
+                    trackingItem = docMailIDItems[j].outerHtml.toString();
+                    trackingMatch = true;
+                  }
+                }
+                //stop searching after finding the correct matches
+                if (trackingMatch == true && reminderMatch == true) {
+                  break;
+                }
               }
 
-              //get the number out of the matched text
-              reminderLinkUrl = Uri.parse(reminderLinkList[0]);
-              if (trackingMatch == true) {
-                learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
-                hasLearnMore = true;
+              //get a list of links, only the first link should matter
+              List<String> reminderLinkList = await _getUrlLinks(reminderItem);
+
+              //get a list of links, if tracking match is not found it wont load a tracking link in set state below
+              List<String> trackingLinkList = await _getUrlLinks(trackingItem);
+
+              //finally, set the state of the links to the matched element
+              setState(() {
+                //get the number out of the matched text
+                reminderLinkUrl = Uri.parse(reminderLinkList[0]);
+                if (trackingMatch == true) {
+                  learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+                  hasLearnMore = true;
+                }
+
+                if ((hasLearnMore || hasSetReminder) == true) {
+                  hasDoMore = true;
+                } else {
+                  hasDoMore = false;
+                }
+
+                loading = false;
+              }); //end of if SetReminder is true functions
+            } else {
+              for (int j = 0; j < docMailIDItems.length; j++) {
+                //find the element that contains "Learn More"
+                if (trackingMatch == false) {
+                  if (docMailIDItems[j]
+                      .innerHtml
+                      .toString()
+                      .contains("alt=\"Learn More\"")) {
+                    trackingItem = docMailIDItems[j].outerHtml.toString();
+                    trackingMatch = true;
+                  }
+                }
+                //stop searching after finding the correct matches
+                if (trackingMatch == true) {
+                  break;
+                }
               }
 
-              if ((hasLearnMore || hasSetReminder) == true) {
-                hasDoMore = true;
-              } else {
-                hasDoMore = false;
-              }
+              //get a list of links, if tracking match is not found it wont load a tracking link in set state below
+              List<String> trackingLinkList = await _getUrlLinks(trackingItem);
 
-              loading = false;
-            });
+              //finally, set the state of the links to the matched element
+              setState(() {
+                if (trackingMatch == true) {
+                  learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+                  hasLearnMore = true;
+                  hasDoMore = true;
+                }
+                loading = false;
+              });
+            } //end else for tracking only link
           } //end if contains text/html
         } //end element(y) for loop
       } //end if contains multipart
