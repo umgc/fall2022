@@ -76,9 +76,7 @@ class TopBarState extends State<TopBar> {
                   excludeSemantics: true,
                   button: true,
                   label: "Back",
-                  onTap: () {
-                    navKey.currentState!.pushNamed('/main');
-                  },
+                  onTap: () => Navigator.pop(context),
                   child: IconButton(
                       icon: new Image.asset("assets/icon/back-icon.png",
                           width: 30, height: 30),

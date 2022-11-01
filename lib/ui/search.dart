@@ -57,6 +57,9 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
     final filters = SearchCriteria.withList(this.widget.parameters);
 
     // Update local variables
+    if (filters.keyword.isNotEmpty) {
+      keywordInput.text = filters.keyword;
+    }
     _start = filters.startDate ?? _start;
     _end = filters.endDate ?? _end;
   }
@@ -248,7 +251,7 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
                               // Go directly to mail item if the user clicks a suggestion
                               Navigator.pushNamed(context, '/mail_piece_view',
                                   arguments: new MailPieceViewArguments(suggestion as MailPiece));
-                              FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'keyword':keywordInput, 'itemId':suggestion.uspsMID});
+                              FirebaseAnalytics.instance.logEvent(name: 'Mail_Search',parameters:{'keyword':keywordInput, 'uspsMID':suggestion.uspsMID});
                               },
 
                             suggestionsCallback: (pattern) {

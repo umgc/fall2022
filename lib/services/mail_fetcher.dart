@@ -4,12 +4,15 @@ import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/email_processing/gmail_api_service.dart';
 import 'package:summer2022/utility/user_auth_service.dart';
 import 'package:summer2022/services/mail_utility.dart';
+import '../models/Code.dart';
 import '../models/MailPiece.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:enough_mail/enough_mail.dart';
 import '../models/Digest.dart';
 import 'package:intl/intl.dart';
 import 'package:html/parser.dart';
+
+import '../utility/linkwell.dart';
 
 /// The `MailFetcher` class requests new mail from a mail server.
 class MailFetcher {
@@ -290,6 +293,34 @@ class MailFetcher {
     //todo: save list of Emails found on the ocrScanResult
     //todo: save list of Phone Numbers found on the ocrScanResult
 
+    List<CodeObject> codeObj = ocrScanResult.codes;
+    var links = <String>[];
+    var emailList = <String>[];
+    var phoneList = <String>[];
+
+    for (int i = 0; i < codeObj.length; i++) {
+      if (codeObj[i].getType == 'qr') {
+        links.add(codeObj[i].getInfo.toString());
+      }
+    }
+
+
+    LinkWell linkWell = LinkWell(text!);
+
+    List<dynamic> linkWellLinks = linkWell.links;
+    List<dynamic> linkWellPhone = linkWell.phone;    for (final link in linkWellLinks) {
+      if (link.toString().contains('@')) {
+        emailList.add(link);
+      } else {
+        links.add(link);
+      }
+    }
+
+    for (final phone in linkWellPhone) {
+      print(phone.toString());
+      phoneList.add(phone);
+    }
+
     //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
     //todo: otherwise the date is probably fine since there is only one USPS ID email per day
     final emailId = timestamp.toString();
@@ -459,8 +490,7 @@ class MailFetcher {
     } //end for loop for element x parts
 
     return new MailPiece(id, emailId, timestamp, attachment.sender, text!,
-        scanImgCID, mailPieceId);
-
+        scanImgCID, mailPieceId, links, emailList, phoneList);
   } //end _processMailImage
 
   /// Perform OCR scan once on the mail image to get the results for further processing

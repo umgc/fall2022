@@ -10,6 +10,7 @@
 
 library linkwell;
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'src/source.dart';
@@ -29,9 +30,13 @@ class LinkWell extends StatelessWidget {
   /// This is holds all links when detected
   final List links = <String>[];
 
+  final List phone = <String>[];
+
   /// This hold all Names of links provided by the User
   /// this is set to null by default
   final Map<String, String>? listOfNames;
+
+  final RegExp phexp = Helper.phoneRegex;
 
   /// This hold TextSpan Widgets List
   /// which is then placed as child in the RichText Widget
@@ -106,6 +111,7 @@ class LinkWell extends StatelessWidget {
   /// by default can also be null
   final Key? key;
 
+
   /// LinkWell class is constructed here
   LinkWell(
     this.text, {
@@ -146,11 +152,18 @@ class LinkWell extends StatelessWidget {
       this.links.add(text.substring(match.start, match.end));
     });
 
+
+    Iterable<RegExpMatch> phmatches = phexp.allMatches(this.text);
+
+    phmatches.forEach((match) {
+      this.phone.add(text.substring(match.start, match.end));
+    });
+
     /// We run a check to know if urls and Emails are found
     /// by checking if links.isNotEmpty
     /// if true
     /// we call BuildBody
-    /// else we call BuildNormalBody
+    /// else we call BuildNormalBody1111
     if (links.isNotEmpty) {
       _buildBody();
     } else {
@@ -225,12 +238,12 @@ class LinkWell extends StatelessWidget {
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = (){
-              launch(url);
+            recognizer: new TapGestureRecognizer()..onTap = () {
               FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':url});
-            }
-            );
+              launch(url);});
+
         /// added
+
         textSpanWidget.add(link);
       } else {
         /// else we let url_laucher know that this is url and not an email
@@ -253,12 +266,10 @@ class LinkWell extends StatelessWidget {
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
             recognizer: new TapGestureRecognizer()..onTap = () {
-              launch(l);
               FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':l});
-            }
-        );
-
+              launch(l);});
         /// added
+        /// send link to my method
         textSpanWidget.add(link);
       }
 

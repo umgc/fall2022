@@ -54,6 +54,17 @@ class MailPieceService {
           "timestamp >= '${start.millisecondsSinceEpoch}' AND timestamp <= '${end.millisecondsSinceEpoch}'");
     }
 
+    List<String> getList(String from) {
+      if (from.startsWith("[") && from.endsWith(("]"))) {
+        from = from.substring(1, from.length - 1);
+      }
+      var list = from.split(',');
+      if (list.length == 1 && list[0].isEmpty) {
+        list.removeAt(0);
+      }
+      return list;
+    }
+
     String query = queryList.join(" AND ");
     try {
       final db = await database;
@@ -68,7 +79,10 @@ class MailPieceService {
               row["sender"]?.toString() ?? "",
               row["image_text"]?.toString() ?? "",
               row["scanImgCID"]?.toString() ?? "",
-              row["uspsMID"]?.toString() ?? ""))
+              row["uspsMID"]?.toString() ?? "",
+              getList(row["links"]?.toString() ?? ""),
+              getList(row["emails"]?.toString() ?? ""),
+              getList(row["phones"]?.toString() ?? "")))
           .toList();
     } catch (e) {
       throw new FetchMailException(e.toString());

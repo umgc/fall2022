@@ -32,7 +32,7 @@ MailNotifier mn = new MailNotifier();
 MailPieceStorage mailStorage = new MailPieceStorage();
 
 final time =  DateTime.now().subtract(Duration(days: 30));
-MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "","");
+MailPiece clickedMailPiece = new MailPiece("", "", time, "", "", "","", null, null, null);
 class NotificationsWidgetState extends AssistantState<NotificationsWidget> with SingleTickerProviderStateMixin {
   final _notifier = MailNotifier();
   final _keywordController = TextEditingController();
@@ -318,7 +318,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                           borderRadius: BorderRadius.circular(30)))),
                               onPressed: () {
                                 addSubscription(_keywordController.text);
-                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'itemId':_keywordController.text});
+                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Add_Keyword':_keywordController.text});
                                 _keywordController.clear();
                               },
                             ),
@@ -364,6 +364,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                                   BorderRadius.circular(30)))),
                                       onPressed: () {
                                         removeSubscription(item.keyword);
+                                        FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Delete_Keyword':item.keyword});
                                       },
                                     ),
                                   )

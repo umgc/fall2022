@@ -40,7 +40,10 @@ class MailPieceStorage {
       "scanImgCID": piece.scanImgCID,
       "uspsMID": piece.uspsMID,
       "image_bytes": piece.featuredHtml,
-      "featured_html": piece.featuredHtml
+      "featured_html": piece.featuredHtml,
+      "links": piece.links?.toString(),
+      "emails": piece.emailList?.toString(),
+      "phones": piece.phoneNumbersList?.toString()
     };
     try {
       await db.insert(MAIL_PIECE_TABLE, data);
@@ -64,8 +67,11 @@ class MailPieceStorage {
       result[0]["image_text"]?.toString() ?? "",
       result[0]["scanImgCID"]?.toString() ?? "",
       result[0]["uspsMID"]?.toString() ?? "",
+      result[0]["links"]?.toString().split(',') ?? null,
+      result[0]["emails"]?.toString().split(',') ?? null,
+      null,
       imageBytes: result[0]["image_bytes"]?.toString(),
-      featuredHtml: result[0]["featured_html"]?.toString(),
+      featuredHtml: result[0]["featured_html"]?.toString()
     );
   }
 
@@ -121,8 +127,11 @@ class MailPieceStorage {
               row["image_text"]?.toString() ?? "",
               row["scanImgCID"]?.toString() ?? "",
               row["uspsMID"]?.toString() ?? "",
+              row["links"]?.toString().split(',') ?? null,
+              row["emails"]?.toString().split(',') ?? null,
+              null,
               imageBytes: result[0]["image_bytes"]?.toString(),
-              featuredHtml: result[0]["featured_html"]?.toString()
+              featuredHtml: result[0]["featured_html"]?.toString(),
             ))
         .toList();
   }

@@ -12,8 +12,8 @@ void main() async {
   DateTime today = new DateTime(now.year, now.month, now.day);
 
   var mailPieces = <MailPiece>[
-    new MailPiece("1", "", today, "sender", "test", "", ""),
-    new MailPiece("2", "", today.add(Duration(days: 1)), "empty", "empty", "", "")
+    new MailPiece("1", "", today, "sender", "test", "", "", null, null, null),
+    new MailPiece("2", "", today.add(Duration(days: 1)), "empty", "empty", "", "", null, null, null)
   ];
 
   setUpAll(() async {

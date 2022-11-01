@@ -41,14 +41,6 @@ class _ChatWidgetState extends State<ChatWidget> {
   void initState() {
     super.initState();
     locator<AnalyticsService>().logScreens(name: "Chatbot");
-    //FirebaseAnalytics.instance.setCurrentScreen(screenName: "Settings");
-    /*FirebaseAnalytics.instance.logEvent(
-      name: 'screen_view',
-      parameters: {
-        'screenName': 'Chatbot',
-        'screenClass': 'chat_widget.dart',
-      },
-    );*/
     _addSystemMessage("How may I assist you?");
   }
 

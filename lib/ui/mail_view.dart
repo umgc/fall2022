@@ -29,7 +29,7 @@ class MailViewWidgetState extends State<MailViewWidget> {
   Widget build(BuildContext context) {
 
     Widget _buildMailPiece(BuildContext context, MailPiece mailPiece) {
-      locator<AnalyticsService>().logScreens(name: "Search Results");
+      locator<AnalyticsService>().logScreens(name: "Email Search Results");
       return Container(
         color: Colors.white10,
         child:
