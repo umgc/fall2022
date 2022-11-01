@@ -89,8 +89,6 @@ class MailNotifier {
   /// objects are created and stored.
   Future<int> updateNotifications(DateTime lastTimestamp) async {
     final db = await database;
-    var test = db.query(MAIL_PIECE_TABLE);
-    print(test);
     print("query section");
     await db.execute('''
       INSERT INTO $NOTIFICATION_TABLE 
@@ -107,9 +105,6 @@ class MailNotifier {
                                               WHERE t1.mail_piece_id=mail_piece.id)
       AND mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch} limit 10 
 ''');
-      WHERE mail_piece.timestamp > ${lastTimestamp.millisecondsSinceEpoch};
-    """);
-
     final result = await db.rawQuery("""
       SELECT COUNT(*) as count
       FROM $NOTIFICATION_TABLE
