@@ -1,28 +1,21 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:summer2022/models/Code.dart';
 import 'package:summer2022/image_processing/barcode_scanner.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:summer2022/image_processing/usps_address_verification.dart';
 import 'package:summer2022/services/mail_fetcher.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path/path.dart';
 
 class DigestEmailParser {
-  String _userName = ''; // Add your credentials
-  String _password = ''; // Add your credentials
-  DateTime? _targetDate;
   CloudVisionApi vision = CloudVisionApi();
   BarcodeScannerApi? _barcodeScannerApi;
-  String filePath = '';
-  String imagePath = '';
 
   Future<Digest> createDigest(String userName, String password) async {
     try {
@@ -42,20 +35,25 @@ class DigestEmailParser {
 
   Future<List<Attachment>> _getAttachments(MimeMessage m) async {
     try {
+      await deleteImageFiles();
       List<Attachment> list = [];
-      await deleteImageFiles(); //this method deletes the current list of user images in the app local directory
       for (int x = 0; x < m.mimeData!.parts!.length; x++) {
         var firstLevel = m.mimeData!.parts!.elementAt(x);
+        if (firstLevel.contentType?.value.toString().contains("image") ?? false) {
+          var attachment = Attachment();
+          attachment.attachment = firstLevel
+              .decodeMessageData()
+              .toString(); //These are base64 encoded images with formatting
+          attachment.attachmentNoFormatting = attachment.attachment
+              .toString()
+              .replaceAll(
+              "\r\n", ""); //These are base64 encoded images with formatting
+          attachment.detailedInformation = await processImage(attachment.attachmentNoFormatting); //process image defined below
+          list.add(attachment); //add attachment to list of attachments
+        }
         if (firstLevel.parts != null && firstLevel.parts!.isNotEmpty) {
           for (int y = 0; y < firstLevel!.parts!.length; y++) {
-            if (firstLevel
-            !.parts
-            !.elementAt(y)
-                .contentType
-                ?.value
-                .toString()
-                .contains("image") ??
-                false) {
+            if (firstLevel!.parts!.elementAt(y).contentType?.value.toString().contains("image") ?? false) {
               var attachment = Attachment();
               attachment.attachment = firstLevel.parts!
                   .elementAt(y)
@@ -64,13 +62,9 @@ class DigestEmailParser {
               attachment.attachmentNoFormatting = attachment.attachment
                   .toString()
                   .replaceAll(
-                  "\r\n", ""); //These are base64 encoded images with formatting
-              /* get the position of element with value "image" and save to attachment.  delete all returns */
-              await saveImageFile(
-                  base64Decode(attachment.attachmentNoFormatting),
-                  "mailpiece$y.jpg");
-              attachment.detailedInformation =
-              await processImage(filePath); //process image defined below
+                  "\r\n",
+                  ""); //These are base64 encoded images with formatting
+              attachment.detailedInformation = await processImage(attachment.attachmentNoFormatting); //process image defined below
               list.add(attachment); //add attachment to list of attachments
             }
           }
@@ -116,11 +110,6 @@ class DigestEmailParser {
     } catch (e) {
       rethrow;
     }
-  }
-
-  String _formatTargetDateForSearch(DateTime date) {
-    final DateFormat format = DateFormat('dd-MMM-yyyy');
-    return format.format(date);
   }
 
   Future<MimeMessage> _getDigestEmail(String username, String password) async {
@@ -169,15 +158,12 @@ class DigestEmailParser {
 
   deleteImageFiles() async {
     Directory? directory;
-
     try {
       if (Platform.isIOS) {
         directory = await getApplicationDocumentsDirectory();
       }
       if (Platform.isAndroid) {
         directory = await getApplicationDocumentsDirectory();
-
-        // directory = await getExternalStorageDirectory();
       }
 
       Directory? directory2 = await getTemporaryDirectory();
@@ -185,48 +171,42 @@ class DigestEmailParser {
       var files2 = directory2.listSync(recursive: false, followLinks: false);
       for (int x = 0; x < files!.length; x++) {
         try {
-          files[x].delete();
-          print("Delete in Extern: ${files[x].path}");
-        } catch (e) {
-          print("File$x does not exist");
-        }
+          var file = files[x];
+          if (basename(file.path) == 'mailpiece.jpg') {
+            file.delete();
+          }
+        } catch (e) {}
       }
       for (int x = 0; x < files2.length; x++) {
         try {
-          files[x].delete();
-          print("Delete: ${files2[x].path}");
-        } catch (e) {
-          print("File$x does not exist");
-        }
+          var file = files[x];
+          if (basename(file.path) == 'mailpiece.jpg') {
+            file.delete();
+          }
+        } catch (e) {}
       }
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<bool> saveImageFile(Uint8List imageBytes, String fileName) async {
+  Future<File?> saveImageFile(Uint8List imageBytes, String fileName) async {
     Directory? directory;
     try {
       if (Platform.isAndroid) {
         if (await _requestPermission(Permission.storage)) {
-          // directory = await getExternalStorageDirectory();
           directory = await getApplicationDocumentsDirectory();
-          imagePath = directory.path.toString();
-          print(directory.path);
         } else {
           if (await _requestPermission(Permission.photos)) {
             directory = await getTemporaryDirectory();
-            imagePath = directory.path;
-            print(directory.path);
           } else {
-            return false;
+            return null;
           }
         }
       }
       if (Platform.isIOS) {
         if (imageBytes.isNotEmpty) {
           directory = await getApplicationDocumentsDirectory();
-          imagePath = directory.path;
           print(directory.path);
         }
       }
@@ -237,14 +217,10 @@ class DigestEmailParser {
         File saveFile = File("${directory.path}/$fileName");
         saveFile.writeAsBytesSync(imageBytes);
 
-        filePath = saveFile.path;
-        print("Directory${directory.listSync()}");
-        return true;
+        return saveFile;
       }
-    } catch (e) {
-      debugPrint("Something happened in saveImageFile method");
-    }
-    return false;
+    } catch (e) {}
+    return null;
   }
 
   Future<bool> _requestPermission(Permission permission) async {
@@ -264,30 +240,33 @@ class DigestEmailParser {
     }
   }
 
-  Future<MailResponse> processImage(String imagePath) async {
+  Future<MailResponse> processImage(String imageData) async {
     try {
       CloudVisionApi vision = CloudVisionApi();
-      print("processImage: $imagePath");
-      var image = File(imagePath);
-      Uint8List imageByte;
-      imageByte = image.readAsBytesSync();
 
-      var a = base64.encode(imageByte);
-      print(a);
-      var objMr = await vision.search(a);
+      var objMr = await vision.search(imageData);
       for (var address in objMr.addresses) {
         address.validated = await UspsAddressVerification()
             .verifyAddressString(address.address);
       }
-      _barcodeScannerApi = BarcodeScannerApi();
-      File img = File(filePath);
-      _barcodeScannerApi!.setImageFromFile(img);
 
-      List<CodeObject> codes = await _barcodeScannerApi!.processImage();
-      for (final code in codes) {
-        objMr.codes.add(code);
+      var file = await saveImageFile(base64Decode(imageData), "mailpiece.jpg");
+
+      try {
+        if (file != null) {
+          _barcodeScannerApi = BarcodeScannerApi();
+          _barcodeScannerApi!.setImageFromFile(file);
+
+          List<CodeObject> codes = await _barcodeScannerApi!.processImage();
+          for (final code in codes) {
+            objMr.codes.add(code);
+          }
+        }
+      } finally {
+        if (file != null) {
+          file.delete();
+        }
       }
-      print(objMr.toJson());
       return objMr;
     } catch (e) {
       rethrow;
