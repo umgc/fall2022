@@ -14,6 +14,9 @@ import 'package:summer2022/models/NotificationSubscription.dart';
 import 'package:summer2022/models/MailPieceViewArguments.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'package:summer2022/firebase_options.dart';
 
 
 
