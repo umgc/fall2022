@@ -96,7 +96,7 @@ void main() {
       expect(subscriptions, containsAll([subscriptionOne, subscriptionTwo]));
     });
 
-    group("and deleting a subscrition", () {
+    group("and deleting a subscription", () {
       test('it deletes associated notifications', () async {
         await _createMailPiece(
             "test-one", "someone", "test something one", now);
@@ -214,15 +214,15 @@ void main() {
     });
 
     test('it can clear a notification', () async {
-      await subject.clearNotification(Notification("test-one", "something",0));
+      await subject.clearNotification(Notification("test-one", "test",0));
       final notifications = await subject.getNotifications();
       expect(notifications.length, 3);
       expect(
           notifications,
           containsAll([
-            Notification("test-one", "test",0),
+            Notification("test-one", "something",0),
             Notification("test-two", "test",0),
-            Notification("test-two", "something",0),
+            Notification("test-two", "something",0)
           ]));
     });
 
