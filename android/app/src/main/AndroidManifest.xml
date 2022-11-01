@@ -28,7 +28,7 @@
 
    <application
         android:label="MailSpeak"
-
+        android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
