@@ -61,8 +61,9 @@ class MailNotifier {
       {
         'isCleared': 1
       },
-      where: 'mail_piece_id = ?',
-      whereArgs: [notification.mailPieceId],
+      where: 'mail_piece_id = ? AND subscription_keyword = ? AND isCleared= ?',
+      whereArgs: [notification.mailPieceId, notification.subscriptionKeyword,
+      notification.isCleared],
     );
     final result = await db.query(NOTIFICATION_TABLE);
    print('Result after isCleared is set: $result');
