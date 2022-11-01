@@ -96,7 +96,7 @@ void main() {
       expect(subscriptions, containsAll([subscriptionOne, subscriptionTwo]));
     });
 
-    group("and deleting a subscrition", () {
+    group("and deleting a subscription", () {
       test('it deletes associated notifications', () async {
         await _createMailPiece(
             "test-one", "someone", "test something one", now);
@@ -222,7 +222,7 @@ void main() {
           containsAll([
             Notification("test-one", "something",0),
             Notification("test-two", "test",0),
-            Notification("test-two", "something",0),
+            Notification("test-two", "something",0)
           ]));
     });
 
