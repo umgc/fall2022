@@ -163,6 +163,8 @@ class MailFetcher {
       DateTime timestamp, int index) async {
     MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
+    //need a way to get text/html in either 1st or 2nd level of parts - its different
+    //in different email accounts
     int mimePartMatch1 = -1;
     int mimePartMatch2 = -1;
     String mimePartMatchLevel = '';
@@ -173,11 +175,9 @@ class MailFetcher {
     for (int x = 0; x < mimeParts.length; x++) {
       String elementXString = mimeParts[x].contentType?.mediaType
           .toString() ?? "";
-      debugPrint(elementXString);
-
       if (test1.hasMatch(elementXString!)) {
         if (elementXString.contains("text/html")) {
-          debugPrint("got to first x text/html find");
+          //got the match in level one, so set x and level
           mimePartMatch1 = x;
           mimePartMatchLevel = "One";
           break;
@@ -187,7 +187,7 @@ class MailFetcher {
             mimeParts[x].parts![y].contentType!.mediaType.toString();
 
             if (subPartTopType.contains("text/html")) {
-              debugPrint("got to first y text/html find");
+              //found the match at level 2, set both x and y (very important) and level to Two
               mimePartMatch1 = x;
               mimePartMatch2 = y;
               mimePartMatchLevel = "Two";
@@ -198,12 +198,10 @@ class MailFetcher {
       } //end x has either multipart or text/html
     } //end x loop
 
-    debugPrint(
-        mimePartMatch1.toString() + ' ' + mimePartMatch2.toString() + ' ' +
-            mimePartMatchLevel);
-
+    //need to instantiate textHtmlPart but this should always be overridden.
     var textHtmlPart = mimeParts[0];
 
+    //Because we don't know if we need mime parts level 1 or level 2, need this code
     if (mimePartMatchLevel == 'One') {
       textHtmlPart = mimeParts[mimePartMatch1];
     } else if (mimePartMatchLevel == 'Two') {
@@ -211,7 +209,8 @@ class MailFetcher {
     }
 
     //get the parts into an html document to make it searchable.
-    //need to decode Text into 'quoted-printable' type to see all the link text values
+    //need to decode Text into 'quoted-printable' if possible or have alternate
+    // search type for 7bit or other email accounts
 
     debugPrint(textHtmlPart.headersList.toString());
     String contentTransferType = '';
@@ -221,10 +220,8 @@ class MailFetcher {
     } else if (textHtmlPart.headersList.toString().contains("quoted-printable") ) {
       contentTransferType = 'quoted-printable';
     }
-    debugPrint(contentTransferType);
 
     var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), contentTransferType) );
-    //var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), 'quoted-printable') );
 
     //############# start sender section ################
     // If sender is not stored in metadata
@@ -325,10 +322,7 @@ class MailFetcher {
 
     //#############end linkwell section################
 
-    //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
-    //todo: otherwise the date is probably fine since there is only one USPS ID email per day
     final emailId = timestamp.toString();
-
 
     //#############start mailPieceId section################
 
@@ -365,6 +359,11 @@ class MailFetcher {
               //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
               var trackingItems = doc.querySelectorAll(
                   'a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
+
+              if ( trackingItems.length == 0 ) {
+                trackingItems = doc.querySelectorAll(
+                    'a[href*=\'informeddelivery.usps.com/tracking\']');
+              }
 
               //need a counter for times the reminder mailPiece with image was found
               int trackingCount = 0;
@@ -427,6 +426,11 @@ class MailFetcher {
               var reminderItems = doc.querySelectorAll(
                   'a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
 
+              if ( reminderItems.length == 0 ) {
+                reminderItems = doc.querySelectorAll(
+                    'a[href*=\'informeddelivery.usps.com/box/pages/reminder\']');
+              }
+
               //need a counter for times the reminder mailPiece with image was found
               int reminderCount = 0;
               //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
@@ -469,34 +473,5 @@ class MailFetcher {
     CloudVisionApi vision = CloudVisionApi();
     return await vision.search(mailImage);
   }
-
-  MimeData _getTextHtmlPart (MimeMessage email) {
-    var mimeParts = email.mimeData!.parts!;
-    RegExp test1 = RegExp(r'multipart|text/html');
-
-      for (int x = 0; x < mimeParts.length; x++) {
-        String elementXString = mimeParts[x].contentType?.mediaType
-            .toString() ?? "";
-        debugPrint(elementXString);
-
-        if (test1.hasMatch(elementXString!)) {
-          if (elementXString.contains("text/html")) {
-            debugPrint("got to first x text/html find");
-            return mimeParts[x];
-          } else {
-            for (int y = 0; y < mimeParts[x].parts!.length; y++) {
-              String subPartTopType =
-              mimeParts[x].parts![y].contentType!.mediaType.toString();
-
-              if (subPartTopType.contains("text/html")) {
-                debugPrint("got to first y text/html find");
-                return mimeParts[x].parts![y];
-              } //end y has text/html
-            } //end y loop
-          } //end else
-        } //end x has either multipart or text/html
-      } //end x loop
-    return mimeParts[0];
-    }
 
 } //end class MailFetcher
