@@ -5,20 +5,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:intl/intl.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:summer2022/models/MailPiece.dart';
 import 'package:summer2022/ui/bottom_app_bar.dart';
 import 'package:summer2022/ui/floating_home_button.dart';
 import 'package:summer2022/ui/top_app_bar.dart';
 import 'package:summer2022/models/Digest.dart';
 import 'package:html/parser.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:summer2022/utility/linkwell.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
-import 'package:summer2022/firebase_options.dart';
 import 'package:summer2022/services/analytics_service.dart';
 import 'package:summer2022/utility/locator.dart';
 
@@ -50,6 +47,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   bool loading = true;
 
   late bool hasLearnMore = false;
+  late bool hasSetReminder = false;
   late bool hasDoMore = false;
   late Uri? learnMoreLinkUrl = null;
   late Uri? reminderLinkUrl = null;
@@ -58,20 +56,27 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
   @override
   void initState() {
+    //initial page loading state
     super.initState();
     setState(() {
       loading = true;
     });
 
+    //display mailpiece data to console for record
     debugPrint("Loading data for mailpiece:"
-        "\nid: " + widget.mailPiece.id.toString() +
-        "\nscanImgCID: " + widget.mailPiece.scanImgCID.toString() +
-        "\nuspsMID: " + widget.mailPiece.uspsMID.toString() +
-        "\ndate: " + widget.mailPiece.timestamp.toString()  );
+            "\nid: " +
+        widget.mailPiece.id.toString() +
+        "\nscanImgCID: " +
+        widget.mailPiece.scanImgCID.toString() +
+        "\nuspsMID: " +
+        widget.mailPiece.uspsMID.toString() +
+        "\ndate: " +
+        widget.mailPiece.timestamp.toString());
 
+    //update mailPiece string data
     mailPieceText = _reformatMailPieceString(originalText);
 
-    if(widget.mailPiece.scanImgCID != "") {
+    if (widget.mailPiece.scanImgCID != "") {
       _getMailPieceEmail();
     } else {
       // scanImgCID = "" means no image or links will be found. dont check email and remove do more section
@@ -79,45 +84,58 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         mailImage = null;
         reminderLinkUrl = null;
         learnMoreLinkUrl = null;
-        hasDoMore = false;
+
         hasLearnMore = false;
+        hasSetReminder = false;
+        hasDoMore = false;
+
         loading = false;
       });
     }
     locator<AnalyticsService>().logScreens(name: 'Email');
-    FirebaseAnalytics.instance.logEvent(name: 'EMail',parameters:{'uspsMID':widget.mailPiece.uspsMID});
+    FirebaseAnalytics.instance.logEvent(
+        name: 'EMail', parameters: {'uspsMID': widget.mailPiece.uspsMID});
   }
 
+  //get the image of the mail piece
   Future<void> _getMailPieceEmail() async {
     MailFetcher mf1 = new MailFetcher();
-    digest = widget.digest ?? await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
+
+    //get digest email only if not passed when calling page
+    digest = widget.digest ??
+        await mf1.getMailPieceDigest(widget.mailPiece.timestamp);
+
     MimeMessage m1 = digest.message;
+
     _getImgFromEmail(m1);
 
     if (widget.mailPiece.uspsMID != "") {
       _getLinkHtmlFromEmail(m1);
     } else {
-      // uspsMID = "" means it was not a correctly loaded mailPiece.  No links
+      // uspsMID = "" means it was not a correctly loaded mailPiece.  No links so skip function
       setState(() {
         reminderLinkUrl = null;
         learnMoreLinkUrl = null;
-        hasDoMore = false;
+
         hasLearnMore = false;
+        hasSetReminder = false;
+        hasDoMore = false;
+
         loading = false;
       });
     }
 
-    if(Firebase.apps.length != 0){
+    if (Firebase.apps.length != 0) {
       var EventParams = ['screen_view,page_location, page_referrer'];
       /*await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );*/
-      FirebaseAnalytics.instance
-          .setUserProperty(name: 'USPS_Email_MID', value: widget.mailPiece.uspsMID);
-     // FirebaseAnalytics.instance
-       //   .logEvent(name: 'AnalyticsParameterScreenName', parameters:;
-    };
-
+      FirebaseAnalytics.instance.setUserProperty(
+          name: 'USPS_Email_MID', value: widget.mailPiece.uspsMID);
+      // FirebaseAnalytics.instance
+      //   .logEvent(name: 'AnalyticsParameterScreenName', parameters:;
+    }
+    ;
   }
 
   void _getImgFromEmail(MimeMessage m) async {
@@ -205,67 +223,113 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             var docMailIDItems = doc.querySelectorAll(
                 'a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
 
-            String reminderItem = "";
-            String trackingItem = "";
-            bool reminderMatch = false;
-            bool trackingMatch = false;
-
-            for (int j = 0; j < docMailIDItems.length; j++) {
-
-              //find the element that contains "Set a Reminder"
-              if (reminderMatch == false) {
-                if (docMailIDItems[j].outerHtml.toString().contains(
-                    "pages/reminder")) {
-                  reminderItem = docMailIDItems[j].outerHtml.toString();
-                  reminderMatch = true;
-                }
-              }
-
-              //find the element that contains "Learn More"
-              if (trackingMatch == false) {
-                if ( docMailIDItems[j].innerHtml.toString().contains(
-                    "alt=\"Learn More\"") ) {
-                  trackingItem = docMailIDItems[j].outerHtml.toString();
-                  trackingMatch = true;
-                }
-              }
-              //stop searching after finding the correct matches
-              if (trackingMatch == true && reminderMatch == true){
-                break;
-              }
+            Duration diff =
+                DateTime.now().difference(widget.mailPiece.timestamp);
+            if (diff.inDays >= 30) {
+              hasSetReminder = false;
+            } else {
+              hasSetReminder = true;
             }
 
-            //get a list of links, only the first link should matter
-            List<String> reminderLinkList = await _getLinks(reminderItem);
+            String trackingItem = "";
+            bool trackingMatch = false;
 
-            //get a list of links, if tracking match is not found it wont load a tracking link in set state below
-            List<String> trackingLinkList = await _getLinks(trackingItem);
+            bool reminderMatch = false;
+            String reminderItem = "";
 
-            //finally, set the state of the links to the matched element
-            setState(() {
-              hasDoMore = true;
-              //get the number out of the matched text
-              reminderLinkUrl = Uri.parse(reminderLinkList[0]);
-              if(trackingMatch == true ) {
-                learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
-                hasLearnMore = true;
+            if (hasSetReminder == true) {
+              for (int j = 0; j < docMailIDItems.length; j++) {
+                //find the element that contains "Set a Reminder"
+                if (reminderMatch == false) {
+                  if (docMailIDItems[j]
+                      .outerHtml
+                      .toString()
+                      .contains("pages/reminder")) {
+                    reminderItem = docMailIDItems[j].outerHtml.toString();
+                    reminderMatch = true;
+                  }
+                }
+
+                //find the element that contains "Learn More"
+                if (trackingMatch == false) {
+                  if (docMailIDItems[j]
+                      .innerHtml
+                      .toString()
+                      .contains("alt=\"Learn More\"")) {
+                    trackingItem = docMailIDItems[j].outerHtml.toString();
+                    trackingMatch = true;
+                  }
+                }
+                //stop searching after finding the correct matches
+                if (trackingMatch == true && reminderMatch == true) {
+                  break;
+                }
               }
-              loading = false;
-            });
+
+              //get a list of links, only the first link should matter
+              List<String> reminderLinkList = await _getUrlLinks(reminderItem);
+
+              //get a list of links, if tracking match is not found it wont load a tracking link in set state below
+              List<String> trackingLinkList = await _getUrlLinks(trackingItem);
+
+              //finally, set the state of the links to the matched element
+              setState(() {
+                //get the number out of the matched text
+                reminderLinkUrl = Uri.parse(reminderLinkList[0]);
+                if (trackingMatch == true) {
+                  learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+                  hasLearnMore = true;
+                }
+
+                if ((hasLearnMore || hasSetReminder) == true) {
+                  hasDoMore = true;
+                } else {
+                  hasDoMore = false;
+                }
+
+                loading = false;
+              }); //end of if SetReminder is true functions
+            } else {
+              for (int j = 0; j < docMailIDItems.length; j++) {
+                //find the element that contains "Learn More"
+                if (trackingMatch == false) {
+                  if (docMailIDItems[j]
+                      .innerHtml
+                      .toString()
+                      .contains("alt=\"Learn More\"")) {
+                    trackingItem = docMailIDItems[j].outerHtml.toString();
+                    trackingMatch = true;
+                  }
+                }
+                //stop searching after finding the correct matches
+                if (trackingMatch == true) {
+                  break;
+                }
+              }
+
+              //get a list of links, if tracking match is not found it wont load a tracking link in set state below
+              List<String> trackingLinkList = await _getUrlLinks(trackingItem);
+
+              //finally, set the state of the links to the matched element
+              setState(() {
+                if (trackingMatch == true) {
+                  learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+                  hasLearnMore = true;
+                  hasDoMore = true;
+                }
+                loading = false;
+              });
+            } //end else for tracking only link
           } //end if contains text/html
         } //end element(y) for loop
       } //end if contains multipart
     } //end element(x) for loop
   } //end _getLinkHtmlFromEmail
 
-
-
-
-  List<String> _getLinks(String x) {
+  List<String> _getUrlLinks(String x) {
     try {
       List<String> list = [];
-      RegExp linkExp = RegExp(
-          r'"(https:\/\/informeddelivery(.*?))"');
+      RegExp linkExp = RegExp(r'"(https:\/\/informeddelivery(.*?))"');
 
       String text = x;
 
@@ -294,7 +358,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     } catch (e) {
       rethrow;
     }
-  } //end _getLinks
+  } //end _getUrlLinks
 
   //Function to strip out all line feeds \n to make sure test would wrap, then add it back
   //for shorter blocks such as address or title blocks - currently set to 50 characters.
@@ -304,12 +368,24 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     final replaceWith = ' ';
     final String original = x;
     final originalSplit = x.split('\n');
-    for(int i=0; i< originalSplit.length; i++) {
-        if(originalSplit[i].length < 50)
-          originalSplit[i] += ' ';
-    };
+    for (int i = 0; i < originalSplit.length; i++) {
+      if (originalSplit[i].length < 50) originalSplit[i] += ' ';
+    }
+    ;
     return originalSplit.join('\n');
   }
+
+  String convertToAgo(DateTime input) {
+    Duration diff = DateTime.now().difference(input);
+
+    if (diff.inDays >= 2) {
+      return '${diff.inDays} days ago';
+    } else if (diff.inDays >= 1) {
+      return '${diff.inDays} day ago';
+    } else {
+      return 'Today';
+    }
+  } //end convertToAgo
 
   @override
   Widget build(BuildContext context) {
@@ -324,235 +400,287 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       appBar: TopBar(
         title: 'Mail Piece',
       ),
-      body:  //in the main page, if loading is false, load container, if loading is true, run circ prog indicator
-          loading == true ? Center(
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children:[ CircularProgressIndicator(),
-                                    Text(
-                                      '\nLOADING MAIL PIECE...',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color.fromRGBO(51, 51, 102, 1.0)),
-                                    )
-                                  ])
-                              ):
-        SingleChildScrollView(
-          child:
-          Container(
-          alignment: Alignment.topCenter,
-          margin: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
-          child: Center(
-            widthFactor: .85,
-            child: Column(children: [
-              Text(
-                'SENT BY: ${widget.mailPiece.sender}\n',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(51, 51, 102, 1.0)),
-              ),
-              mailImage ?? Text("No Photo Loaded"), //load link to photo
-              Container(
-                margin: EdgeInsets.all(15),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Wrap(
-                      direction: Axis.vertical,
-                      alignment: WrapAlignment.start,
-                      spacing: 15,
+      body: //in the main page, if loading is false, load container, if loading is true, run circ prog indicator
+          loading == true
+              ? Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        //Row(
-                          //children: [
-                                Text(
-                                'RECEIVED: ' +
-                                    DateFormat('yyyy/MM/dd')
-                                        .format(widget.mailPiece.timestamp),
-                                style: TextStyle(fontSize: 15)),
-                              ],
+                      CircularProgressIndicator(),
+                      Text(
+                        '\nLOADING MAIL PIECE...',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromRGBO(51, 51, 102, 1.0)),
+                      )
+                    ]))
+              : SingleChildScrollView(
+                  child: Container(
+                    alignment: Alignment.topCenter,
+                    margin: EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 35.0),
+                    child: Center(
+                      widthFactor: .85,
+                      child: Column(children: [
+                        Text(
+                          'SENT BY: ${widget.mailPiece.sender}\n',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(51, 51, 102, 1.0)),
                         ),
-                ),
-              ),
-                      if (widget.mailPiece.links != null && widget.mailPiece.links!.isNotEmpty) Container(
-                            padding: EdgeInsets.all(10),
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: widget.mailPiece.links!.length,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      return Container(
-                                          child: RichText(
-                                            text: TextSpan(
-                                                text: "View " + widget.mailPiece.links![index],
-                                                style: TextStyle(color: Colors.blue, fontSize: 15),
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () async {
-                                                    //Code to launch your URL
-                                                    String text = widget.mailPiece.links![index];
-                                                    if (text.isNotEmpty) {
-                                                      text = text.replaceAll(']', "");
-                                                      text = text.replaceAll('[', "");
-                                                      text = text.replaceAll(' ', "");
-                                                      if(!text.startsWith('http') && !text.startsWith('https')) {
-                                                        text = 'https://' + text;
-                                                         }
-                                                      }
-                                                    Uri uri = Uri.parse(text);
-                                                    print(uri.toString());
-                                                    FirebaseAnalytics.instance.logEvent(name: 'Link_Navigated',parameters:{'itemId':text});
-                                                    if (await launchUrl(uri)) {
-                                                      //await launchUrl(uri);
-                                                    } else {
-                                                      throw 'Could not launch ';
+                        mailImage ??
+                            Text("Image Not Available"), //load link to photo
+                        Container(
+                          margin: EdgeInsets.all(15),
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Wrap(
+                              direction: Axis.vertical,
+                              alignment: WrapAlignment.start,
+                              spacing: 15,
+                              children: [
+                                //Row(
+                                //children: [
+                                Text(
+                                    'RECEIVED: ' +
+                                        DateFormat('yyyy/MM/dd').format(
+                                            widget.mailPiece.timestamp) +
+                                        ', ' +
+                                        convertToAgo(
+                                            widget.mailPiece.timestamp),
+                                    style: TextStyle(fontSize: 15)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (widget.mailPiece.links != null &&
+                            widget.mailPiece.links!.isNotEmpty)
+                          Container(
+                              padding: EdgeInsets.all(10),
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: widget.mailPiece.links!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Container(
+                                            child: RichText(
+                                          text: TextSpan(
+                                              text: "View " +
+                                                  widget
+                                                      .mailPiece.links![index],
+                                              style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 15),
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () async {
+                                                  //Code to launch your URL
+                                                  String text = widget
+                                                      .mailPiece.links![index];
+                                                  if (text.isNotEmpty) {
+                                                    text = text.replaceAll(
+                                                        ']', "");
+                                                    text = text.replaceAll(
+                                                        '[', "");
+                                                    text = text.replaceAll(
+                                                        ' ', "");
+                                                    if (!text.startsWith(
+                                                            'http') &&
+                                                        !text.startsWith(
+                                                            'https')) {
+                                                      text = 'https://' + text;
                                                     }
                                                   }
-                                            ),
-                                          ));
-                                    }
-                                ))),
-                        if (widget.mailPiece.emailList != null && widget.mailPiece.emailList!.isNotEmpty) Container(
-                            padding: EdgeInsets.all(10),
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: widget.mailPiece.emailList!.length,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      return Container(
-                                          child: RichText(
-                                            text: TextSpan(
-                                                text: "Email " + widget.mailPiece.emailList![index],
-                                                style: TextStyle(color: Colors.blue, fontSize: 15),
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () async {
-                                                    //Code to launch your URL
-                                                    Uri uri = Uri.parse("mailto:" + widget.mailPiece.emailList![index]);
-                                                    if (await launchUrl(uri)) {
-                                                      await launchUrl(uri);
-                                                    } else {
-                                                      throw 'Could not launch ';
-                                                    }
+                                                  Uri uri = Uri.parse(text);
+                                                  print(uri.toString());
+                                                  FirebaseAnalytics.instance
+                                                      .logEvent(
+                                                          name:
+                                                              'Link_Navigated',
+                                                          parameters: {
+                                                        'itemId': text
+                                                      });
+                                                  if (await launchUrl(uri)) {
+                                                    //await launchUrl(uri);
+                                                  } else {
+                                                    throw 'Could not launch ';
                                                   }
-                                            ),
-                                          ));
-                                    }
-                                ))),
-                        if (widget.mailPiece.phoneNumbersList != null && widget.mailPiece.phoneNumbersList!.isNotEmpty) Container(
-                            padding: EdgeInsets.all(10),
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: widget.mailPiece.phoneNumbersList!.length,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      return Container(
-                                          child: RichText(
-                                            text: TextSpan(
-                                                text: "Contact " + widget.mailPiece.phoneNumbersList![index],
-                                                style: TextStyle(color: Colors.blue, fontSize: 15),
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () async {
-                                                    //Code to launch your URL
-                                                    Uri uri = Uri.parse("tel:" + widget.mailPiece.phoneNumbersList![index]);
-                                                    if (await launchUrl(uri)) {
-                                                      await launchUrl(uri);
-                                                    } else {
-                                                      throw 'Could not launch ';
-                                                    }
+                                                }),
+                                        ));
+                                      }))),
+                        if (widget.mailPiece.emailList != null &&
+                            widget.mailPiece.emailList!.isNotEmpty)
+                          Container(
+                              padding: EdgeInsets.all(10),
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          widget.mailPiece.emailList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Container(
+                                            child: RichText(
+                                          text: TextSpan(
+                                              text: "Email " +
+                                                  widget.mailPiece
+                                                      .emailList![index],
+                                              style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 15),
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () async {
+                                                  //Code to launch your URL
+                                                  Uri uri = Uri.parse(
+                                                      "mailto:" +
+                                                          widget.mailPiece
+                                                                  .emailList![
+                                                              index]);
+                                                  if (await launchUrl(uri)) {
+                                                    await launchUrl(uri);
+                                                  } else {
+                                                    throw 'Could not launch ';
                                                   }
-                                            ),
-                                          ));
-                                    }
-                                ))),
-                        Row(
-                          children:[
-                            Visibility(
-                              visible: hasDoMore,
-                              child:
-                              Container(
-                                width: MediaQuery.of(context).size.width/1.15,
-                                padding: EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: new BorderRadius.circular(16.0),
-                                    color: _buttonColor),
-                                child: Column(children: [
-                                        Text(
-                                          'Do more with your mail\n',
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.bold,
-                                              decoration: TextDecoration.underline,
-                                              color: Colors.white),
-                                        ),
-                                        Visibility(
-                                          visible: hasLearnMore,
-                                          child:
-                                          TextButton.icon(
-                                            onPressed: () async {
-                                              if (await canLaunchUrl(learnMoreLinkUrl!)) {
-                                                await launchUrl(learnMoreLinkUrl!);
-                                                FirebaseAnalytics.instance.logEvent(name: 'LearnMore_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
-                                              } else {
-                                                throw 'Could not launch $learnMoreLinkUrl';
-                                              }
-                                            },
-                                            icon: Icon(Icons.language, size: 40.0),
-                                            label: Text('Learn More'),
-                                            style: TextButton.styleFrom(
-                                              foregroundColor: Colors.white,
-                                              textStyle : const TextStyle(
-                                                fontSize: 25.0,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      TextButton.icon(
-                                        onPressed: () async {
-                                          if (await canLaunchUrl(reminderLinkUrl!)) {
-                                            await launchUrl(reminderLinkUrl!);
-                                            FirebaseAnalytics.instance.logEvent(name: 'SetAReminder_Clicked',parameters:{'itemId':widget.mailPiece.uspsMID});
-                                          } else {
-                                            throw 'Could not launch $reminderLinkUrl';
-                                          }
-                                        },
-                                        icon: Icon(Icons.calendar_month, size: 40.0),
-                                        label: Text('Set a Reminder'),
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          textStyle : const TextStyle(
-                                            fontSize: 25.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                                }),
+                                        ));
+                                      }))),
+                        if (widget.mailPiece.phoneNumbersList != null &&
+                            widget.mailPiece.phoneNumbersList!.isNotEmpty)
+                          Container(
+                              padding: EdgeInsets.all(10),
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: widget
+                                          .mailPiece.phoneNumbersList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Container(
+                                            child: RichText(
+                                          text: TextSpan(
+                                              text: "Contact " +
+                                                  widget.mailPiece
+                                                      .phoneNumbersList![index],
+                                              style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 15),
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () async {
+                                                  //Code to launch your URL
+                                                  Uri uri = Uri.parse("tel:" +
+                                                      widget.mailPiece
+                                                              .phoneNumbersList![
+                                                          index]);
+                                                  if (await launchUrl(uri)) {
+                                                    await launchUrl(uri);
+                                                  } else {
+                                                    throw 'Could not launch ';
+                                                  }
+                                                }),
+                                        ));
+                                      }))),
+                        Row(children: [
+                          Visibility(
+                            visible: hasDoMore,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 1.15,
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: new BorderRadius.circular(16.0),
+                                  color: _buttonColor),
+                              child: Column(children: [
+                                Text(
+                                  'Do more with your mail\n',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.white),
+                                ),
+                                Visibility(
+                                  visible: hasLearnMore,
+                                  child: TextButton.icon(
+                                    onPressed: () async {
+                                      if (await canLaunchUrl(
+                                          learnMoreLinkUrl!)) {
+                                        await launchUrl(learnMoreLinkUrl!);
+                                        FirebaseAnalytics.instance.logEvent(
+                                            name: 'LearnMore_Clicked',
+                                            parameters: {
+                                              'itemId': widget.mailPiece.uspsMID
+                                            });
+                                      } else {
+                                        throw 'Could not launch $learnMoreLinkUrl';
+                                      }
+                                    },
+                                    icon: Icon(Icons.language, size: 40.0),
+                                    label: Text('Learn More'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      textStyle: const TextStyle(
+                                        fontSize: 25.0,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                ]),
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: hasSetReminder,
+                                  child: TextButton.icon(
+                                    onPressed: () async {
+                                      if (await canLaunchUrl(
+                                          reminderLinkUrl!)) {
+                                        await launchUrl(reminderLinkUrl!);
+                                        FirebaseAnalytics.instance.logEvent(
+                                            name: 'SetAReminder_Clicked',
+                                            parameters: {
+                                              'itemId': widget.mailPiece.uspsMID
+                                            });
+                                      } else {
+                                        throw 'Could not launch $reminderLinkUrl';
+                                      }
+                                    },
+                                    icon:
+                                        Icon(Icons.calendar_month, size: 40.0),
+                                    label: Text('Set a Reminder'),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      textStyle: const TextStyle(
+                                        fontSize: 25.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            ),
+                          )
+                        ]),
+                        Row(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width / 1.15,
+                              child: LinkWell(
+                                mailPieceText,
+                                style: TextStyle(
+                                    color: Color.fromRGBO(51, 51, 102, 1.0),
+                                    fontStyle: FontStyle.italic),
                               ),
                             )
-                          ]
-                        ),
-                        Row(
-                            children:[
-                                  Container(
-                                    width: MediaQuery.of(context).size.width/1.15,
-                                    child: LinkWell(
-                                      mailPieceText,
-                                      style: TextStyle(color: Color.fromRGBO(51, 51, 102, 1.0), fontStyle: FontStyle.italic),),
-                                  )
-                                    ],
+                          ],
                         ),
                       ]),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
+    );
   }
-
-
 } //end of class MailPieceViewWidget
