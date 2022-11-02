@@ -50,20 +50,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   TextEditingController mailBodyInput = TextEditingController();
   final _mailPieceService = MailPieceService();
 
-
-  // Apply and passed in search parameters to the filters
-  void applyFilters() {
-    if (this.widget.parameters.isEmpty) return;
-    final filters = SearchCriteria.withList(this.widget.parameters);
-
-    // Update local variables
-    if (filters.keyword.isNotEmpty) {
-      keywordInput.text = filters.keyword;
-    }
-    _start = filters.startDate ?? _start;
-    _end = filters.endDate ?? _end;
-  }
-
   @override
   Future<void> processFunction(ApplicationFunction function) async {
     if (function.methodName == "performSearch") {
@@ -84,7 +70,6 @@ class SearchWidgetState extends AssistantState<SearchWidget> {
   @override
   Widget build(BuildContext context) {
     locator<AnalyticsService>().logScreens(name: "Mail Search");
-    applyFilters();
     int _duration = _start != null && _end != null ? DateTimeRange(start: _start!, end: _end!).duration.inDays + 1 : 0;
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return Scaffold(

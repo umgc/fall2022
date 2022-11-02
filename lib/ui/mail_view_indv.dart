@@ -97,6 +97,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         name: 'EMail', parameters: {'uspsMID': widget.mailPiece.uspsMID});
   } //end init state
 
+
   //get the image of the mail piece
   Future<void> _getMailPieceEmail() async {
     MailFetcher mf1 = new MailFetcher();
@@ -352,6 +353,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     } //end else for tracking only link
   } //end getLinkHtmlEmail
 
+
   //this function tries to get URL links from a String
   List<String> _getUrlLinks(String x) {
     try {
@@ -401,6 +403,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     ;
     return originalSplit.join('\n');
   }
+
 
   //this function returns a String with how many days ago the mailpiece was received
   String convertToAgo(DateTime input) {
@@ -715,7 +718,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 /*
   //specialTestFunction is just a function used to test the mailPiece processing,
   // but per email, and without saving.  It can take awhile to verify the main mailpiece processor
-  //works in mail_fetcher
+  //works in mail_fetcher since it executes automatically and can process a lot of emails
   void _specialTestFunction (MimeMessage email) {
     int mimePartMatch1 = -1;
     int mimePartMatch2 = -1;

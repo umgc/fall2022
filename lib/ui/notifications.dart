@@ -47,7 +47,6 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
     locator<AnalyticsService>().logScreens(name: "Notifications");
     updateSubscriptionList();
     updateNotificationList();
-    removeAllNotification();
 
     this.fetch();
 
@@ -110,7 +109,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
 
   void addSubscription(String keywords) async {
     for (final text in keywords.split(',')) {
-    // .toLowerCase() eliminates duplicates subscriptions with capital letters
+      // .toLowerCase() eliminates duplicates subscriptions with capital letters
       final keyword = text.trim().toLowerCase();
       if (keyword.isEmpty) continue;
       final subscription = NotificationSubscription(keyword);
@@ -135,7 +134,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
   }
 
   void removeNotification(String mailPieceId, String keyword) async {
-    final notification =  Notification.Notification(mailPieceId,keyword);
+    final notification =  Notification.Notification(mailPieceId,keyword,0);
     await _notifier.clearNotification(notification);
     await updateNotificationList();
   }
@@ -149,72 +148,72 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
   Widget build(BuildContext context) {
     bool showHomeButton = MediaQuery.of(context).viewInsets.bottom == 0;
     return new Scaffold(
-        floatingActionButton: Visibility(
-          visible: showHomeButton,
-          child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        resizeToAvoidBottomInset: false,
-        bottomNavigationBar: const BottomBar(),
-        appBar: TopBar(title: "Notifications", tabController: _tabController),
-        body:
-        TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              Container( //Notifications
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Column(
-                  children: [
-                    // for (var item in _notifications)
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Semantics(
-                            explicitChildNodes: true,
-                            child:
-                            SizedBox(
-                              child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
-                                    fontSize: 18), textAlign: TextAlign.center,),
-                              width: MediaQuery.of(context).size.width/6,
-                                ),
-                          ),
-                          Semantics(
-                            explicitChildNodes: true,
-                            child:
-                            SizedBox(
-                              child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
-                                  fontSize: 18), textAlign: TextAlign.center),
-                                width: MediaQuery.of(context).size.width/4,
-                            ),
-                          ),
-                          Spacer(),
+      floatingActionButton: Visibility(
+        visible: showHomeButton,
+        child: FloatingHomeButton(parentWidgetName: context.widget.toString()),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: const BottomBar(),
+      appBar: TopBar(title: "Notifications", tabController: _tabController),
+      body:
+      TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            Container( //Notifications
+              padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+              child: Column(
+                children: [
+                  // for (var item in _notifications)
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Semantics(
+                          explicitChildNodes: true,
+                          child:
                           SizedBox(
-                                child: ElevatedButton(
-                                  child: Text('Clear All', style: TextStyle(color: Colors.white),),
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
-                                    //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
-                                  ),
-                                  onPressed: () {
-                                    removeAllNotification();
-                                  },
-                                ),
-                              ),
-                          ]),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      child: Divider(
-                        height: 1,
-                        indent: 10,
-                        endIndent: 10,
-                        thickness: 1,
-                        color: Color.fromRGBO(51, 51, 102, 1),
-                      ),
+                            child: Text('Date',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                fontSize: 18), textAlign: TextAlign.center,),
+                            width: MediaQuery.of(context).size.width/6,
+                          ),
+                        ),
+                        Semantics(
+                          explicitChildNodes: true,
+                          child:
+                          SizedBox(
+                            child: Text('Keyword(s)',style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                fontSize: 18), textAlign: TextAlign.center),
+                            width: MediaQuery.of(context).size.width/4,
+                          )
+                        ),
+                        Spacer(),
+                        SizedBox(
+                          child: ElevatedButton(
+                            child: Text('Clear All', style: TextStyle(color: Colors.white),),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                              //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                            ),
+                            onPressed: () {
+                              removeAllNotification();
+                            },
+                          ),
+                        ),
+                      ]),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: Divider(
+                      height: 1,
+                      indent: 10,
+                      endIndent: 10,
+                      thickness: 1,
+                      color: Color.fromRGBO(51, 51, 102, 1),
                     ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                          padding: EdgeInsets.only(bottom: 35),
-                          child: Column(
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: 35),
+                        child: Column(
                           children: [
                             for(var item in _notifications)
                               Row(
@@ -225,7 +224,7 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                         +item.mailPieceId.split("-")[3].split(" ")[0] + "\n" +item.mailPieceId.split("-")[1],
                                         textAlign: TextAlign.center
                                     ),
-                                    width: MediaQuery.of(context).size.width/6,
+                                    width: MediaQuery.of(context).size.width/9,
                                   ),
                                   SizedBox(
                                     child: Text(item.subscriptionKeyword, textAlign: TextAlign.center),
@@ -233,154 +232,154 @@ class NotificationsWidgetState extends AssistantState<NotificationsWidget> with 
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                      child: Text('Go to Message',
-                                        semanticsLabel: "Go to " + item.subscriptionKeyword + " Message",
-                                        style: TextStyle(color: Colors.white),),
-                                      style: ButtonStyle(
-                                        backgroundColor: MaterialStateColor.resolveWith((states) => Colors.black45),
-                                        //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
-                                      ),
-                                      onPressed: () async {
-                                        Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(await getMailPiece(item.mailPieceId)));
-                                      },
+                                    child: Text('Go to Message',
+                                      semanticsLabel: "Go to " + item.subscriptionKeyword + " Message",
+                                      style: TextStyle(color: Colors.white),),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateColor.resolveWith((states) => Colors.black45),
+                                      //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.pushNamed(context, '/mail_piece_view', arguments: new MailPieceViewArguments(await getMailPiece(item.mailPieceId)));
+                                    },
                                   ),
                                   Spacer(),
                                   ElevatedButton(
-                                      child: Text('Clear',
-                                        semanticsLabel: "Clear " + item.subscriptionKeyword,
-                                        style: TextStyle(color: Colors.white),),
-                                      style: ButtonStyle(
-                                        backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
-                                        //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
-                                      ),
-                                      onPressed: () {
-                                        removeNotification(item.mailPieceId,item.subscriptionKeyword);
-                                      },
+                                    child: Text('Clear',
+                                      semanticsLabel: "Clear " + item.subscriptionKeyword,
+                                      style: TextStyle(color: Colors.white),),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateColor.resolveWith((states) => Colors.red),
+                                      //shape: MaterialStateProperty.all(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)))
+                                    ),
+                                    onPressed: () {
+                                      removeNotification(item.mailPieceId,item.subscriptionKeyword);
+                                    },
                                   )
                                 ],
                               ),
                           ],
-                          )
-                      ),
+                        )
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Container(
-               //Manager1
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Column(
-                  children: [
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Semantics(
-                            explicitChildNodes: true,
-                            child:
+            ),
+            Container(
+              //Manager1
+              padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+              child: Column(
+                children: [
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Semantics(
+                          explicitChildNodes: true,
+                          child:
                           Container(
                             width: MediaQuery.of(context).size.width/1.5,
                             alignment: Alignment.center,
                             child:
-                                Semantics(
-                                  excludeSemantics: true,
-                                  label: "Keyword",
-                                  textField: true,
-                                  hint: "Enter notification keyword to add",
-                                  child:
-                                  TextField(
-                                      controller: _keywordController,
-                                      onSubmitted: (keywords) {
-                                        addSubscription(keywords);
-                                        _keywordController.clear();
-                                      },
-                                      decoration: const InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white54,
-                                          border: OutlineInputBorder(),
-                                          //contentPadding: EdgeInsets.all(8),
-                                          labelText: 'Keyword(s)',
-                                          labelStyle: TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
-                                              fontSize: 18),
-                                          isDense: true),
-                                    ),),
+                            Semantics(
+                              excludeSemantics: true,
+                              label: "Keyword",
+                              textField: true,
+                              hint: "Enter notification keyword to add",
+                              child:
+                              TextField(
+                                controller: _keywordController,
+                                onSubmitted: (keywords) {
+                                  addSubscription(keywords);
+                                  _keywordController.clear();
+                                },
+                                decoration: const InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white54,
+                                    border: OutlineInputBorder(),
+                                    //contentPadding: EdgeInsets.all(8),
+                                    labelText: 'Keyword(s)',
+                                    labelStyle: TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                        fontSize: 18),
+                                    isDense: true),
+                              ),),
                           ),),
-                          Container(
-                            child: OutlinedButton(
-                              child: Text(
-                                'Add',
-                                style: TextStyle(color: Colors.white, fontSize: 18),
-                              ),
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateColor.resolveWith(
-                                          (states) => Colors.green),
-                                  shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(30)))),
-                              onPressed: () {
-                                addSubscription(_keywordController.text);
-                                FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Add_Keyword':_keywordController.text});
-                                _keywordController.clear();
-                              },
+                        Container(
+                          child: OutlinedButton(
+                            child: Text(
+                              'Add',
+                              style: TextStyle(color: Colors.white, fontSize: 18),
                             ),
-                          )
-                        ]),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      child: Divider(
-                        height: 1,
-                        indent: 10,
-                        endIndent: 10,
-                        thickness: 1,
-                        color: Color.fromRGBO(51, 51, 102, 1),
-                      ),
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateColor.resolveWith(
+                                        (states) => Colors.green),
+                                shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30)))),
+                            onPressed: () {
+                              addSubscription(_keywordController.text);
+                              FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Add_Keyword':_keywordController.text});
+                              _keywordController.clear();
+                            },
+                          ),
+                        )
+                      ]),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: Divider(
+                      height: 1,
+                      indent: 10,
+                      endIndent: 10,
+                      thickness: 1,
+                      color: Color.fromRGBO(51, 51, 102, 1),
                     ),
-                    Expanded(child:
-                    SingleChildScrollView(
-                      padding: EdgeInsets.only(bottom: 35),
-                      child: Column(
-                        children: [
-                          for (var item in _subscriptions)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
-                                      fontSize: 18),),
-                                  ),
-                                  SizedBox(
-                                    child: OutlinedButton(
-                                      child: Text(
-                                        'Delete',
-                                        semanticsLabel: "Delete " + item.keyword,
-                                        style: TextStyle(color: Colors.white,fontSize: 18),
-                                      ),
-                                      style: ButtonStyle(
-                                          backgroundColor:
-                                          MaterialStateColor.resolveWith(
-                                                  (states) => Colors.red),
-                                          shape: MaterialStateProperty.all(
-                                              RoundedRectangleBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(30)))),
-                                      onPressed: () {
-                                        removeSubscription(item.keyword);
-                                        FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Delete_Keyword':item.keyword});
-                                      },
-                                    ),
-                                  )
-                                ],
+                  ),
+                  Expanded(child:
+                  SingleChildScrollView(
+                    padding: EdgeInsets.only(bottom: 35),
+                    child: Column(
+                      children: [
+                        for (var item in _subscriptions)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(item.keyword, style:TextStyle(color:Color.fromRGBO(51, 51, 102, 1),
+                                    fontSize: 18),),
                               ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                              SizedBox(
+                                child: OutlinedButton(
+                                  child: Text(
+                                    'Delete',
+                                    semanticsLabel: "Delete " + item.keyword,
+                                    style: TextStyle(color: Colors.white,fontSize: 18),
+                                  ),
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                      MaterialStateColor.resolveWith(
+                                              (states) => Colors.red),
+                                      shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(30)))),
+                                  onPressed: () {
+                                    removeSubscription(item.keyword);
+                                    FirebaseAnalytics.instance.logEvent(name: 'Notification_Subscription',parameters:{'Delete_Keyword':item.keyword});
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                  )
+                ],
               ),
-              // This is the end of manager tab one
-            ]
-        ),
-     );
+            ),
+            // This is the end of manager tab one
+          ]
+      ),
+    );
   }
 
 
