@@ -63,12 +63,11 @@ class MailFetcher {
 
     // Get attachments with metadata and convert them to MailPieces
     final mailPieceAttachments = await _getAttachments(email);
-    for (final attachment in mailPieceAttachments) {
-      MailPiece mp = await _processMailImage(
-          email, attachment, email.decodeDate()!, mailPieces.length);
 
-      mailPieces.add(mp);
-    }
+    mailPieces = await Future.wait([
+    for (final attachment in mailPieceAttachments)
+       _processMailImage(email, attachment, email.decodeDate()!, mailPieces.length)
+    ]);
 
     debugPrint("Finished processing " +
         mailPieceAttachments.length.toString() +
