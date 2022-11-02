@@ -32,11 +32,11 @@ class SearchCriteria {
     }
 
     this.keyword = _potentialKeyword;
-    this.startDate = _potentialStart ?? DateTime.now();
-    this.endDate = _potentialEnd ?? DateTime.now();
+    this.startDate = _potentialStart;
+    this.endDate = _potentialEnd ?? _potentialStart;
 
     // Verify end isn't before start
-    if (this.startDate!.compareTo(this.endDate!) > 0) {
+    if (this.startDate != null && this.endDate != null && this.startDate!.compareTo(this.endDate!) > 0) {
       this.endDate = this.startDate;
     }
   }
