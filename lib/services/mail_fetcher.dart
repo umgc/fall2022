@@ -29,17 +29,14 @@ class MailFetcher {
           lastTimestamp,
           "uspsinformeddelivery@email.informeddelivery.usps.com",
           "Your Daily Digest");
+      List<List<MailPiece>> mailPieceLists;
+      mailPieceLists = await Future.wait([
+        for (final email in emails)
+          processEmail(email)
+      ]);
 
-      // Process each email
-      for (final email in emails) {
-        try {
-          debugPrint("Attempting to process email from " +
-              email.decodeDate()!.toString());
-          mailPieces.addAll(await processEmail(email));
-        } catch (e) {
-          print("Unable to process individual email.");
-        }
-      }
+      mailPieces = mailPieceLists.expand((i) => i).toList();
+
     } catch (e) {
       print("Unable to retrieve email.");
     }
@@ -61,19 +58,25 @@ class MailFetcher {
   Future<List<MailPiece>> processEmail(MimeMessage email) async {
     List<MailPiece> mailPieces = <MailPiece>[];
 
-    // Get attachments with metadata and convert them to MailPieces
-    final mailPieceAttachments = await _getAttachments(email);
+    try {
+      debugPrint("Attempting to process email from " +
+          email.decodeDate()!.toString());
+      // Get attachments with metadata and convert them to MailPieces
+      final mailPieceAttachments = await _getAttachments(email);
 
-    mailPieces = await Future.wait([
-    for (final attachment in mailPieceAttachments)
-       _processMailImage(email, attachment, email.decodeDate()!, mailPieces.length)
-    ]);
+      mailPieces = await Future.wait([
+        for (final attachment in mailPieceAttachments)
+          _processMailImage(
+              email, attachment, email.decodeDate()!, mailPieces.length)
+      ]);
 
-    debugPrint("Finished processing " +
-        mailPieceAttachments.length.toString() +
-        " mailpieces for email on " +
-        email.decodeDate()!.toString());
-
+      debugPrint("Finished processing " +
+          mailPieceAttachments.length.toString() +
+          " mailpieces for email on " +
+          email.decodeDate()!.toString());
+    }catch (e){
+      print("Unable to process individual email.");
+    }
     return mailPieces;
   }
 
