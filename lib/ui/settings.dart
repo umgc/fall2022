@@ -94,6 +94,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                         height: 20,
                       ),
                       Text.rich(
+                        textAlign: TextAlign.justify,
                         TextSpan(
                             text: 'These terms and conditions outline the rules and regulations for the use of Mailspeak.'
                                 '\n\nBy using this app we assume you accept these terms and conditions. Do not continue to use MailSpeak if you do not agree to take all of the terms and conditions stated on this page.'
@@ -276,6 +277,7 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
                         height: 20,
                       ),
                       RichText(
+                        textAlign: TextAlign.justify,
                           text: TextSpan(children: [
                             TextSpan(
                               text:
@@ -345,15 +347,68 @@ class SettingWidgetState extends AssistantState<SettingsWidget> {
 
   void askConfirmationDialog() {
     Widget noButton =
-        TextButton(onPressed: () => Navigator.pop(context), child: Text("No"));
+      ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor:
+          MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+          padding: MaterialStateProperty.all(
+              EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 8)),
+          textStyle: MaterialStateProperty.all(
+            TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        onPressed: () => Navigator.pop(context),
+        child: Text('No'),
+      );
     Widget yesButton =
-        TextButton(onPressed: () => _deleteEverything(), child: Text("Yes"));
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            side: BorderSide(color: Color.fromRGBO(51, 51, 102, 1)),
+            backgroundColor: Colors.white,
+            foregroundColor: Color.fromRGBO(51, 51, 102, 1),
+            padding: EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 8),
+            textStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+        ),
+        onPressed: () => _deleteEverything(),
+        child: Text('Yes'),
+      );
 
     //setup Alert Dialog
     AlertDialog confirmation = AlertDialog(
-      title: Text("Delete Confirmation"),
-      content: Text(
-          "Are you sure you want to delete all cached data?  This will delete everything and log you out."),
+      title: Center(
+        child: Text.rich(
+          TextSpan(
+            text: 'Delete Confirmation',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+      content: SizedBox(
+        height: 50.0, // Change as per your requirement
+        width: 75.0, // Change as per your requirement
+        child: Center(
+            child: Text.rich(
+                textAlign: TextAlign.left,
+                TextSpan(
+                    text: 'Are you sure you want to delete all cached data?  This will delete everything and log you out.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    )
+                )
+            )
+        ),
+      ),
       actions: [yesButton, noButton],
     );
 
