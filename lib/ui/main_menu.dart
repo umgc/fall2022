@@ -326,7 +326,16 @@ class MainWidgetState extends AssistantState<MainWidget> {
         builder: (context) {
           return AlertDialog(
             title: Center(
-              child: Text("Error Dialog"),
+              child: Text.rich(
+                TextSpan(
+                  text: 'Error',
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
             actions: [
               ElevatedButton(
@@ -348,15 +357,21 @@ class MainWidgetState extends AssistantState<MainWidget> {
             ],
             actionsAlignment: MainAxisAlignment.center,
             content: SizedBox(
-              height: 100.0,
-              width: 100.0,
+              height: 50.0, // Change as per your requirement
+              width: 75.0, // Change as per your requirement
               child: Center(
-                child: Text(
-                  "An Unexpected Error has occurred, please try again later.",
-                  style: TextStyle(color: Colors.black),
-                ),
+                  child: Text.rich(
+                      textAlign: TextAlign.left,
+                      TextSpan(
+                          text: 'An Unexpected Error has occurred, please try again later.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          )
+                      )
+                  )
+              ),
             ),
-          ),
         );
       },
     );

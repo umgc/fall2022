@@ -87,18 +87,54 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           title: Center(
-            child: Text("Please Login"),
+            child: Text.rich(
+              TextSpan(
+                text: 'Please Login',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
+          actions: [
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor:
+                MaterialStateProperty.all(Color.fromRGBO(51, 51, 102, 1)),
+                padding: MaterialStateProperty.all(
+                    EdgeInsets.only(top: 8, left: 45, right: 45, bottom: 8)),
+                textStyle: MaterialStateProperty.all(
+                  TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.center,
           content: SizedBox(
             height: 50.0, // Change as per your requirement
             width: 75.0, // Change as per your requirement
             child: Center(
-              child: Text(
-                "You must be logged in to do this.",
-                style: TextStyle(color: Colors.black),
-              ),
+                child: Text.rich(
+                    textAlign: TextAlign.left,
+                    TextSpan(
+                        text: 'You must be logged in to do this.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        )
+                    )
+                )
             ),
           ),
         );
@@ -119,7 +155,16 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
       builder: (context) {
         return AlertDialog(
           title: Center(
-            child: Text("Login Error"),
+            child: Text.rich(
+              TextSpan(
+                text: 'Login Error',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
           actions: [
             ElevatedButton(
@@ -146,10 +191,16 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
             height: 50.0, // Change as per your requirement
             width: 75.0, // Change as per your requirement
             child: Center(
-              child: Text(
-                "Login credentials failed.",
-                style: TextStyle(color: Colors.black),
-              ),
+                child: Text.rich(
+                    textAlign: TextAlign.left,
+                    TextSpan(
+                        text: 'Login credentials failed',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        )
+                    )
+                )
             ),
           ),
         );
@@ -170,7 +221,6 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                     fontSize: 22,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
@@ -204,11 +254,10 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                       textAlign: TextAlign.left,
                       TextSpan(
                           text:
-                              'Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy',
+                              'Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy.',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
                           )))),
             ));
       },
@@ -269,6 +318,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         height: 20,
                       ),
                       Text.rich(
+                        textAlign: TextAlign.justify,
                         TextSpan(
                             text: 'These terms and conditions outline the rules and regulations for the use of Mailspeak.'
                                 '\n\nBy using this app we assume you accept these terms and conditions. Do not continue to use MailSpeak if you do not agree to take all of the terms and conditions stated on this page.'
@@ -448,6 +498,7 @@ class SignInWidgetState extends AssistantState<SignInWidget> {
                         height: 20,
                       ),
                       RichText(
+                          textAlign: TextAlign.justify,
                           text: TextSpan(children: [
                         TextSpan(
                           text:
