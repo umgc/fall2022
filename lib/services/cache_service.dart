@@ -46,9 +46,12 @@ class CacheService {
   /// updating notifications.
   Future<int> fetchAndProcessLatestMail() async {
     final lastTimestamp = await _storage.lastTimestamp;
-    for (final piece in await _fetcher.fetchMail(lastTimestamp)) {
-      await _storage.saveMailPiece(piece);
-    }
+    
+    await Future.wait([
+    for (final piece in await _fetcher.fetchMail(lastTimestamp))
+       _storage.saveMailPiece(piece)
+    ]);
+
     return await _notifier.updateNotifications(lastTimestamp);
   }
 
