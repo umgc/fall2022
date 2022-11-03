@@ -1,3 +1,4 @@
+import 'package:enough_mail/enough_mail.dart';
 import 'package:googleapis/gmail/v1.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:summer2022/models/MailResponse.dart';
@@ -164,100 +165,96 @@ class MailFetcher {
       DateTime timestamp, int index) async {
     MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
+    //need a way to get text/html in either 1st or 2nd level of parts - its different
+    //in different email accounts
+    int mimePartMatch1 = -1;
+    int mimePartMatch2 = -1;
+    String mimePartMatchLevel = '';
+
+    var mimeParts = email.mimeData!.parts!;
+    RegExp test1 = RegExp(r'multipart|text/html');
+
+    for (int x = 0; x < mimeParts.length; x++) {
+      String elementXString = mimeParts[x].contentType?.mediaType
+          .toString() ?? "";
+      if (test1.hasMatch(elementXString!)) {
+        if (elementXString.contains("text/html")) {
+          //got the match in level one, so set x and level
+          mimePartMatch1 = x;
+          mimePartMatchLevel = "One";
+          break;
+        } else {
+          for (int y = 0; y < mimeParts[x].parts!.length; y++) {
+            String subPartTopType =
+            mimeParts[x].parts![y].contentType!.mediaType.toString();
+
+            if (subPartTopType.contains("text/html")) {
+              //found the match at level 2, set both x and y (very important) and level to Two
+              mimePartMatch1 = x;
+              mimePartMatch2 = y;
+              mimePartMatchLevel = "Two";
+              break;
+            } //end y has text/html
+          } //end y loop
+        } //end else
+      } //end x has either multipart or text/html
+    } //end x loop
+
+    //need to instantiate textHtmlPart but this should always be overridden.
+    var textHtmlPart = mimeParts[0];
+
+    //Because we don't know if we need mime parts level 1 or level 2, need this code
+    if (mimePartMatchLevel == 'One') {
+      textHtmlPart = mimeParts[mimePartMatch1];
+    } else if (mimePartMatchLevel == 'Two') {
+      textHtmlPart = mimeParts[mimePartMatch1].parts![mimePartMatch2];
+    }
+
+    //get the parts into an html document to make it searchable.
+    //need to decode Text into 'quoted-printable' if possible or have alternate
+    // search type for 7bit or other email accounts
+
+    debugPrint(textHtmlPart.headersList.toString());
+    String contentTransferType = '';
+
+    if (textHtmlPart.headersList.toString().contains("7bit")) {
+      contentTransferType = '7bit';
+    } else if (textHtmlPart.headersList.toString().contains("quoted-printable") ) {
+      contentTransferType = 'quoted-printable';
+    }
+
+    var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), contentTransferType) );
+
+    //############# start sender section ################
     // If sender is not stored in metadata
     if (email.sender == null) {
 
-      for (int x = 0; x < email.mimeData!.parts!.length; x++) {
-        if (email.mimeData!.parts!
-            .elementAt(x)
-            .contentType
-            ?.value
-            .toString()
-            .contains("multipart") ??
-            false) {
-          for (int y = 0;
-          y < email.mimeData!.parts!.elementAt(x).parts!.length;
-          y++) {
-            if (email.mimeData!.parts!
-                .elementAt(x)
-                .parts!
-                .elementAt(y)
-                .contentType
-                ?.value
-                .toString()
-                .contains("text/html") ??
-                false) {
-              //get the parts into an html document to make it searchable.
-              //need to decode Text into 'quoted-printable' type to see all the link text values
-              var doc = parse(email.mimeData!.parts!
-                  .elementAt(x)
-                  .parts!
-                  .elementAt(y)
-                  .decodeText(
-                  ContentTypeHeader('text/html'), 'quoted-printable'));
-              //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
-              var scannedMailPieceItems = doc.querySelectorAll(
-                  'img[src*=\'${attachment.contentID}\']');
+      //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
+      var scannedMailPieceItems = doc.querySelectorAll(
+          'img[src*=\'${attachment.contentID}\']');
 
-              int scanImgPos = doc.querySelectorAll('*').indexOf(
-                  scannedMailPieceItems![0]);
+      int scanImgPos = doc.querySelectorAll('*').indexOf(
+          scannedMailPieceItems![0]);
 
-              var fromItems = doc.querySelectorAll("strong");
+      var fromItems = doc.querySelectorAll("strong");
 
-              for (int z = 0; z < fromItems.length; z++) {
-                int fromSenderPos = doc.querySelectorAll('*')
-                    .indexOf(fromItems[z]);
-                if ((scanImgPos < (fromSenderPos + 15)) &&
-                    (scanImgPos > fromSenderPos)) {
-                  String? sender = parse(doc
-                      .querySelectorAll('*')
-                      .elementAt(fromSenderPos)
-                      .parent
-                      ?.text).documentElement?.text.toString().substring(
-                      5); //remove "From "
-                  debugPrint("Mailpiece: " + attachment.contentID + " has this sender: " + sender!);
+      for (int z = 0; z < fromItems.length; z++) {
+        int fromSenderPos = doc.querySelectorAll('*')
+            .indexOf(fromItems[z]);
+        if ((scanImgPos < (fromSenderPos + 15)) &&
+            (scanImgPos > fromSenderPos)) {
+          String? sender = parse(doc
+              .querySelectorAll('*')
+              .elementAt(fromSenderPos)
+              .parent
+              ?.text).documentElement?.text.toString().substring(5); //remove "From "
+          debugPrint("Mailpiece: " + attachment.contentID + " has this sender: " + sender!);
 
-                  attachment.sender = sender;
-                  break;
-                }
-              }
-            } //end if "text/html"
-            break;
-          } //end elements y looop
-
-        } //end if "multipart
-        break;
-      } //end element x loop
-
-      /* skip this code, has errors
-      //get full html string of the email
-      String fullHtml = email.mimeData!.parts!.first.toString();
-      List<int> matchIndicies =
-          _parseForAllStartingPoints(fullHtml, 'From</strong>');
-
-      if (matchIndicies.isNotEmpty) {
-        // Find all potential cid's in html, try to match one to the attachment
-        // TODO: A more efficient solution where you cache so you only search each html string once
-        for (int i in matchIndicies) {
-          int cidStart = fullHtml.indexOf('cid', i) + 4;
-          String parsedCid =
-              fullHtml.substring(cidStart, fullHtml.indexOf("\"", cidStart));
-
-          //Parsing the html gives us some delimiters, so must get rid of
-          var parts = parsedCid.split("=");
-          var getRidOfStrangeWhiteSpace = parts[1].trim();
-          parsedCid = parts[0] + getRidOfStrangeWhiteSpace;
-
-          if (attachment.contentID == parsedCid) {
-            attachment.sender = fullHtml
-                .substring(i + 13, fullHtml.indexOf('</td>', i + 13))
-                .trim();
-            break;
-          }
-        }
-      }
-      */
-
+          attachment.sender = sender;
+          break; //break when sender is found
+        } //end if sender is close to matched image
+      } //end fromItems loop
+    //end if sender is null
     } else {
       if (email.sender!.hasPersonalName) {
         attachment.sender = email.sender!.personalName.toString();
@@ -286,11 +283,12 @@ class MailFetcher {
         }
       }
     }
+    //############# end sender section ################
 
     final id = "${attachment.sender}-$timestamp-$index";
     var text = ocrScanResult.textAnnotations.first.text;
-    var scanImgCID = attachment
-        .contentID; //todo: couldn't determine where MID might be at a first glance, this seemed fitting for now
+    var scanImgCID = attachment.contentID;
+
     //todo: save list of URLs found on the ocrScanResult (including text URLs, barcodes, and QR codes)
     //todo: save list of Emails found on the ocrScanResult
     //todo: save list of Phone Numbers found on the ocrScanResult
@@ -306,6 +304,7 @@ class MailFetcher {
       }
     }
 
+    //#############start linkwell section################
 
     LinkWell linkWell = LinkWell(text!);
 
@@ -323,43 +322,17 @@ class MailFetcher {
       phoneList.add(phone);
     }
 
-    //todo: determine if enough_mail provides an actual ID value to pass as the EmailID,
-    //todo: otherwise the date is probably fine since there is only one USPS ID email per day
+    //#############end linkwell section################
+
     final emailId = timestamp.toString();
+
+    //#############start mailPieceId section################
 
     //this section of code finds the USPS mailpiece ID in the email associated with the
     //image CID.  Useful in getting links per mailpiece.
 
     String mailPieceId = "";
-    //based on test account, need to get 2nd level of parts to find image.  search in text/html part first
-    for (int x = 0; x < email.mimeData!.parts!.length; x++) {
-      if (email.mimeData!.parts!
-              .elementAt(x)
-              .contentType
-              ?.value
-              .toString()
-              .contains("multipart") ??
-          false) {
-        for (int y = 0;
-            y < email.mimeData!.parts!.elementAt(x).parts!.length;
-            y++) {
-          if (email.mimeData!.parts!
-                  .elementAt(x)
-                  .parts!
-                  .elementAt(y)
-                  .contentType
-                  ?.value
-                  .toString()
-                  .contains("text/html") ??
-              false) {
-            //get the parts into an html document to make it searchable.
-            //need to decode Text into 'quoted-printable' type to see all the link text values
-            var doc = parse(email.mimeData!.parts!
-                .elementAt(x)
-                .parts!
-                .elementAt(y)
-                .decodeText(
-                    ContentTypeHeader('text/html'), 'quoted-printable'));
+    //need to get text/html section of email
 
             if (scanImgCID.contains("ra_0_") ) { //start code for ride along processing
 
@@ -383,12 +356,16 @@ class MailFetcher {
                 debugPrint("For mailPiece " +
                     scanImgCID +
                     " there was no associated ID.");
-                break;
               }
 
               //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
               var trackingItems = doc.querySelectorAll(
                   'a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
+
+              if ( trackingItems.length == 0 ) {
+                trackingItems = doc.querySelectorAll(
+                    'a[href*=\'informeddelivery.usps.com/tracking\']');
+              }
 
               //need a counter for times the reminder mailPiece with image was found
               int trackingCount = 0;
@@ -445,12 +422,16 @@ class MailFetcher {
                 debugPrint("For mailPiece " +
                     scanImgCID +
                     " there was no associated ID.");
-                break;
               }
 
               //next, get a list of items that have the reminder link.  They all have the reminder link.
               var reminderItems = doc.querySelectorAll(
                   'a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
+
+              if ( reminderItems.length == 0 ) {
+                reminderItems = doc.querySelectorAll(
+                    'a[href*=\'informeddelivery.usps.com/box/pages/reminder\']');
+              }
 
               //need a counter for times the reminder mailPiece with image was found
               int reminderCount = 0;
@@ -481,15 +462,9 @@ class MailFetcher {
                     break;
                   }
                   reminderCount++;
-                }
+                } //end if reminder item has img
               }//end for loop for reminderItems
             } //end else for normal mailpiece process
-            break;
-          } //end if 'text/html'
-        } //end for loop for element y parts
-        break;
-      } //end if multipart
-    } //end for loop for element x parts
 
     return new MailPiece(id, emailId, timestamp, attachment.sender, text!,
         scanImgCID, mailPieceId, links, emailList, phoneList);
@@ -500,4 +475,5 @@ class MailFetcher {
     CloudVisionApi vision = CloudVisionApi();
     return await vision.search(mailImage);
   }
-}
+
+} //end class MailFetcher

@@ -95,7 +95,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     locator<AnalyticsService>().logScreens(name: 'Email');
     FirebaseAnalytics.instance.logEvent(
         name: 'EMail', parameters: {'uspsMID': widget.mailPiece.uspsMID});
-  }
+  } //end init state
+
 
   //get the image of the mail piece
   Future<void> _getMailPieceEmail() async {
@@ -108,6 +109,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     MimeMessage m1 = digest.message;
 
     _getImgFromEmail(m1);
+    //_specialTestFunction(m1);  //only un-comment this on when needing to test mailpiece loading functionality
 
     if (widget.mailPiece.uspsMID != "") {
       _getLinkHtmlFromEmail(m1);
@@ -123,7 +125,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
 
         loading = false;
       });
-    }
+    } //end else if uspsMID is = ""
 
     if (Firebase.apps.length != 0) {
       var EventParams = ['screen_view,page_location, page_referrer'];
@@ -136,196 +138,223 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       //   .logEvent(name: 'AnalyticsParameterScreenName', parameters:;
     }
     ;
-  }
+  } //end getMailPieceEmail
 
   void _getImgFromEmail(MimeMessage m) async {
-    //m = digest.message;
-    for (int x = 0; x < m.mimeData!.parts!.length; x++) {
-      if (m.mimeData!.parts!
-              .elementAt(x)
-              .contentType
-              ?.value
-              .toString()
-              .contains("multipart") ??
-          false) {
-        for (int y = 0;
-            y < m.mimeData!.parts!.elementAt(x).parts!.length;
-            y++) {
-          if (m.mimeData!.parts!
-                  .elementAt(x)
-                  .parts!
-                  .elementAt(y)
-                  .contentType
-                  ?.value
-                  .toString()
-                  .contains("image") ??
-              false) {
-            if (m.mimeData!.parts!
-                .elementAt(x)
-                .parts!
-                .elementAt(y)
-                .toString()
-                .contains(widget.mailPiece.scanImgCID)) {
-              var picture = m.mimeData!.parts!
-                  .elementAt(x)
-                  .parts!
-                  .elementAt(y)
-                  .decodeMessageData()
-                  .toString();
-              //These are base64 encoded images with formatting, remove all returns and lines
-              picture = picture.replaceAll("\r\n", "");
+    var mimeParts = m.mimeData!.parts!;
 
-              setState(() {
-                mailImage = Image.memory(base64Decode(picture));
-              });
-              break; //break when image is found
-            } //end if y element contains scanImgCID
-          } //end if y element contains image
-        } //end element(y) for loop
-        break; //break if found multipart, don't need to run anymore
-      } //end if contains multipart
-    } //end element(x) for loop
+    for (var i = 0; i < mimeParts.length; i++) {
+      var mimeTopType = mimeParts[i].contentType!.mediaType.toString();
+      if (mimeTopType.contains("image")) {
+        if (await _getImgFromEmail2(mimeParts[i])) {
+          break; //break when image with CID is found, true returned
+        }
+      } else if (mimeTopType.contains("multipart")) {
+        // there might be more subparts
+        for (var j = 0; j < mimeParts[i].parts!.length; j++) {
+          var subPartTopType =
+              mimeParts[i].parts![j].contentType!.mediaType.toString();
+          if (subPartTopType.contains("image")) {
+            if (await _getImgFromEmail2(mimeParts[i].parts![j])) {
+              break; //break when image with CID is found, true returned
+            }
+          } //end if image
+        } //end j for loop
+        break;
+      } //end if multipart
+    }
   } //end _getImgFromEmail
+
+  //this function was split out in case the mime part is either in level 1 vs level 2
+  Future<bool> _getImgFromEmail2(MimeData md) async {
+    if (md.headersList.toString().contains(widget.mailPiece.scanImgCID)) {
+      var picture = md.decodeMessageData().toString();
+      //These are base64 encoded images with formatting, remove all returns and lines
+      picture = picture.replaceAll("\r\n", "");
+      debugPrint("Loaded Image for scanImgCID: " + widget.mailPiece.scanImgCID);
+      setState(() {
+        mailImage = Image.memory(base64Decode(picture));
+      });
+      return true;
+    }
+    return false;
+  } //end getImgFromEmail2
 
   //sets state of URLs given the found email based on mailPiece
   void _getLinkHtmlFromEmail(MimeMessage m) async {
-    //based on test account, need to get 2nd level of parts to find image.  search in text/html part first
-    for (int x = 0; x < m.mimeData!.parts!.length; x++) {
-      if (m.mimeData!.parts!
-              .elementAt(x)
-              .contentType
-              ?.value
+    //need a way to get text/html in either 1st or 2nd level of parts - its different
+    //in different email accounts
+    int mimePartMatch1 = -1;
+    int mimePartMatch2 = -1;
+    String mimePartMatchLevel = '';
+
+    var mimeParts = m.mimeData!.parts!;
+    RegExp test1 = RegExp(r'multipart|text/html');
+    for (int x = 0; x < mimeParts.length; x++) {
+      String elementXString =
+          mimeParts[x].contentType?.mediaType.toString() ?? "";
+      if (test1.hasMatch(elementXString!)) {
+        if (elementXString.contains("text/html")) {
+          //got the match in level one, so set x and level
+          mimePartMatch1 = x;
+          mimePartMatchLevel = "One";
+          break;
+        } else {
+          for (int y = 0; y < mimeParts[x].parts!.length; y++) {
+            String subPartTopType =
+                mimeParts[x].parts![y].contentType!.mediaType.toString();
+
+            if (subPartTopType.contains("text/html")) {
+              //found the match at level 2, set both x and y (very important) and level to Two
+              mimePartMatch1 = x;
+              mimePartMatch2 = y;
+              mimePartMatchLevel = "Two";
+              break;
+            } //end y has text/html
+          } //end y loop
+        } //end else
+      } //end x has either multipart or text/html
+    } //end x loop
+
+    //need to instantiate textHtmlPart but this should always be overridden.
+    var textHtmlPart = mimeParts[0];
+
+    //Because we don't know if we need mime parts level 1 or level 2, need this code
+    if (mimePartMatchLevel == 'One') {
+      textHtmlPart = mimeParts[mimePartMatch1];
+    } else if (mimePartMatchLevel == 'Two') {
+      textHtmlPart = mimeParts[mimePartMatch1].parts![mimePartMatch2];
+    }
+
+    //get the parts into an html document to make it searchable.
+    //need to decode Text into 'quoted-printable' if possible or have alternate
+    // search type for 7bit or other email accounts
+
+    debugPrint(textHtmlPart.headersList.toString());
+    String contentTransferType = '';
+
+    if (textHtmlPart.headersList.toString().contains("7bit")) {
+      contentTransferType = '7bit';
+    } else if (textHtmlPart.headersList
+        .toString()
+        .contains("quoted-printable")) {
+      contentTransferType = 'quoted-printable';
+    }
+
+    var doc = parse(textHtmlPart.decodeText(
+        ContentTypeHeader('text/html'), contentTransferType));
+
+    //next, get a list of items that have the uspsMailID.  All mailpieces have these.
+    var docMailIDItems =
+        doc.querySelectorAll('a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
+
+    if (docMailIDItems.length == 0) {
+      docMailIDItems =
+          doc.querySelectorAll('a[href*=\'${widget.mailPiece.uspsMID}\']');
+    }
+
+    // if the mailpiece is older than 30 days, skip the set reminder search
+    Duration diff = DateTime.now().difference(widget.mailPiece.timestamp);
+    if (diff.inDays >= 30) {
+      hasSetReminder = false;
+    } else {
+      hasSetReminder = true;
+    }
+
+    String trackingItem = "";
+    bool trackingMatch = false;
+
+    bool reminderMatch = false;
+    String reminderItem = "";
+
+    if (hasSetReminder == true) {
+      for (int j = 0; j < docMailIDItems.length; j++) {
+        //find the element that contains "Set a Reminder"
+        if (reminderMatch == false) {
+          if (docMailIDItems[j]
+              .outerHtml
               .toString()
-              .contains("multipart") ??
-          false) {
-        for (int y = 0;
-            y < m.mimeData!.parts!.elementAt(x).parts!.length;
-            y++) {
-          if (m.mimeData!.parts!
-                  .elementAt(x)
-                  .parts!
-                  .elementAt(y)
-                  .contentType
-                  ?.value
-                  .toString()
-                  .contains("text/html") ??
-              false) {
-            //get the parts into an html document to make it searchable.
-            //need to decode Text into 'quoted-printable' type to see all the link text values
-            var doc = parse(m.mimeData!.parts!
-                .elementAt(x)
-                .parts!
-                .elementAt(y)
-                .decodeText(
-                    ContentTypeHeader('text/html'), 'quoted-printable'));
+              .contains("pages/reminder")) {
+            reminderItem = docMailIDItems[j].outerHtml.toString();
+            reminderMatch = true;
+          }
+        }
 
-            //next, get a list of items that have the uspsMailID.  All mailpieces have these.
-            var docMailIDItems = doc.querySelectorAll(
-                'a[originalsrc*=\'${widget.mailPiece.uspsMID}\']');
+        //find the element that contains "Learn More"
+        if (trackingMatch == false) {
+          if (docMailIDItems[j]
+              .innerHtml
+              .toString()
+              .contains("alt=\"Learn More\"")) {
+            trackingItem = docMailIDItems[j].outerHtml.toString();
+            trackingMatch = true;
+          }
+        }
+        //stop searching after finding the correct matches
+        if (trackingMatch == true && reminderMatch == true) {
+          break;
+        }
+      }
 
-            Duration diff =
-                DateTime.now().difference(widget.mailPiece.timestamp);
-            if (diff.inDays >= 30) {
-              hasSetReminder = false;
-            } else {
-              hasSetReminder = true;
-            }
+      //get a list of links, only the first link should matter
+      List<String> reminderLinkList = await _getUrlLinks(reminderItem);
 
-            String trackingItem = "";
-            bool trackingMatch = false;
+      //get a list of links, if tracking match is not found it wont load a tracking link in set state below
+      List<String> trackingLinkList = await _getUrlLinks(trackingItem);
 
-            bool reminderMatch = false;
-            String reminderItem = "";
+      //finally, set the state of the links to the matched element
+      setState(() {
+        //get the number out of the matched text
+        reminderLinkUrl = Uri.parse(reminderLinkList[0]);
+        if (trackingMatch == true) {
+          learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+          hasLearnMore = true;
+        }
 
-            if (hasSetReminder == true) {
-              for (int j = 0; j < docMailIDItems.length; j++) {
-                //find the element that contains "Set a Reminder"
-                if (reminderMatch == false) {
-                  if (docMailIDItems[j]
-                      .outerHtml
-                      .toString()
-                      .contains("pages/reminder")) {
-                    reminderItem = docMailIDItems[j].outerHtml.toString();
-                    reminderMatch = true;
-                  }
-                }
+        if ((hasLearnMore || hasSetReminder) == true) {
+          hasDoMore = true;
+        } else {
+          hasDoMore = false;
+        }
 
-                //find the element that contains "Learn More"
-                if (trackingMatch == false) {
-                  if (docMailIDItems[j]
-                      .innerHtml
-                      .toString()
-                      .contains("alt=\"Learn More\"")) {
-                    trackingItem = docMailIDItems[j].outerHtml.toString();
-                    trackingMatch = true;
-                  }
-                }
-                //stop searching after finding the correct matches
-                if (trackingMatch == true && reminderMatch == true) {
-                  break;
-                }
-              }
+        loading = false;
+      }); //end of if SetReminder is true functions
+    } else {
+      //start of processing is SetReminder is false
+      for (int j = 0; j < docMailIDItems.length; j++) {
+        //find the element that contains "Learn More"
+        if (trackingMatch == false) {
+          if (docMailIDItems[j]
+              .innerHtml
+              .toString()
+              .contains("alt=\"Learn More\"")) {
+            trackingItem = docMailIDItems[j].outerHtml.toString();
+            trackingMatch = true;
+          }
+        }
+        //stop searching after finding the correct matches
+        if (trackingMatch == true) {
+          break;
+        }
+      }
 
-              //get a list of links, only the first link should matter
-              List<String> reminderLinkList = await _getUrlLinks(reminderItem);
+      //get a list of links, if tracking match is not found it wont load a tracking link in set state below
+      List<String> trackingLinkList = await _getUrlLinks(trackingItem);
 
-              //get a list of links, if tracking match is not found it wont load a tracking link in set state below
-              List<String> trackingLinkList = await _getUrlLinks(trackingItem);
+      //finally, set the state of the links to the matched element
+      setState(() {
+        if (trackingMatch == true) {
+          learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
+          hasLearnMore = true;
+          hasDoMore = true;
+        }
+        loading = false;
+      });
+    } //end else for tracking only link
+  } //end getLinkHtmlEmail
 
-              //finally, set the state of the links to the matched element
-              setState(() {
-                //get the number out of the matched text
-                reminderLinkUrl = Uri.parse(reminderLinkList[0]);
-                if (trackingMatch == true) {
-                  learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
-                  hasLearnMore = true;
-                }
 
-                if ((hasLearnMore || hasSetReminder) == true) {
-                  hasDoMore = true;
-                } else {
-                  hasDoMore = false;
-                }
-
-                loading = false;
-              }); //end of if SetReminder is true functions
-            } else {
-              for (int j = 0; j < docMailIDItems.length; j++) {
-                //find the element that contains "Learn More"
-                if (trackingMatch == false) {
-                  if (docMailIDItems[j]
-                      .innerHtml
-                      .toString()
-                      .contains("alt=\"Learn More\"")) {
-                    trackingItem = docMailIDItems[j].outerHtml.toString();
-                    trackingMatch = true;
-                  }
-                }
-                //stop searching after finding the correct matches
-                if (trackingMatch == true) {
-                  break;
-                }
-              }
-
-              //get a list of links, if tracking match is not found it wont load a tracking link in set state below
-              List<String> trackingLinkList = await _getUrlLinks(trackingItem);
-
-              //finally, set the state of the links to the matched element
-              setState(() {
-                if (trackingMatch == true) {
-                  learnMoreLinkUrl = Uri.parse(trackingLinkList[0]);
-                  hasLearnMore = true;
-                  hasDoMore = true;
-                }
-                loading = false;
-              });
-            } //end else for tracking only link
-          } //end if contains text/html
-        } //end element(y) for loop
-      } //end if contains multipart
-    } //end element(x) for loop
-  } //end _getLinkHtmlFromEmail
-
+  //this function tries to get URL links from a String
   List<String> _getUrlLinks(String x) {
     try {
       List<String> list = [];
@@ -375,6 +404,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     return originalSplit.join('\n');
   }
 
+
+  //this function returns a String with how many days ago the mailpiece was received
   String convertToAgo(DateTime input) {
     Duration diff = DateTime.now().difference(input);
 
@@ -683,4 +714,234 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
                 ),
     );
   }
+
+/*
+  //specialTestFunction is just a function used to test the mailPiece processing,
+  // but per email, and without saving.  It can take awhile to verify the main mailpiece processor
+  //works in mail_fetcher since it executes automatically and can process a lot of emails
+  void _specialTestFunction (MimeMessage email) {
+    int mimePartMatch1 = -1;
+    int mimePartMatch2 = -1;
+    String mimePartMatchLevel = '';
+
+    var mimeParts = email.mimeData!.parts!;
+    RegExp test1 = RegExp(r'multipart|text/html');
+
+    for (int x = 0; x < mimeParts.length; x++) {
+      String elementXString = mimeParts[x].contentType?.mediaType
+          .toString() ?? "";
+      debugPrint(elementXString);
+
+      if (test1.hasMatch(elementXString!)) {
+        if (elementXString.contains("text/html")) {
+          debugPrint("got to first x text/html find");
+          mimePartMatch1 = x;
+          mimePartMatchLevel = "One";
+          break;
+        } else {
+          for (int y = 0; y < mimeParts[x].parts!.length; y++) {
+            String subPartTopType =
+            mimeParts[x].parts![y].contentType!.mediaType.toString();
+
+            if (subPartTopType.contains("text/html")) {
+              debugPrint("got to first y text/html find");
+              mimePartMatch1 = x;
+              mimePartMatch2 = y;
+              mimePartMatchLevel = "Two";
+              break;
+            } //end y has text/html
+          } //end y loop
+        } //end else
+      } //end x has either multipart or text/html
+    } //end x loop
+
+    debugPrint(
+        mimePartMatch1.toString() + ' ' + mimePartMatch2.toString() + ' ' +
+            mimePartMatchLevel);
+
+    var textHtmlPart = mimeParts[0];
+
+    if (mimePartMatchLevel == 'One') {
+      textHtmlPart = mimeParts[mimePartMatch1];
+    } else if (mimePartMatchLevel == 'Two') {
+      textHtmlPart = mimeParts[mimePartMatch1].parts![mimePartMatch2];
+    }
+
+    //get the parts into an html document to make it searchable.
+    //need to decode Text into 'quoted-printable' type to see all the link text values
+
+    debugPrint(textHtmlPart.headersList.toString());
+    String contentTransferType = '';
+
+    if (textHtmlPart.headersList.toString().contains("7bit")) {
+      contentTransferType = '7bit';
+    } else if (textHtmlPart.headersList.toString().contains("quoted-printable") ) {
+      contentTransferType = 'quoted-printable';
+    }
+    debugPrint(contentTransferType);
+
+    var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), contentTransferType) );
+    //var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), 'quoted-printable') );
+
+    //#############start mailPieceId section################
+
+    //this section of code finds the USPS mailpiece ID in the email associated with the
+    //image CID.  Useful in getting links per mailpiece.
+
+    String mailPieceId = "";
+    //need to get text/html section of email
+
+    if (widget.mailPiece.scanImgCID.contains("ra_0_") ) { //start code for ride along processing
+
+      //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
+      var rideAlongItems = doc.querySelectorAll(
+          'img[alt*=\'ride along content for your mail piece\']');
+
+      debugPrint(' rideAlong ' + rideAlongItems.length.toString() );
+
+      int matchingIndex = -1;
+      for (int i = 0; i < rideAlongItems.length; i++) {
+        if (rideAlongItems[i]
+            .attributes
+            .toString()
+            .contains(widget.mailPiece.scanImgCID)) {
+          matchingIndex = i;
+          break;
+        }
+      }
+
+      //print debug error that the scanImgCID didn't find a match.
+      if (matchingIndex == -1) {
+        debugPrint("For mailPiece " +
+            widget.mailPiece.scanImgCID +
+            " there was no associated ID.");
+      }
+
+      debugPrint(' matchingIndex ' + matchingIndex.toString() );
+
+      //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
+      var trackingItems = doc.querySelectorAll('a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
+
+      if ( trackingItems.length == 0 ) {
+        trackingItems = doc.querySelectorAll(
+            'a[href*=\'informeddelivery.usps.com/tracking\']');
+      }
+
+      for (int k = 0; k < trackingItems.length; k++){
+        debugPrint(trackingItems[k].outerHtml.toString());
+      }
+
+      debugPrint(' trackingItems ' + trackingItems.length.toString() );
+
+      //need a counter for times the reminder mailPiece with image was found
+      int trackingCount = 0;
+      //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
+      for (int i = 0; i < trackingItems.length; i++) {
+        if (trackingItems[i].innerHtml.toString().contains("img")) {
+          //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
+          if (trackingCount == matchingIndex) {
+            var regex = RegExp(
+                r'mailpiece=\d*\&'); //finds the string mailpieceId=digits to "
+            var regexNum = RegExp(r'\d+'); //get numbers only
+
+            var mpID1 =
+            regex.firstMatch(trackingItems[i].outerHtml.toString());
+
+            mailPieceId = regexNum
+                .firstMatch(mpID1![0]!.toString())![0]!
+                .toString();
+
+            debugPrint("Date: " +
+                DateFormat('yyyy/MM/dd').format(widget.mailPiece.timestamp) +
+                "; scanImgCID: " +
+                widget.mailPiece.scanImgCID +
+                "; has matching USPS-ID: " +
+                mailPieceId);
+
+            //break out of for after finding correct mailPiece
+            break;
+          }
+          trackingCount++;
+        }
+      } //end for loop for trackingItems
+    } else { //start code for normal mailpiece
+
+      //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
+      var scannedMailPieceItems = doc.querySelectorAll(
+          'img[alt*=\'Scanned image of your mail piece\']');
+
+      debugPrint(' scannedMailPieceItems ' + scannedMailPieceItems.length.toString() );
+
+      //scan through the mailpiece images to figure out which index matches the mailPiece Id.
+      //this will be used to find the corresponding reminder link.
+      int matchingIndex = -1;
+      for (int i = 0; i < scannedMailPieceItems.length; i++) {
+        if (scannedMailPieceItems[i]
+            .attributes
+            .toString()
+            .contains(widget.mailPiece.scanImgCID)) {
+          matchingIndex = i;
+          break;
+        }
+      }
+
+      //print debug error that the scanImgCID didn't find a match.
+      if (matchingIndex == -1) {
+        debugPrint("For mailPiece " +
+            widget.mailPiece.scanImgCID +
+            " there was no associated ID.");
+      }
+
+      debugPrint(' matchingIndex ' + matchingIndex.toString() );
+
+      //next, get a list of items that have the reminder link.  They all have the reminder link.
+      var reminderItems = doc.querySelectorAll('a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
+      //'a[\'*informeddelivery.usps.com/box/pages/reminder\']');
+
+      debugPrint(' reminderItems ' + reminderItems.length.toString() );
+
+      if ( reminderItems.length == 0 ) {
+        reminderItems = doc.querySelectorAll(
+            'a[href*=\'informeddelivery.usps.com/box/pages/reminder\']');
+      }
+
+      debugPrint(' reminderItems ' + reminderItems.length.toString() );
+
+      //need a counter for times the reminder mailPiece with image was found
+      int reminderCount = 0;
+      //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
+      for (int i = 0; i < reminderItems.length; i++) {
+        debugPrint(reminderItems[i].innerHtml.toString());
+        if (reminderItems[i].innerHtml.toString().contains("img")) {
+          //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
+          if (reminderCount == matchingIndex) {
+            var regex = RegExp(
+                r'mailpieceId=\d*\"'); //finds the string mailpieceId=digits to "
+            var regexNum = RegExp(r'\d+'); //get numbers only
+
+            var mpID1 =
+            regex.firstMatch(reminderItems[i].outerHtml.toString());
+
+            mailPieceId = regexNum
+                .firstMatch(mpID1![0]!.toString())![0]!
+                .toString();
+
+            debugPrint("Date: " +
+                DateFormat('yyyy/MM/dd').format(widget.mailPiece.timestamp) +
+                "; scanImgCID: " +
+                widget.mailPiece.scanImgCID +
+                "; has matching USPS-ID: " +
+                mailPieceId);
+
+            //break out of for after finding correct mailPiece
+            break;
+          }
+          reminderCount++;
+        } //end if reminder item has img
+      }//end for loop for reminderItems
+    } //end else for normal mailpiece process
+
+  }//end specialTestFunction
+ */
+
 } //end of class MailPieceViewWidget
