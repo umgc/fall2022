@@ -28,7 +28,7 @@ jobs:
       - name: Update keystore key password  
         run: sed -i 's/#{KEYSTORE_KEY_PASS}#/${{ secrets.KEYSTORE_KEY_PASS }}/g' android/key.properties
       - name: Replace Cloud Vision JSON
-        run: sed -i "s/#{CLOUD_VISION}#/${{ secrets.CLOUD_VISION }}/g" assets/credentials.json
+        run: sed -i 's/#{CLOUD_VISION}#/${{ secrets.CLOUD_VISION }}/' assets/credentials.json
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
