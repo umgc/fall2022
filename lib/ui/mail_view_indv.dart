@@ -643,7 +643,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     );
   }
 
-/*
+
   //mailPieceEmailTest is just a function used to test the mailPiece processing,
   // but per email, and without saving.  It can take awhile to verify the main mailpiece processor
   //works in mail_fetcher since it executes automatically and can process a lot of emails
@@ -856,7 +856,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     } //end else for normal mailpiece process
 
   }//end mailPieceEmailTest
-*/
+
 
 
 } //end of class MailPieceViewWidget

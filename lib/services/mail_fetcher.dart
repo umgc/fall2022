@@ -68,7 +68,7 @@ class MailFetcher {
       mailPieces = await Future.wait([
         for (final attachment in mailPieceAttachments)
           _processMailImage(
-              email, attachment, email.decodeDate()!, mailPieces.length)
+              email, attachment, email.decodeDate()!, mailPieceAttachments.indexOf(attachment) )
       ]);
 
       debugPrint("Finished processing " +
@@ -280,135 +280,130 @@ class MailFetcher {
     //image CID.  Useful in getting links per mailpiece.
 
     String? mailPieceId = "";
-    //need to get text/html section of email
 
-            if (scanImgCID.contains("ra_0_") ) { //start code for ride along processing
+    if (scanImgCID.contains("ra_0_") ) { //start code for ride along processing
 
-              //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
-              var rideAlongItems = doc.querySelectorAll(
-                  'img[alt*=\'ride along content for your mail piece\']');
+      //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
+      var rideAlongItems = doc.querySelectorAll(
+          'img[alt*=\'ride along content for your mail piece\']');
 
-              int matchingIndex = -1;
-              for (int i = 0; i < rideAlongItems.length; i++) {
-                if (rideAlongItems[i]
-                    .attributes
-                    .toString()
-                    .contains(scanImgCID)) {
-                  matchingIndex = i;
-                  break;
-                }
-              }
+      int matchingIndex = -1;
+      for (int i = 0; i < rideAlongItems.length; i++) {
+        if (rideAlongItems[i]
+            .attributes
+            .toString()
+            .contains(scanImgCID)) {
+          matchingIndex = i;
+          break;
+        }
+      }
 
-              //print debug error that the scanImgCID didn't find a match.
-              if (matchingIndex == -1) {
-                debugPrint("MailPiece " +
-                    scanImgCID +
-                    " has no associated ID.");
-              }
+      //print debug error that the scanImgCID didn't find a match.
+      if (matchingIndex == -1) {
+        debugPrint("MailPiece " +
+            scanImgCID +
+            " has no associated ID.");
+      }
 
-              //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
-              var trackingItems = doc.querySelectorAll(
-                  'a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
+      //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
+      var trackingItems = doc.querySelectorAll(
+          'a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
 
-              if ( trackingItems.length == 0 ) {
-                trackingItems = doc.querySelectorAll(
-                    'a[href*=\'informeddelivery.usps.com/tracking\']');
-              }
+      if ( trackingItems.length == 0 ) {
+        trackingItems = doc.querySelectorAll(
+            'a[href*=\'informeddelivery.usps.com/tracking\']');
+      }
 
-              //need a counter for times the reminder mailPiece with image was found
-              int trackingCount = 0;
-              //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
-              for (int i = 0; i < trackingItems.length; i++) {
-                if (trackingItems[i].innerHtml.toString().contains("img")) {
-                  //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
-                  if (trackingCount == matchingIndex) {
-                    var regex = RegExp(
-                        r'mailpiece=\d*\&'); //finds the string mailpieceId=digits to "
-                    var regexNum = RegExp(r'\d+'); //get numbers only
+      //need a counter for times the reminder mailPiece with image was found
+      int trackingCount = 0;
+      //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
+      for (int i = 0; i < trackingItems.length; i++) {
+        if (trackingItems[i].innerHtml.toString().contains("img")) {
+          //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
+          if (trackingCount == matchingIndex) {
 
-                    var mpID1 =
-                    regex.firstMatch(trackingItems[i].outerHtml.toString());
+            //finds the string mailpiece=digits to &, digits grouped
+            var regex = RegExp(r'mailpiece=(\d*)\&');
 
-                    mailPieceId = regexNum
-                        .firstMatch(mpID1![0]!.toString())![0]!
-                        .toString();
+            //can get group [1] of match, is (\d*) digits
+            mailPieceId = regex.firstMatch( trackingItems[i].outerHtml.toString() )?[1].toString() ?? '';
 
-                    debugPrint("Date: " +
-                        DateFormat('yyyy/MM/dd').format(timestamp) +
-                        "; scanImgCID: " +
-                        scanImgCID +
-                        "; has matching USPS-ID: " +
-                        mailPieceId);
+            debugPrint("Date: " +
+                DateFormat('yyyy/MM/dd').format(timestamp) +
+                "; scanImgCID: " +
+                scanImgCID +
+                "; has matching USPS-ID: " +
+                mailPieceId);
 
-                    //break out of for after finding correct mailPiece
-                    break;
-                  }
-                  trackingCount++;
-                }
-              } //end for loop for trackingItems
-            } else { //start code for normal mailpiece
+            //break out of for after finding correct mailPiece
+            break;
+          }
+          trackingCount++;
+        }
+      } //end for loop for trackingItems
+    } else { //start code for normal mailpiece
 
-              //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
-              var scannedMailPieceItems = doc.querySelectorAll(
-                  'img[alt*=\'Scanned image of your mail piece\']');
+      //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
+      var scannedMailPieceItems = doc.querySelectorAll(
+          'img[alt*=\'Scanned image of your mail piece\']');
 
-              //scan through the mailpiece images to figure out which index matches the mailPiece Id.
-              //this will be used to find the corresponding reminder link.
-              int matchingIndex = -1;
-              for (int i = 0; i < scannedMailPieceItems.length; i++) {
-                if (scannedMailPieceItems[i]
-                    .attributes
-                    .toString()
-                    .contains(scanImgCID)) {
-                  matchingIndex = i;
-                  break;
-                }
-              }
+      //scan through the mailpiece images to figure out which index matches the mailPiece Id.
+      //this will be used to find the corresponding reminder link.
+      int matchingIndex = -1;
+      for (int i = 0; i < scannedMailPieceItems.length; i++) {
+        if (scannedMailPieceItems[i]
+            .attributes
+            .toString()
+            .contains(scanImgCID)) {
+          matchingIndex = i;
+          break;
+        }
+      }
 
-              //print debug error that the scanImgCID didn't find a match.
-              if (matchingIndex == -1) {
-                debugPrint("MailPiece " +
-                    scanImgCID +
-                    " has no associated ID.");
-              }
+      //print debug error that the scanImgCID didn't find a match.
+      if (matchingIndex == -1) {
+        debugPrint("MailPiece " +
+            scanImgCID +
+            " has no associated ID.");
+      }
 
-              //next, get a list of items that have the reminder link.  They all have the reminder link.
-              var reminderItems = doc.querySelectorAll(
-                  'a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
+      //next, get a list of items that have the reminder link.  They all have the reminder link.
+      var reminderItems = doc.querySelectorAll(
+          'a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
 
-              if ( reminderItems.length == 0 ) {
-                reminderItems = doc.querySelectorAll(
-                    'a[href*=\'informeddelivery.usps.com/box/pages/reminder\']');
-              }
+      if ( reminderItems.length == 0 ) {
+        reminderItems = doc.querySelectorAll(
+            'a[href*=\'informeddelivery.usps.com/box/pages/reminder\']');
+      }
 
-              //need a counter for times the reminder mailPiece with image was found
-              int reminderCount = 0;
-              //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
-              for (int i = 0; i < reminderItems.length; i++) {
-                if (reminderItems[i].innerHtml.toString().contains("img")) {
-                  //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
-                  if (reminderCount == matchingIndex) {
+      //need a counter for times the reminder mailPiece with image was found
+      int reminderCount = 0;
+      //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
+      for (int i = 0; i < reminderItems.length; i++) {
+        if (reminderItems[i].innerHtml.toString().contains("img")) {
+          //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
+          if (reminderCount == matchingIndex) {
 
-                    //finds the string mailpieceId=digits to ", digits grouped ()
-                    var regex = RegExp( r'mailpieceId=(\d*)\"' ); //finds the string mailpieceId=digits to , digits grouped"
+            //finds the string mailpieceId=digits to ", digits grouped ()
+            var regex = RegExp( r'mailpieceId=(\d*)\"' );
 
-                    //can get group [1] of match, is (\d*) digits
-                    mailPieceId = regex.firstMatch( reminderItems[i].outerHtml.toString() )?[1].toString() ?? '';
+            //can get group [1] of match, is (\d*) digits
+            mailPieceId = regex.firstMatch( reminderItems[i].outerHtml.toString() )?[1].toString() ?? '';
 
-                    debugPrint("Date: " +
-                        DateFormat('yyyy/MM/dd').format(timestamp) +
-                        "; scanImgCID: " +
-                        scanImgCID +
-                        "; has matching USPS-ID: " +
-                        mailPieceId);
+            debugPrint("Date: " +
+                DateFormat('yyyy/MM/dd').format(timestamp) +
+                "; scanImgCID: " +
+                scanImgCID +
+                "; has matching USPS-ID: " +
+                mailPieceId);
 
-                    //break out of for after finding correct mailPiece
-                    break;
-                  }
-                  reminderCount++;
-                } //end if reminder item has img
-              }//end for loop for reminderItems
-            } //end else for normal mailpiece process
+            //break out of for after finding correct mailPiece
+            break;
+          }
+          reminderCount++;
+        } //end if reminder item has img
+      }//end for loop for reminderItems
+    } //end else for normal mailpiece process
 
     //<<<<<<<<<<<<<<<<<<<< end mailpiece id section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
