@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:enough_mail/enough_mail.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:summer2022/email_processing/gmail_api_service.dart';
 import 'package:summer2022/models/MailResponse.dart';
 import 'package:summer2022/image_processing/google_cloud_vision_api.dart';
 import 'package:summer2022/models/Digest.dart';
@@ -12,6 +14,7 @@ import 'package:summer2022/image_processing/usps_address_verification.dart';
 import 'package:summer2022/services/mail_fetcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart';
+import 'package:summer2022/utility/user_auth_service.dart';
 
 class DigestEmailParser {
   CloudVisionApi vision = CloudVisionApi();
@@ -21,12 +24,12 @@ class DigestEmailParser {
     try {
       Digest digest = Digest(await _getDigestEmail(userName, password));
 
-        if (!digest.isNull()) {
-          var fetcher = MailFetcher();
-          digest.attachments = await _getAttachments(digest.message);
-          digest.links = _getLinks(digest.message);
-          digest.mailPieces = await fetcher.processEmail(digest.message);
-        }
+      if (!digest.isNull()) {
+        var fetcher = MailFetcher();
+        digest.attachments = await _getAttachments(digest.message);
+        digest.links = _getLinks(digest.message);
+        digest.mailPieces = await fetcher.processEmail(digest.message);
+      }
       return digest;
     } catch (e) {
       rethrow;
@@ -39,7 +42,8 @@ class DigestEmailParser {
       List<Attachment> list = [];
       for (int x = 0; x < m.mimeData!.parts!.length; x++) {
         var firstLevel = m.mimeData!.parts!.elementAt(x);
-        if (firstLevel.contentType?.value.toString().contains("image") ?? false) {
+        if (firstLevel.contentType?.value.toString().contains("image") ??
+            false) {
           var attachment = Attachment();
           attachment.attachment = firstLevel
               .decodeMessageData()
@@ -47,13 +51,20 @@ class DigestEmailParser {
           attachment.attachmentNoFormatting = attachment.attachment
               .toString()
               .replaceAll(
-              "\r\n", ""); //These are base64 encoded images with formatting
-          attachment.detailedInformation = await processImage(attachment.attachmentNoFormatting); //process image defined below
+                  "\r\n", ""); //These are base64 encoded images with formatting
+          attachment.detailedInformation = await processImage(
+              attachment.attachmentNoFormatting); //process image defined below
           list.add(attachment); //add attachment to list of attachments
         }
         if (firstLevel.parts != null && firstLevel.parts!.isNotEmpty) {
           for (int y = 0; y < firstLevel!.parts!.length; y++) {
-            if (firstLevel!.parts!.elementAt(y).contentType?.value.toString().contains("image") ?? false) {
+            if (firstLevel!.parts!
+                    .elementAt(y)
+                    .contentType
+                    ?.value
+                    .toString()
+                    .contains("image") ??
+                false) {
               var attachment = Attachment();
               attachment.attachment = firstLevel.parts!
                   .elementAt(y)
@@ -61,10 +72,10 @@ class DigestEmailParser {
                   .toString(); //These are base64 encoded images with formatting
               attachment.attachmentNoFormatting = attachment.attachment
                   .toString()
-                  .replaceAll(
-                  "\r\n",
-                  ""); //These are base64 encoded images with formatting
-              attachment.detailedInformation = await processImage(attachment.attachmentNoFormatting); //process image defined below
+                  .replaceAll("\r\n",
+                      ""); //These are base64 encoded images with formatting
+              attachment.detailedInformation = await processImage(attachment
+                  .attachmentNoFormatting); //process image defined below
               list.add(attachment); //add attachment to list of attachments
             }
           }
@@ -112,7 +123,37 @@ class DigestEmailParser {
     }
   }
 
+  //FROM USPSInformeddelivery@email.informeddelivery.usps.com SUBJECT "Your Daily Digest"'
+
+  Future<MimeMessage> _getDigestGmail() async {
+    try {
+      final dateFormatter = DateFormat('yyyy/MM/dd');
+      String after = dateFormatter
+          .format(DateTime.now().subtract(const Duration(days: 30)));
+
+      var msgs = await GmailApiService().fetchMail({
+        'from:': "USPSInformeddelivery@email.informeddelivery.usps.com",
+        'subject': "Your Daily Digest",
+        'after': after,
+      });
+
+      if (msgs.length == 0) {
+        return MimeMessage();
+      } else {
+        msgs.sort((a, b) => (a.decodeDate() ?? new DateTime(1970))
+            .compareTo((b.decodeDate() ?? new DateTime(1970))));
+        return msgs.last;
+      }
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<MimeMessage> _getDigestEmail(String username, String password) async {
+    if (await UserAuthService().isSignedIntoGoogle) {
+      return _getDigestGmail();
+    }
+
     final client = ImapClient(isLogEnabled: true);
     try {
       //Retrieve the imap server config
@@ -127,20 +168,21 @@ class DigestEmailParser {
         await client.login(username, password);
         await client.selectInbox();
 
-        String searchCriteria = 'FROM USPSInformeddelivery@email.informeddelivery.usps.com SUBJECT "Your Daily Digest"';
-        final searchResult = await client.searchMessages(searchCriteria: searchCriteria);
+        String searchCriteria =
+            'FROM USPSInformeddelivery@email.informeddelivery.usps.com SUBJECT "Your Daily Digest"';
+        final searchResult =
+            await client.searchMessages(searchCriteria: searchCriteria);
         MessageSequence? matchingSequence = searchResult.matchingSequence;
 
         if (matchingSequence != null) {
-          final messages = await client.fetchMessages(
-              matchingSequence, 'BODY.PEEK[]');
+          final messages =
+              await client.fetchMessages(matchingSequence, 'BODY.PEEK[]');
 
           final messagesList = messages.messages;
 
           if (messagesList.isNotEmpty) {
-            messagesList.sort((a, b) =>
-                (a.decodeDate() ?? new DateTime(1970)).compareTo(
-                    (b.decodeDate() ?? new DateTime(1970))));
+            messagesList.sort((a, b) => (a.decodeDate() ?? new DateTime(1970))
+                .compareTo((b.decodeDate() ?? new DateTime(1970))));
             return messagesList.last;
           }
         }
