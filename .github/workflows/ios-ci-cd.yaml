@@ -24,7 +24,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Replace Cloud Vision JSON
-        run: sed -i 's/#%cloud_vision%#/${{secrets.CLOUD_VISION}}/g' assets/credentials.json
+        run: sed -i 's/#{CLOUD_VISION}#/${{ secrets.CLOUD_VISION }}/g' assets/credentials.json
       - name: Run Flutter tasks
         uses: subosito/flutter-action@v2
         with:
