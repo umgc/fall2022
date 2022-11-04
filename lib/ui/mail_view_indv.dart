@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:enough_mail/codecs.dart';
 import 'package:flutter/gestures.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -109,7 +110,7 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     MimeMessage m1 = digest.message;
 
     _getImgFromEmail(m1);
-    //_specialTestFunction(m1);  //only un-comment this on when needing to test mailpiece loading functionality
+    //_mailPieceEmailTest(m1);  //only un-comment this when needing to test mailpiece loading functionality
 
     if (widget.mailPiece.uspsMID != "") {
       _getLinkHtmlFromEmail(m1);
@@ -141,108 +142,35 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
   } //end getMailPieceEmail
 
   void _getImgFromEmail(MimeMessage m) async {
-    var mimeParts = m.mimeData!.parts!;
 
-    for (var i = 0; i < mimeParts.length; i++) {
-      var mimeTopType = mimeParts[i].contentType!.mediaType.toString();
-      if (mimeTopType.contains("image")) {
-        if (await _getImgFromEmail2(mimeParts[i])) {
-          break; //break when image with CID is found, true returned
-        }
-      } else if (mimeTopType.contains("multipart")) {
-        // there might be more subparts
-        for (var j = 0; j < mimeParts[i].parts!.length; j++) {
-          var subPartTopType =
-              mimeParts[i].parts![j].contentType!.mediaType.toString();
-          if (subPartTopType.contains("image")) {
-            if (await _getImgFromEmail2(mimeParts[i].parts![j])) {
-              break; //break when image with CID is found, true returned
-            }
-          } //end if image
-        } //end j for loop
+    String? picture = null;
+    for ( int x = 0; x < m.allPartsFlat.length; x++ ) {
+      if ( m.allPartsFlat[x].decodeHeaderValue("Content-ID").toString().contains(widget.mailPiece.scanImgCID) ) {
+        picture = m.allPartsFlat[x].decodeContentMessage().toString();
         break;
-      } //end if multipart
+      }
     }
-  } //end _getImgFromEmail
+    if (picture != null) {
+        //These are base64 encoded images with formatting, remove all returns and lines
+        picture = picture.replaceAll("\r\n", "");
+        debugPrint(
+            "Loaded Image for scanImgCID: " + widget.mailPiece.scanImgCID);
+        setState(() {
+          mailImage = Image.memory(base64Decode(picture!));
+        });
+      } else {
+        debugPrint('Image data could not be found');
+      }
 
-  //this function was split out in case the mime part is either in level 1 vs level 2
-  Future<bool> _getImgFromEmail2(MimeData md) async {
-    if (md.headersList.toString().contains(widget.mailPiece.scanImgCID)) {
-      var picture = md.decodeMessageData().toString();
-      //These are base64 encoded images with formatting, remove all returns and lines
-      picture = picture.replaceAll("\r\n", "");
-      debugPrint("Loaded Image for scanImgCID: " + widget.mailPiece.scanImgCID);
-      setState(() {
-        mailImage = Image.memory(base64Decode(picture));
-      });
-      return true;
-    }
-    return false;
-  } //end getImgFromEmail2
+  } //end getImgFromEmail
 
   //sets state of URLs given the found email based on mailPiece
   void _getLinkHtmlFromEmail(MimeMessage m) async {
-    //need a way to get text/html in either 1st or 2nd level of parts - its different
-    //in different email accounts
-    int mimePartMatch1 = -1;
-    int mimePartMatch2 = -1;
-    String mimePartMatchLevel = '';
 
-    var mimeParts = m.mimeData!.parts!;
-    RegExp test1 = RegExp(r'multipart|text/html');
-    for (int x = 0; x < mimeParts.length; x++) {
-      String elementXString =
-          mimeParts[x].contentType?.mediaType.toString() ?? "";
-      if (test1.hasMatch(elementXString!)) {
-        if (elementXString.contains("text/html")) {
-          //got the match in level one, so set x and level
-          mimePartMatch1 = x;
-          mimePartMatchLevel = "One";
-          break;
-        } else {
-          for (int y = 0; y < mimeParts[x].parts!.length; y++) {
-            String subPartTopType =
-                mimeParts[x].parts![y].contentType!.mediaType.toString();
-
-            if (subPartTopType.contains("text/html")) {
-              //found the match at level 2, set both x and y (very important) and level to Two
-              mimePartMatch1 = x;
-              mimePartMatch2 = y;
-              mimePartMatchLevel = "Two";
-              break;
-            } //end y has text/html
-          } //end y loop
-        } //end else
-      } //end x has either multipart or text/html
-    } //end x loop
-
-    //need to instantiate textHtmlPart but this should always be overridden.
-    var textHtmlPart = mimeParts[0];
-
-    //Because we don't know if we need mime parts level 1 or level 2, need this code
-    if (mimePartMatchLevel == 'One') {
-      textHtmlPart = mimeParts[mimePartMatch1];
-    } else if (mimePartMatchLevel == 'Two') {
-      textHtmlPart = mimeParts[mimePartMatch1].parts![mimePartMatch2];
-    }
+    MimePart textHtmlPart = m.getPartWithMediaSubtype(MediaSubtype.textHtml)!;
 
     //get the parts into an html document to make it searchable.
-    //need to decode Text into 'quoted-printable' if possible or have alternate
-    // search type for 7bit or other email accounts
-
-    debugPrint(textHtmlPart.headersList.toString());
-    String contentTransferType = '';
-
-    if (textHtmlPart.headersList.toString().contains("7bit")) {
-      contentTransferType = '7bit';
-    } else if (textHtmlPart.headersList
-        .toString()
-        .contains("quoted-printable")) {
-      contentTransferType = 'quoted-printable';
-    }
-
-    var doc = parse(textHtmlPart.decodeText(
-        ContentTypeHeader('text/html'), contentTransferType));
+    var doc = parse( textHtmlPart.decodeTextHtmlPart() );
 
     //next, get a list of items that have the uspsMailID.  All mailpieces have these.
     var docMailIDItems =
@@ -715,11 +643,13 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     );
   }
 
-/*
-  //specialTestFunction is just a function used to test the mailPiece processing,
+
+  //mailPieceEmailTest is just a function used to test the mailPiece processing,
   // but per email, and without saving.  It can take awhile to verify the main mailpiece processor
   //works in mail_fetcher since it executes automatically and can process a lot of emails
-  void _specialTestFunction (MimeMessage email) {
+  void _mailPieceEmailTest (MimeMessage email) {
+
+    /*
     int mimePartMatch1 = -1;
     int mimePartMatch2 = -1;
     String mimePartMatchLevel = '';
@@ -730,11 +660,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
     for (int x = 0; x < mimeParts.length; x++) {
       String elementXString = mimeParts[x].contentType?.mediaType
           .toString() ?? "";
-      debugPrint(elementXString);
-
       if (test1.hasMatch(elementXString!)) {
         if (elementXString.contains("text/html")) {
-          debugPrint("got to first x text/html find");
           mimePartMatch1 = x;
           mimePartMatchLevel = "One";
           break;
@@ -744,7 +671,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             mimeParts[x].parts![y].contentType!.mediaType.toString();
 
             if (subPartTopType.contains("text/html")) {
-              debugPrint("got to first y text/html find");
               mimePartMatch1 = x;
               mimePartMatch2 = y;
               mimePartMatchLevel = "Two";
@@ -755,10 +681,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       } //end x has either multipart or text/html
     } //end x loop
 
-    debugPrint(
-        mimePartMatch1.toString() + ' ' + mimePartMatch2.toString() + ' ' +
-            mimePartMatchLevel);
-
     var textHtmlPart = mimeParts[0];
 
     if (mimePartMatchLevel == 'One') {
@@ -767,28 +689,31 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       textHtmlPart = mimeParts[mimePartMatch1].parts![mimePartMatch2];
     }
 
-    //get the parts into an html document to make it searchable.
-    //need to decode Text into 'quoted-printable' type to see all the link text values
+     */
 
-    debugPrint(textHtmlPart.headersList.toString());
-    String contentTransferType = '';
-
-    if (textHtmlPart.headersList.toString().contains("7bit")) {
-      contentTransferType = '7bit';
-    } else if (textHtmlPart.headersList.toString().contains("quoted-printable") ) {
-      contentTransferType = 'quoted-printable';
+    for ( int x = 0; x < email.allPartsFlat.length; x++ ) {
+      if ( email.allPartsFlat[x].decodeHeaderValue("Content-ID").toString().contains(widget.mailPiece.scanImgCID) ) {
+        debugPrint(email.allPartsFlat[x].decodeHeaderValue("Content-ID").toString());
+      }
     }
-    debugPrint(contentTransferType);
 
-    var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), contentTransferType) );
-    //var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), 'quoted-printable') );
+
+    MimePart textHtmlPart = email.parts!.first;
+
+    if ( email.getPartWithMediaSubtype(MediaSubtype.textHtml) != null ) {
+      textHtmlPart = email.getPartWithMediaSubtype(MediaSubtype.textHtml)!;
+    }
+
+    //get the parts into an html document to make it searchable.
+
+    var doc = parse( textHtmlPart.decodeTextHtmlPart() );
 
     //#############start mailPieceId section################
 
     //this section of code finds the USPS mailpiece ID in the email associated with the
     //image CID.  Useful in getting links per mailpiece.
 
-    String mailPieceId = "";
+    String? mailPieceId = "";
     //need to get text/html section of email
 
     if (widget.mailPiece.scanImgCID.contains("ra_0_") ) { //start code for ride along processing
@@ -796,8 +721,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       //first step is to get all elements that are image, and have alt text 'scanned image of your mail piece'.
       var rideAlongItems = doc.querySelectorAll(
           'img[alt*=\'ride along content for your mail piece\']');
-
-      debugPrint(' rideAlong ' + rideAlongItems.length.toString() );
 
       int matchingIndex = -1;
       for (int i = 0; i < rideAlongItems.length; i++) {
@@ -817,8 +740,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             " there was no associated ID.");
       }
 
-      debugPrint(' matchingIndex ' + matchingIndex.toString() );
-
       //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
       var trackingItems = doc.querySelectorAll('a[originalsrc*=\'informeddelivery.usps.com/tracking\']');
 
@@ -826,12 +747,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
         trackingItems = doc.querySelectorAll(
             'a[href*=\'informeddelivery.usps.com/tracking\']');
       }
-
-      for (int k = 0; k < trackingItems.length; k++){
-        debugPrint(trackingItems[k].outerHtml.toString());
-      }
-
-      debugPrint(' trackingItems ' + trackingItems.length.toString() );
 
       //need a counter for times the reminder mailPiece with image was found
       int trackingCount = 0;
@@ -870,8 +785,6 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       var scannedMailPieceItems = doc.querySelectorAll(
           'img[alt*=\'Scanned image of your mail piece\']');
 
-      debugPrint(' scannedMailPieceItems ' + scannedMailPieceItems.length.toString() );
-
       //scan through the mailpiece images to figure out which index matches the mailPiece Id.
       //this will be used to find the corresponding reminder link.
       int matchingIndex = -1;
@@ -892,39 +805,40 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
             " there was no associated ID.");
       }
 
-      debugPrint(' matchingIndex ' + matchingIndex.toString() );
-
       //next, get a list of items that have the reminder link.  They all have the reminder link.
       var reminderItems = doc.querySelectorAll('a[originalsrc*=\'informeddelivery.usps.com/box/pages/reminder\']');
       //'a[\'*informeddelivery.usps.com/box/pages/reminder\']');
 
-      debugPrint(' reminderItems ' + reminderItems.length.toString() );
 
       if ( reminderItems.length == 0 ) {
         reminderItems = doc.querySelectorAll(
             'a[href*=\'informeddelivery.usps.com/box/pages/reminder\']');
       }
 
-      debugPrint(' reminderItems ' + reminderItems.length.toString() );
-
       //need a counter for times the reminder mailPiece with image was found
       int reminderCount = 0;
       //find a reminder with the image tag, this eliminates the duplicate tag with the "Set a Reminder" text
       for (int i = 0; i < reminderItems.length; i++) {
-        debugPrint(reminderItems[i].innerHtml.toString());
         if (reminderItems[i].innerHtml.toString().contains("img")) {
           //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
           if (reminderCount == matchingIndex) {
             var regex = RegExp(
-                r'mailpieceId=\d*\"'); //finds the string mailpieceId=digits to "
+                r'(mailpieceId=)(\d*\")'); //finds the string mailpieceId=digits to "
+
             var regexNum = RegExp(r'\d+'); //get numbers only
 
+            /*
             var mpID1 =
             regex.firstMatch(reminderItems[i].outerHtml.toString());
+             */
 
+            mailPieceId = regex.firstMatch( reminderItems[i].outerHtml.toString() )?[2].toString() ?? '';
+
+            /*
             mailPieceId = regexNum
                 .firstMatch(mpID1![0]!.toString())![0]!
                 .toString();
+ */
 
             debugPrint("Date: " +
                 DateFormat('yyyy/MM/dd').format(widget.mailPiece.timestamp) +
@@ -941,7 +855,8 @@ class MailPieceViewWidgetState extends State<MailPieceViewWidget> {
       }//end for loop for reminderItems
     } //end else for normal mailpiece process
 
-  }//end specialTestFunction
- */
+  }//end mailPieceEmailTest
+
+
 
 } //end of class MailPieceViewWidget
