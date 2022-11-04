@@ -12,7 +12,7 @@ String _dbPath = "mail.db";
 
 Future<Database> get database async {
   return await openDatabase(_dbPath,
-      version: 3,
+      version: 4,
       onConfigure: _configureClient,
       onUpgrade: _createTables,
       singleInstance: true);
@@ -44,12 +44,11 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
       keyword STRING UNIQUE NOT NULL
     );
   """);
-  
-   await db.execute("""
+
+  await db.execute("""
     CREATE TABLE IF NOT EXISTS $NOTIFICATION_TABLE (
       mail_piece_id STRING  NOT NULL REFERENCES $MAIL_PIECE_TABLE(id),
-      subscription_keyword STRING  NOT NULL REFERENCES $NOTIFICATION_SUBSCRIPTION_TABLE(keyword) ON DELETE CASCADE,
-      isCleared BIT DEFAULT 0 NOT NULL
+      subscription_keyword STRING  NOT NULL REFERENCES $NOTIFICATION_SUBSCRIPTION_TABLE(keyword) ON DELETE CASCADE
     );
   """);
 
@@ -58,77 +57,52 @@ FutureOr<void> _createTables(Database db, int prev, int next) async {
       await db.execute("""
         ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN scanImgCID TEXT;
       """);
-    } catch (e) {
-      // Do nothing, prevent duplicate column from being added
-    }
+    } catch (_) {}
   }
 
   if (prev <= 2) {
     try {
       await db.execute("""
-        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN links TEXT;
-      """);
-      await db.execute("""
-        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN emails TEXT;
-      """);
-      await db.execute("""
-        ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN phone_numbers TEXT;
-      """);
-      await db.execute("""
         ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN image_bytes TEXT;
       """);
+    } catch (_) {}
+    try {
       await db.execute("""
         ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN featured_html TEXT;
       """);
-    } catch (e) {
-      // Do nothing, prevent duplicate column from being added
-    }
+    } catch (_) {}
   }
 
-  if (prev <= 1) {
+  if (prev <= 3) {
     try {
       await db.execute("""
       ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN uspsMID TEXT;
     """);
-    }
-    catch (e) {
-      // Do nothing, prevent duplicate column from being added
-    }
-  }
-
-  if (prev <= 1) {
+    } catch (_) {}
     try {
       await db.execute("""
       ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN links TEXT;
     """);
-    }
-    catch (e) {
-      // Do nothing, prevent duplicate column from being added
-    }
-  }
-
-  if (prev <= 1) {
+    } catch (_) {}
     try {
       await db.execute("""
       ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN emails TEXT;
     """);
-    }
-    catch (e) {
-      // Do nothing, prevent duplicate column from being added
-    }
-  }
-
-  if (prev <= 1) {
+    } catch (_) {}
     try {
       await db.execute("""
       ALTER TABLE $MAIL_PIECE_TABLE ADD COLUMN phones TEXT;
     """);
-    }
-    catch (e) {
-      // Do nothing, prevent duplicate column from being added
-    }
+    } catch (_) {}
   }
 
+  if (prev <= 4) {
+    try {
+      await db.execute("""
+      ALTER TABLE $NOTIFICATION_TABLE ADD COLUMN isCleared BIT DEFAULT 0 NOT NULL;
+    """);
+    } catch (_) {}
+  }
 }
 
 Future<void> setUpTestDatabase() async {
