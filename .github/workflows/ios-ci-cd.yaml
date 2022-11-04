@@ -23,8 +23,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
-      - name: Replace Cloud Vision JSON
-        run: sed -i 's/#{CLOUD_VISION}#/${{ secrets.CLOUD_VISION }}/g' assets/credentials.json
+      # TODO: Fix this for iOS to work (maybe sec command will work, but this fails on macOS)    
+      #- name: Find and Replace
+      #  uses: jacobtomlinson/gha-find-replace@2.0.0
+      #  with:
+      #    find: "#{CLOUD_VISION}#"
+      #    replace: ${{secrets.CLOUD_VISION}}
       - name: Run Flutter tasks
         uses: subosito/flutter-action@v2
         with:
