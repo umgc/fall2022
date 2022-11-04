@@ -61,7 +61,7 @@ class MailFetcher {
 
     try {
       debugPrint("Attempting to process email from " +
-          email.decodeDate()!.toString());
+          email.decodeDate()!.toString() );
       // Get attachments with metadata and convert them to MailPieces
       final mailPieceAttachments = await _getAttachments(email);
 
@@ -97,6 +97,7 @@ class MailFetcher {
 
   /// Retrieve a list of the mail image "attachments" with accompanying metadata
   Future<List<Attachment>> _getAttachments(MimeMessage email) async {
+
     var mimeParts = email.mimeData!.parts!;
     List<Attachment> attachments = [];
 
@@ -165,67 +166,15 @@ class MailFetcher {
       DateTime timestamp, int index) async {
     MailResponse ocrScanResult = await _getOcrScan(attachment.attachment);
 
-    //need a way to get text/html in either 1st or 2nd level of parts - its different
-    //in different email accounts
-    int mimePartMatch1 = -1;
-    int mimePartMatch2 = -1;
-    String mimePartMatchLevel = '';
+    final emailId = timestamp.toString();
 
-    var mimeParts = email.mimeData!.parts!;
-    RegExp test1 = RegExp(r'multipart|text/html');
+    //use enough mail "getPartWithMediaSubType" to find MediaSubType.textHtml
+    MimePart textHtmlPart = email.getPartWithMediaSubtype(MediaSubtype.textHtml)!;
 
-    for (int x = 0; x < mimeParts.length; x++) {
-      String elementXString = mimeParts[x].contentType?.mediaType
-          .toString() ?? "";
-      if (test1.hasMatch(elementXString!)) {
-        if (elementXString.contains("text/html")) {
-          //got the match in level one, so set x and level
-          mimePartMatch1 = x;
-          mimePartMatchLevel = "One";
-          break;
-        } else {
-          for (int y = 0; y < mimeParts[x].parts!.length; y++) {
-            String subPartTopType =
-            mimeParts[x].parts![y].contentType!.mediaType.toString();
+    //decode it into text and parse it back into HTML document to make it searchable with querySelector
+    var doc = parse( textHtmlPart.decodeTextHtmlPart() );
 
-            if (subPartTopType.contains("text/html")) {
-              //found the match at level 2, set both x and y (very important) and level to Two
-              mimePartMatch1 = x;
-              mimePartMatch2 = y;
-              mimePartMatchLevel = "Two";
-              break;
-            } //end y has text/html
-          } //end y loop
-        } //end else
-      } //end x has either multipart or text/html
-    } //end x loop
-
-    //need to instantiate textHtmlPart but this should always be overridden.
-    var textHtmlPart = mimeParts[0];
-
-    //Because we don't know if we need mime parts level 1 or level 2, need this code
-    if (mimePartMatchLevel == 'One') {
-      textHtmlPart = mimeParts[mimePartMatch1];
-    } else if (mimePartMatchLevel == 'Two') {
-      textHtmlPart = mimeParts[mimePartMatch1].parts![mimePartMatch2];
-    }
-
-    //get the parts into an html document to make it searchable.
-    //need to decode Text into 'quoted-printable' if possible or have alternate
-    // search type for 7bit or other email accounts
-
-    debugPrint(textHtmlPart.headersList.toString());
-    String contentTransferType = '';
-
-    if (textHtmlPart.headersList.toString().contains("7bit")) {
-      contentTransferType = '7bit';
-    } else if (textHtmlPart.headersList.toString().contains("quoted-printable") ) {
-      contentTransferType = 'quoted-printable';
-    }
-
-    var doc = parse( textHtmlPart.decodeText(ContentTypeHeader('text/html'), contentTransferType) );
-
-    //############# start sender section ################
+    //###################### start sender section ##########################
     // If sender is not stored in metadata
     if (email.sender == null) {
 
@@ -271,19 +220,19 @@ class MailFetcher {
           attachment.sender = ocrScanResult.addresses.first.name;
         }
       } catch (e) {
-        debugPrint("No addresses detected for this attachment");
+        debugPrint("No addresses detected for " + attachment.contentID);
 
         try {
           if (ocrScanResult.logos.first.getName.isNotEmpty) {
             attachment.sender = ocrScanResult.logos.first.getName;
           }
         } catch (e) {
-          debugPrint("No logos detected for this attachment");
+          debugPrint("No logos detected for " + attachment.contentID);
           attachment.sender = "Unknown Sender";
         }
       }
     }
-    //############# end sender section ################
+    //<<<<<<<<<<<<< end sender section >>>>>>>>>>>>>>>>>>>>
 
     final id = "${attachment.sender}-$timestamp-$index";
     var text = ocrScanResult.textAnnotations.first.text;
@@ -304,7 +253,7 @@ class MailFetcher {
       }
     }
 
-    //#############start linkwell section################
+    //################ start linkwell section #######################
 
     LinkWell linkWell = LinkWell(text!);
 
@@ -322,16 +271,15 @@ class MailFetcher {
       phoneList.add(phone);
     }
 
-    //#############end linkwell section################
+    //<<<<<<<<<<<<<<<<<<<<<< end linkwell section >>>>>>>>>>>>>>>>>>>>>>>
 
-    final emailId = timestamp.toString();
 
-    //#############start mailPieceId section################
+    //############# start mailPieceId section ################
 
     //this section of code finds the USPS mailpiece ID in the email associated with the
     //image CID.  Useful in getting links per mailpiece.
 
-    String mailPieceId = "";
+    String? mailPieceId = "";
     //need to get text/html section of email
 
             if (scanImgCID.contains("ra_0_") ) { //start code for ride along processing
@@ -353,9 +301,9 @@ class MailFetcher {
 
               //print debug error that the scanImgCID didn't find a match.
               if (matchingIndex == -1) {
-                debugPrint("For mailPiece " +
+                debugPrint("MailPiece " +
                     scanImgCID +
-                    " there was no associated ID.");
+                    " has no associated ID.");
               }
 
               //next, get a list of items that have the tracking link.  All ride alongs have a tracking link.
@@ -419,9 +367,9 @@ class MailFetcher {
 
               //print debug error that the scanImgCID didn't find a match.
               if (matchingIndex == -1) {
-                debugPrint("For mailPiece " +
+                debugPrint("MailPiece " +
                     scanImgCID +
-                    " there was no associated ID.");
+                    " has no associated ID.");
               }
 
               //next, get a list of items that have the reminder link.  They all have the reminder link.
@@ -440,16 +388,12 @@ class MailFetcher {
                 if (reminderItems[i].innerHtml.toString().contains("img")) {
                   //we want to get the mailPieceID of the matching mailPiece.  Will help with getting other items
                   if (reminderCount == matchingIndex) {
-                    var regex = RegExp(
-                        r'mailpieceId=\d*\"'); //finds the string mailpieceId=digits to "
-                    var regexNum = RegExp(r'\d+'); //get numbers only
 
-                    var mpID1 =
-                    regex.firstMatch(reminderItems[i].outerHtml.toString());
+                    //finds the string mailpieceId=digits to ", digits grouped ()
+                    var regex = RegExp( r'mailpieceId=(\d*)\"' ); //finds the string mailpieceId=digits to , digits grouped"
 
-                    mailPieceId = regexNum
-                        .firstMatch(mpID1![0]!.toString())![0]!
-                        .toString();
+                    //can get group [1] of match, is (\d*) digits
+                    mailPieceId = regex.firstMatch( reminderItems[i].outerHtml.toString() )?[1].toString() ?? '';
 
                     debugPrint("Date: " +
                         DateFormat('yyyy/MM/dd').format(timestamp) +
@@ -466,8 +410,10 @@ class MailFetcher {
               }//end for loop for reminderItems
             } //end else for normal mailpiece process
 
+    //<<<<<<<<<<<<<<<<<<<< end mailpiece id section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
     return new MailPiece(id, emailId, timestamp, attachment.sender, text!,
-        scanImgCID, mailPieceId, links, emailList, phoneList);
+        scanImgCID, mailPieceId ?? '', links, emailList, phoneList);
   } //end _processMailImage
 
   /// Perform OCR scan once on the mail image to get the results for further processing
