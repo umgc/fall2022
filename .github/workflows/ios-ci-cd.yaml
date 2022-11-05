@@ -1,0 +1,72 @@
+name: iOS CI/CD
+
+on:
+  push:
+    branches:
+      - "master"
+      - "developer"
+  
+  pull_request:
+    branches:
+      - "master"
+      - "developer"
+      
+jobs:
+ deploy_ios:
+    name: Build iOS
+    runs-on: macOS-latest
+    steps:
+      - name: Get run number
+        run: |
+          echo '${{ github.run_number }}'
+      - name: Checkout code from ref
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      # TODO: Fix this for iOS to work (maybe sec command will work, but this fails on macOS)    
+      #- name: Find and Replace
+      #  uses: jacobtomlinson/gha-find-replace@2.0.0
+      #  with:
+      #    find: "#{CLOUD_VISION}#"
+      #    replace: ${{secrets.CLOUD_VISION}}
+      - name: Run Flutter tasks
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - name: Install from Podfile
+        run: |
+          cd ios
+          pod install
+          cd .. 
+      - name: FLutter build
+        run: flutter build ios --release --no-codesign
+      - name: Upload App File
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.app
+          path: /Users/runner/work/fall2022/fall2022/build/ios/iphoneos/Runner.app
+      - name: Run Unit Tests
+        run: flutter test
+      - name: Deploy iOS Beta to TestFlight via Fastlane
+        continue-on-error: true
+        uses: maierj/fastlane-action@v1.4.0
+        with:
+          lane: closed_beta
+          subdirectory: ios
+        env:
+          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+          DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+          PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          BUILD_NUMBER: '${{ github.run_number }}'
+          APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
+          APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
+          APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
